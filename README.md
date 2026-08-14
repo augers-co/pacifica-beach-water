@@ -25,6 +25,19 @@ Linda Mar Beach has some of the worst measured water quality in San Mateo County
 - **CEDEN / Safe to Swim** — state data warehouse behind the map; has bulk/query access
 - **Heal the Bay BRC** — grades API used by beachreportcard.org (inspect)
 
+## Repo layout
+
+- [`pipeline/fetch.py`](pipeline/fetch.py) — pulls county bacteria records (CEDEN + BeachWatch via data.ca.gov), advisory postings, and daily watershed rainfall (ERA5) into `data/pacifica.db` (SQLite; gitignored)
+- [`pipeline/analyze.py`](pipeline/analyze.py) — builds antecedent-rain features, computes exceedance vs. single-sample standards
+- [`pipeline/charts.py`](pipeline/charts.py) — renders the findings charts
+- [`docs/data-sources.md`](docs/data-sources.md) — verified source map (what exists, what's machine-readable, what's missing)
+- [`docs/findings-v1.md`](docs/findings-v1.md) — first results: the creek has a dry-weather source; the beach is rain-driven; Linda Mar deteriorated starting ~2014
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install pandas requests matplotlib
+.venv/bin/python pipeline/fetch.py && .venv/bin/python pipeline/analyze.py
+```
+
 ## Status
 
-Scaffolding. Next: probe each source for machine-readable endpoints, then pick the stack.
+v1 analysis done (see findings). Next: Surfrider BWTF export (requested), tide/wave covariates, first logistic nowcast model for the beach, then live dashboard.
