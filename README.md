@@ -38,6 +38,16 @@ python3 -m venv .venv && .venv/bin/pip install pandas requests matplotlib
 .venv/bin/python pipeline/fetch.py && .venv/bin/python pipeline/analyze.py
 ```
 
+## Data hierarchy
+
+**Creek measurements are the primary signal.** Single grab samples in the surf
+zone are inherently noisy (bacteria vary by orders of magnitude over meters and
+minutes), so ocean-station data here serves as context and validation — it
+shows how creek influence expresses at the beach, and is not treated as a
+measure of ocean water quality. The modeling target is **creek state and creek
+influence** (rain-driven amplification, clearance timing, transport conditions),
+not ocean quality per se.
+
 ## Status
 
-v1 analysis done (see findings). Next: Surfrider BWTF export (requested), tide/wave covariates, first logistic nowcast model for the beach, then live dashboard.
+v2 findings done. Next: Surfrider BWTF export (requested), stacked creek-state model with honest cross-validation, then live dashboard.

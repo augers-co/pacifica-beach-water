@@ -1,5 +1,16 @@
 # Findings v2 — benchmarking the folk rule; new covariates (2026-08-14)
 
+> **Framing note (added after Coalition context).** Creek measurements are the
+> primary, trusted signal in this project. Ocean-side grab samples (LM5/LM6)
+> are single points in a dynamic surf zone — bacteria there vary by
+> order-of-magnitude over meters and minutes, so one weekly grab is a noisy
+> observation, not a measure of "ocean water quality." Beach-station analyses
+> below are used as *context and validation only*: they characterize how creek
+> influence expresses in the surf zone (e.g., the LM6 spatial contrast, tide-
+> stage transport), and the noise means beach-side AUCs understate true
+> predictability. The forecast target this project builds toward is **creek
+> state and creek influence**, not ocean quality as such.
+
 Question: can a forecast beat "stay out if it's raining or recently rained"?
 Frame: LM5 enterococcus, modern era (2015+, n≈528–540), where the beach fails
 ~48% of samples overall. Code: `pipeline/fetch_covariates.py` + analysis
