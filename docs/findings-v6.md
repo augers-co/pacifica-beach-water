@@ -56,6 +56,22 @@ Modeling consequence: stable-weather forecast features are hour, temp7,
 solar3, and lagged creek state. Weekly Monday county samples + these
 covariates now explain the seasonal shape without invoking flow.
 
+## Revision (same day): the "dim" half was partly season in disguise
+
+Normalizing solar by clear-sky radiation (FAO-56 Ra; `csi = solar/0.75·Ra`)
+removes daylength/season and isolates true cloudiness. Result: season-free
+cloudiness alone shows little (r = −0.06; terciles non-monotonic), so the raw
+solar3 effect above was substantially seasonal. **The temperature effect
+stands** (monotonic, r = +0.22). Two caveats cut the other way: (1) ERA5's
+grid cell hardly sees the marine layer — median Jun–Oct csi is 0.87
+("mostly clear"), which is not the coastal reality — so true fog variation is
+measured with a poor instrument; (2) the warm/cloudy interaction cell runs
+highest (warm+cloudy 531 vs warm+clear 369; cool cells 226/282, n≈46–49
+each), consistent with fog shielding UV when warmth matters. Verdict:
+warmth confirmed; the fog-shielding hypothesis is open pending a real fog
+record (Half Moon Bay AWOS ceilometer via the IEM archive — access
+confirmed — and/or GOES/MODIS satellite cloud products).
+
 ## Caveats
 
 - ERA5 grid cell (37.585, −122.47) sits partly inland of the fog belt; air
