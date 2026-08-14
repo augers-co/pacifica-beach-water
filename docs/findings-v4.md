@@ -13,22 +13,43 @@ morning (spatial profile), a categorical **Creek Level** (Low/Med/High) and
 station, ~200 yd north of the creek mouth — not in our CEDEN pulls), and a
 Surfrider BWTF creek-mouth series (Thursdays, n=33, ends 2025-05).
 
-## 1. Stable-weather load appears to enter HIGH in the watershed
+## 1. The stable-weather load enters in the Adobe Sanchez → Peralta reach
 
-Geo-mean E. coli (cfu/100mL) by site in stable weather (<2mm rain/14d),
-assumed upstream → downstream order:
+Site order is now **confirmed by the Coalition's published coordinates**
+([testing-sites page](https://www.lindamarwaterquality.org/testing-sites)).
+The creek flows 2.5 mi NW to the ocean; upstream → downstream:
 
-| Peralta Bridge | Adobe Sanchez | Linda Mar Bridge | Creek Mouth |
-|---|---|---|---|
-| **357** | 161 | 243 | 208 |
+| site | code | coordinates |
+|---|---|---|
+| Linda Mar Bridge (most upstream, urban-reach top) | LMMS | 37.58151, -122.47870 |
+| Adobe Sanchez | ADMS | 37.58687, -122.49490 |
+| Peralta Bridge | PRLT | 37.58852, -122.49930 |
+| San Pedro Creek Mouth | SPCM | 37.59625, -122.50550 |
 
-The most upstream site is the dirtiest when it hasn't rained (enterococcus
-shows the same rank-order, 268 at Peralta). On rain days the pattern shifts
-(everything rises; mouth peaks at 2,059 ent geo-mean) — consistent with
-distributed wash-in during storms vs a concentrated upper-valley dry-weather
-input. ⚠ **Caveat: site order is assumed from Pacifica street geography**
-(Peralta Rd = upper valley; Sanchez Adobe = mid; Linda Mar Blvd/Hwy 1 = lower)
-— needs confirmation before anything is built on it.
+Geo-mean cfu/100mL in stable weather (<2mm/14d), upstream → downstream:
+
+| | LMMS | ADMS | PRLT | SPCM |
+|---|---|---|---|---|
+| E. coli | 243 | 161 | **357** | 208 |
+| Enterococcus | 237 | 187 | **268** | 247 |
+
+Two regimes, now coherent:
+
+- **Stable weather:** concentration roughly **doubles between Adobe Sanchez
+  and Peralta Bridge** — the dominant dry-weather input enters in that
+  mid-lower urban reach — then declines toward the mouth (the creek passes
+  through a wetland below the bridges; attenuation by settling/die-off
+  and/or dilution). Water entering the urban core at LMMS is already
+  elevated (~240), well above the "relatively pristine" spring-fed parkland
+  the Coalition describes upstream.
+- **Rain:** the profile flips to monotonic accumulation downstream
+  (ent geo-means 748 → 1,148 → 1,246 → **2,059** at the mouth) — distributed
+  storm-sewer wash-in through the whole urban valley, consistent with the
+  Coalition's storm-sewer map (most drains empty into the creek).
+
+The reach-level implication (dry-weather source between ADMS and PRLT) is
+the kind of thing their DNA sampling can test directly; we simply note what
+their published numbers show.
 
 ## 2. The Creek Level column can't test dilution (yet)
 
