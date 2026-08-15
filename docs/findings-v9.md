@@ -349,6 +349,15 @@ the chronic dry-weather signal that dominates the record. Sources: SCH
 2016122016, City Resolution 37-2020, the Regional Board Cease-and-Desist
 order.
 
+**Shown on the ledger** (Josh's call, 2026-08-15) as a distinct slate-blue
+Construction band (2017–20), deliberately set apart from the grey in-channel
+blocks, with a hover note that it is creek-*adjacent* sewer infrastructure,
+not in-channel creek work. Rationale: it was a ~$19M, beach-health-motivated
+fix Pacifica paid for on the premise it would help the beach — an attempted
+remedy shouldn't be invisible just because our read is that the source is
+upstream — while the different shade keeps it honestly separate from the
+channel changes that could actually alter how the creek reaches the surf.
+
 Also verified, not added as construction bands: **Serra Drive outfall
 repair** (SCH 2021020381, in-channel rip-rap, approved Feb 2021 — build date
 unconfirmed); 505 San Pedro Ave and 570 Crespi developments (creek-adjacent,
