@@ -96,9 +96,18 @@ If you can improve one of these, the maintainers want to hear it.
   from the nearest high water, with high-water times refined to minutes by a
   parabola through the three hourly points around each local maximum
   (negative = flood, positive = ebb).
-- **Assumption:** SF phase leads Pacifica by minutes-to-tens-of-minutes —
-  fine for stage and phase classification, not for minute-level timing; the
-  error blurs phase bins slightly, biasing measured contrasts toward zero.
+- **Phase offset (measured 2026-08-15, corrected):** the open coast leads
+  the SF gauge — Princeton/Half Moon Bay (9414131, a reference station 14 mi
+  south of Linda Mar) turns **54–64 min earlier at highs, 32–52 min at lows**
+  (12 turns compared). An earlier version of this register had the direction
+  backwards. Pacifica, on the open coast, tracks Princeton far more closely
+  than SF; phase computed from SF timing therefore *understates* local phase
+  by up to ~1 h. This blurs turn-adjacent classification and biases measured
+  tide contrasts toward zero (the v9 ebb/flood ratio is an underestimate),
+  and shifts phase-curve labels: the observed minimum sits at local high
+  water, the maximum near local low.
+- **To improve:** refetch `tide_hourly` from station 9414131 and recompute —
+  strictly better for Pacifica than the bay gauge.
 
 ## 7. Replicate & censoring handling
 
