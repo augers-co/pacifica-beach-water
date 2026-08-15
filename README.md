@@ -51,3 +51,14 @@ not ocean quality per se.
 ## Status
 
 v2 findings done. Next: Surfrider BWTF export (requested), stacked creek-state model with honest cross-validation, then live dashboard.
+
+## North star
+
+This project exists to (1) produce clear, defensible insight into what drives
+pollution in San Pedro Creek, (2) help locate the sources, (3) make the
+information useful enough to ordinary beach users that it builds public and
+political will, and (4) support actual fixes. Every analysis and product
+choice should trace to one of those four. Evidence standards are set for
+skeptical review: the likely remedies are expensive and land on homeowners,
+so claims ship with stated falsifiable tests, dated predictions, and the raw
+record alongside every summary.
