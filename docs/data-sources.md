@@ -20,7 +20,7 @@ added or die. (Verification dates: 2026-08-14 unless noted.)
 |---|---|---|---|---|
 | **ERA5 daily precip** (watershed 37.585,-122.47) | Open-Meteo archive API, free, no key | 1998 → present, daily | `weather_daily` | ✅ live |
 | **ERA5 hourly precip** (intensity features) | same, `hourly=precipitation` | 2015 → present | `rain_hourly` | ✅ live |
-| **NOAA CO-OPS tide predictions** — SF station 9414290 (phase leads Pacifica by minutes; deterministic → exact retroactively and forecastable ahead) | CO-OPS API, hourly predictions | 2015 → present (extendable any range) | `tide_hourly` | ✅ live |
+| **NOAA CO-OPS tide predictions** — SF station 9414290 (phase leads Pacifica by minutes; deterministic → exact retroactively and forecastable ahead) | CO-OPS API, hourly predictions | 2000 → present (full LM5 era; extendable any range) | `tide_hourly` | ✅ live |
 | **Donor stream gauges** — core analogs (coastal-draining, unregulated, marine-layer): San Gregorio 11162500, Pescadero 11162570, Soquel 11160000, San Lorenzo 11160500, + Pilarcitos 11162630 (flagged: partly regulated). Contrast-only, not analogs: San Francisquito 11164500 (bay side), Corralitos 11159200 (interior), Lagunitas 11460400 (Marin/Tomales Bay, regulated) | USGS OGC API `api.waterdata.usgs.gov` collection `daily`, param 00060 | 2014 → present, daily cfs | `donor_flow_daily` | ✅ live — core panel: flow_idx r=0.69–0.73, ground_idx r=0.65–0.74 |
 | San Pedro Creek gauge | USGS 11162655 | 2 spot measurements ever (1977, 2015) | — | ❌ none exists |
 | Groundwater (USGS wells 15G001/2M, 14E001M, 14F001M, 27R001M; DWR periodic network) | USGS OGC field-measurements; DWR CKAN `c4de0d7e…` | zero usable series; DWR has no coastal SM County stations | — | ❌ dead end |

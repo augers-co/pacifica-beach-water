@@ -88,10 +88,17 @@ If you can improve one of these, the maintainers want to hear it.
 
 ## 6. Tides
 
-- **Source:** NOAA harmonic predictions, San Francisco station 9414290.
-  Deterministic (exact retroactively, forecastable ahead).
+- **Source:** NOAA harmonic predictions, San Francisco station 9414290,
+  hourly, 2000→present. Deterministic (exact retroactively, forecastable
+  ahead).
+- **Derived at each sampling minute** (`pipeline/tide_beach.py`): height and
+  rate by linear interpolation of the hourly series; **phase** = signed hours
+  from the nearest high water, with high-water times refined to minutes by a
+  parabola through the three hourly points around each local maximum
+  (negative = flood, positive = ebb).
 - **Assumption:** SF phase leads Pacifica by minutes-to-tens-of-minutes —
-  fine for stage/height classification, not for minute-level timing.
+  fine for stage and phase classification, not for minute-level timing; the
+  error blurs phase bins slightly, biasing measured contrasts toward zero.
 
 ## 7. Replicate & censoring handling
 

@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DB = ROOT / "data" / "pacifica.db"
 COOPS = "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter"
 STATION = "9414290"  # San Francisco
-YEARS = range(2015, 2027)
+YEARS = range(2000, 2027)  # tide is deterministic; span the full LM5 record
 
 
 def fetch_tide(con):
