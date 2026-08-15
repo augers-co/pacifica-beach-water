@@ -292,9 +292,13 @@ starting point; unverifiable items were dropped):
   of storm runoff away from the **Linda Mar and Anza pump stations** — the
   Anza station discharges at the lower third of Linda Mar beach — into
   constructed treatment wetlands, **expressly to reduce the coliform / E.
-  coli reaching the beach** ([City of Pacifica](https://www.cityofpacifica.org/departments/public-works/wastewater-treatment/calera-creek-water-recycling/linda-mar-san-pedro-creek-wetlands); [CEQA 2012061091](https://ceqanet.lci.ca.gov/Project/2012061091)).
-  **A project built to make the beach cleaner went in around 2018–2020 — and
-  the beach did not recover** (2022–2024 were among the worst years on
+  coli reaching the beach** ([City of Pacifica](https://www.cityofpacifica.org/departments/public-works/wastewater-treatment/calera-creek-water-recycling/linda-mar-san-pedro-creek-wetlands), Prop 13 funding). *Construction dates not
+  independently verified* — the LLM list's "2018–2020" and its CEQA number
+  (2012061091, which is actually a Pacific Grove project) did not check out;
+  the project's existence and purpose are confirmed by the city, the exact
+  build window is not. Prop 13 (a 2000 water bond) hints it may predate 2018.
+  **A project built to make the beach cleaner was completed before the recent
+  era — and the beach did not recover** (2022–2024 were among the worst years on
   record). Read carefully: it treats *storm* first-flush, so it targets the
   wet-weather pathway, not the chronic *dry-weather* source. Its apparent
   failure to move the beach is therefore evidence *for* the project's central
