@@ -88,9 +88,10 @@ If you can improve one of these, the maintainers want to hear it.
 
 ## 6. Tides
 
-- **Source:** NOAA harmonic predictions, San Francisco station 9414290,
-  hourly, 2000→present. Deterministic (exact retroactively, forecastable
-  ahead).
+- **Source:** NOAA harmonic predictions, **Princeton/Half Moon Bay station
+  9414131** (open-coast reference station 14 mi south of Linda Mar), hourly,
+  2000→present. Deterministic (exact retroactively, forecastable ahead).
+  Switched from the SF Golden Gate gauge 9414290 on 2026-08-15 — see below.
 - **Derived at each sampling minute** (`pipeline/tide_beach.py`): height and
   rate by linear interpolation of the hourly series; **phase** = signed hours
   from the nearest high water, with high-water times refined to minutes by a
@@ -106,8 +107,11 @@ If you can improve one of these, the maintainers want to hear it.
   tide contrasts toward zero (the v9 ebb/flood ratio is an underestimate),
   and shifts phase-curve labels: the observed minimum sits at local high
   water, the maximum near local low.
-- **To improve:** refetch `tide_hourly` from station 9414131 and recompute —
-  strictly better for Pacifica than the bay gauge.
+- **Residual error:** the coastal tide propagates northward, so Pacifica
+  turns an estimated ~5–10 min after Princeton — negligible against the
+  12.4 h cycle. The switch's lesson (findings-v9 correction): an hour-scale
+  clock error does not merely blur phase results, it can relabel them —
+  the SF-timed "ebb effect" was an alias of the clean high-water window.
 
 ## 7. Replicate & censoring handling
 

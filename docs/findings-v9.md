@@ -10,12 +10,15 @@ rather than leaving the claim inside a ridge fit. `pipeline/tide_beach.py`.
   1,255 sample-days; 1,106 carry a real `CollectionTime` (149 rows hold the
   `00:00:00` missing-time sentinel and are dropped). Times cluster 8–11 AM,
   median 9:00. Same-date replicates collapse to the max (register §7).
-- **Tide:** NOAA CO-OPS harmonic predictions, SF station 9414290, hourly,
-  extended back to 2000 (deterministic, so historical values are exact;
-  `tide_hourly` now spans 2000–2026). Height and rate at the sampling minute
+- **Tide:** NOAA CO-OPS harmonic predictions, hourly, 2000–2026,
+  **Princeton/Half Moon Bay station 9414131** — an open-coast reference
+  station 14 miles south of Linda Mar. (The first publication of this note
+  used the SF Golden Gate gauge 9414290; the open coast turns 30–65 minutes
+  before that gauge — register §6 — and the switch materially changed the
+  result. See the correction below.) Height and rate at the sampling minute
   are interpolated; each sample gets a **phase** = signed hours from the
-  nearest high water (parabola-refined maxima): negative = flood (rising),
-  positive = ebb (falling).
+  nearest high water (parabola-refined maxima): negative = before high
+  (rising), positive = after (falling).
 
 The sampling program never chose its times by tide — samplers arrive on a
 morning schedule while the tide drifts ~50 minutes later each day — so tide
@@ -24,51 +27,64 @@ phase at the sampling minute is close to naturally randomized
 samples land disproportionately in winter (50% vs 37%) and on rainier weeks
 (prev-7d 11.7 vs 9.1 mm), so every claim below is checked in dry weather.
 
-## Result: ebb tide raises the odds ~1.3×, and it is not rain in disguise
+## CORRECTION (same day): the effect is high-vs-low phase, not ebb-vs-flood
 
-| subset | n (ebb/flood) | ebb exceed | flood exceed | RR [95% CI] | perm p |
-|---|---|---|---|---|---|
-| all days | 478/628 | 34.7% | 25.3% | **1.37 [1.15–1.65]** | 0.001 |
-| dry ≥3 days | 347/505 | 28.8% | 21.6% | **1.34 [1.06–1.70]** | 0.020 |
-| dry ≥7 days | 279/397 | 29.7% | 23.2% | 1.28 [0.99–1.64] | 0.062 |
+The first publication of this note, timed on the SF Golden Gate gauge,
+reported "ebb tide raises the odds 1.37× (p=0.001)." Re-timing every sample
+on the open-coast clock (Princeton 9414131, which Pacifica tracks to within
+minutes) **collapses that binary**: ebb/flood becomes 1.12 [0.93–1.34],
+p=0.26, and the controlled OLS ebb coefficient falls to +0.05. The SF gauge
+runs ~an hour behind the coast, so the genuinely clean hours *around* local
+high water were being wholesale mislabeled "flood," manufacturing an
+ebb-vs-flood split. Direction at the sampling moment does not matter.
 
-Geo-means move the same way (all days: 52 vs 37). OLS on log-concentration
-gives the same answer from the other direction: the ebb coefficient is
-+0.147 naive and **+0.114 with rain + season controls** (≈ ×1.30
-concentration). The dry-weather replication is the load-bearing row: with
-storm influence excluded entirely, the effect stands at the same size; the
-≥7-day subset thins to p=0.06 as n drops, at an unchanged effect size —
-what a modest real effect looks like as power shrinks, not a disappearing one.
-
-## The phase curve is the mechanism's signature
-
-Exceedance by hours-from-high-water (`docs/charts/tide_phase_lm5.png`):
+What survives — and is the correct claim — is the **phase structure**.
+Exceedance by hours-from-local-high-water (`docs/charts/tide_phase_lm5.png`):
 
 | phase | −5.2h | −3.1h | −1.0h | +1.0h | +3.1h | +5.2h |
 |---|---|---|---|---|---|---|
-| all days | 30% | 26% | **21%** | 36% | 33% | **39%** |
-| dry ≥3d | 24% | 22% | **19%** | 31% | 26% | **33%** |
+| all days | 33% | 30% | **23%** | 28% | 34% | 34% |
+| dry ≥3d | 30% | 25% | **17%** | 27% | 25% | 30% |
 
-Risk falls through the flood to its minimum in the last hour before high
-water, jumps immediately after the turn, and is highest late in the ebb —
-near low water. Both series show the same shape. That is what creek-plume
-transport predicts: hours of incoming ocean water push the plume back
-against the creek mouth; hours of ebb draw it out across the beach face.
-The station sits in the surf zone at the mouth — it samples whatever the
-tide has been doing to the plume all morning.
+The clean window straddles high water; risk is highest in the hours around
+low water, approaching from either direction. Windowed contrast (within
+~2 h of high vs within ~2 h of low):
+
+| subset | around high | around low | RR low/high [95% CI] | perm p |
+|---|---|---|---|---|
+| all days (n=419/332) | 25.3% | 32.2% | **1.27 [1.01–1.60]** | 0.040 |
+| dry ≥3 days (n=329/259) | 21.9% | 27.8% | 1.27 [0.95–1.69] | 0.103 |
+
+A real but **modest** effect — about 1.3× between the best and worst
+windows, borderline significance once rain days are excluded — not the
+strong directional result first reported. Mechanistically it now reads as
+excursion, not direction: at low water the creek's plume has been drawn
+farthest across the beach face and the station stands closest to it; at
+high water the ocean holds it pinned at the mouth. Consistent with that,
+same-morning tide *height* terciles stay flat (next section) — what varies
+is the phase geometry, not the water level.
+
+The v8 beach-model "ebb+" coefficient and the "flood 0.86×" good-news line
+were computed on SF timing and carry the same alias; their predictive value
+was validated out-of-sample and stands, but their mechanistic label should
+be read as "tide phase," and model v2 should refit tide features on
+Princeton timing with a phase term.
 
 ## Height stays null
 
-Tide-height terciles: 29% / 28% / 31% exceedance (geo-means 42/39/48).
-Confirms v8: the folk intuition "high tide dilutes" fails. What matters is
-the water's **direction**, not its level — consistent with a plume being
-moved, not a harbor being filled.
+Tide-height terciles (Princeton datum): 29.5% / 30.7% / 27.9% exceedance.
+Confirms v8: the folk intuition "high tide dilutes" fails. Height terciles
+mix spring and neap cycles, so this is not in tension with the phase
+result — what matters is *where the water is in its cycle*, not its
+absolute level.
 
 ## Limitations
 
-- SF harmonic phase leads Pacifica by minutes-to-tens-of-minutes
-  (register §6) — small against a 12.4 h cycle, and it can only blur the
-  phase curve, not create it.
+- Princeton is 14 miles south; the coastal tide propagates northward, so
+  Pacifica turns an estimated ~5–10 minutes after Princeton — genuinely
+  small against a 12.4 h cycle. (The lesson of the correction above: an
+  hour-scale clock error does not merely blur — it can *relabel*. The
+  residual minutes here cannot.)
 - Predictions, not observations: storm surge and wave setup are absent.
   They affect height (already null), not the timing of the turn.
 - Single-grab noise (±half-log, register §9) still floors any single
@@ -79,15 +95,17 @@ moved, not a harbor being filled.
 
 ## What follows
 
-- The beach product's tide term is now independently demonstrated, with a
-  dose-response curve, not just a fitted coefficient.
+- The beach product's tide term is demonstrated as a **phase** effect with
+  a dose-response curve — and the correction is itself a result: the
+  measurement clock matters at the hour scale, and the analysis now runs on
+  the right one.
 - Practical reading (beach-facing, consistent with the borderline-by-default
-  frame): on equal weather, the hours around an incoming high tide run
-  ~1.3× cleaner than the ebb; the late ebb near low water is the worst
-  window. This never overrides the rain rules — it refines them.
-- The curve is another argument that **the creek is the vector**: the beach
-  reading responds to the machinery that moves creek water, in dry weather,
-  on the astronomical clock.
+  frame): on equal weather, the couple of hours around high water run
+  ~1.3× cleaner than the hours around low water. A modest refinement that
+  never overrides the rain rules.
+- The phase curve remains an argument that **the creek is the vector**: the
+  beach reading responds to where the tide has moved creek water, in dry
+  weather, on the astronomical clock — just via excursion, not direction.
 
 ---
 

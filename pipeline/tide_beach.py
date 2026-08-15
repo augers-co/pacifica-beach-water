@@ -8,8 +8,10 @@ Method
 - Samples: CEDEN LM5 enterococcus with a recorded CollectionTime (the
   "00:00:00" sentinel rows are dropped as missing-time). Same-date replicates
   collapse to the max (register §7).
-- Tide: NOAA CO-OPS harmonic predictions, SF station 9414290, hourly,
-  local clock (lst_ldt) — deterministic, so historical values are exact.
+- Tide: NOAA CO-OPS harmonic predictions, Princeton/Half Moon Bay station
+  9414131 (open coast; see inferences.md §6 for the SF-gauge correction),
+  hourly, local clock (lst_ldt) — deterministic, so historical values are
+  exact.
   Height and rate at the sampling minute are linearly interpolated; each
   sample also gets a phase = signed hours from the nearest high water
   (parabola-refined local maxima), negative before high (flood), positive
@@ -116,6 +118,7 @@ def load():
     rc["date"] = pd.to_datetime(rc.date)
     b = b.merge(rc, on="date", how="left")
     b["exceed"] = b.value > STD
+    b["nd"] = False
     b["logc"] = np.log10(b.value.clip(lower=1))
     b["ebb"] = b.tide_rate < 0
     return b.reset_index(drop=True)
@@ -199,6 +202,32 @@ def main():
     contrast(dry3, "DRY >=3 DAYS (storm influence excluded)")
     dry7 = b[b.days_since_rain >= 7]
     contrast(dry7, "DRY >=7 DAYS")
+
+    # phase-window contrast: around high water vs around low water
+    def window_contrast(df, label):
+        hi = df[df.phase_h.abs() <= 2.07]
+        lo = df[df.phase_h.abs() >= 4.14]
+        ph, pl = hi.exceed.mean(), lo.exceed.mean()
+        rrs = []
+        for _ in range(4000):
+            sh = hi.exceed.sample(len(hi), replace=True).mean()
+            sl = lo.exceed.sample(len(lo), replace=True).mean()
+            if sh > 0:
+                rrs.append(sl / sh)
+        clo, chi = np.percentile(rrs, [2.5, 97.5])
+        pool = pd.concat([hi, lo]).exceed.values
+        obs = pl - ph
+        nlo = len(lo)
+        perm = np.array([abs(np.mean(x[:nlo]) - np.mean(x[nlo:]))
+                         for x in (RNG.permutation(pool) for _ in range(20000))])
+        p = (perm >= abs(obs)).mean()
+        print(f"\n{label} — around high (|ph|<=2.07h) vs around low (|ph|>=4.14h)")
+        print(f"  high-water window: {ph:5.1%} exceed, geo-mean {gm(hi.value):6.1f}, ND {hi.nd.mean() if 'nd' in hi else float('nan'):5.1%}  n={len(hi)}")
+        print(f"  low-water window : {pl:5.1%} exceed, geo-mean {gm(lo.value):6.1f}, ND {lo.nd.mean() if 'nd' in lo else float('nan'):5.1%}  n={len(lo)}")
+        print(f"  RR low/high {pl/ph:.2f}  [95% CI {clo:.2f}-{chi:.2f}]  perm p={p:.4f}")
+
+    window_contrast(b, "ALL DAYS")
+    window_contrast(dry3, "DRY >=3 DAYS")
 
     # height (stage) check — expected null from prior work
     print("\nTide HEIGHT terciles (all days):")
