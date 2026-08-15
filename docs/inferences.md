@@ -73,9 +73,18 @@ If you can improve one of these, the maintainers want to hear it.
   1979 enters through the *air* series, but if the air↔water coupling itself
   changed (e.g., via reduced summer baseflow), the transfer would be biased.
   Cross-creek transfer (San Gregorio → San Pedro) is assumed.
-- **To improve:** a single modern paired air/water season anywhere on an
-  analog creek (a $100 logger) would test the transfer directly. This is the
-  register's weakest calibrated link; treat ±2 °C as a floor on uncertainty.
+- **Modern tests (2026-08):** two live USGS water-temp stations exist within
+  range — Pilarcitos below Stone Dam (11162620, ~11 mi away) and Alameda Ck
+  below Calaveras (11172175) — both **dam-influenced reaches**. On 2024–26
+  data they confirm the model form (linear coupling to 7-day air; r = 0.87
+  and 0.88) but with damped slopes (0.73, 0.60) — exactly the reservoir
+  buffering a managed reach should show. The free-flowing slope (1.05, San
+  Gregorio) therefore stands for San Pedro Creek. Pilarcitos-below-dam is
+  usable as a live regional sanity anchor (its residuals vs. air flag
+  anomalies) but not as a direct level proxy.
+- **To improve:** a single modern paired air/water season on a free-flowing
+  analog creek (a $100 logger) would close the era gap outright. Until then
+  treat ±2 °C as a floor on uncertainty.
 
 ## 6. Tides
 
