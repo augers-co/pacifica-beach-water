@@ -213,7 +213,31 @@ Two distinct hypotheses fit, and they are not exclusive:
    asking.
 
 Neither is asserted; both are testable, and DNA source-tracking remains
-the arbiter of *what* the material is. For context, the mouth itself was
+the arbiter of *what* the material is.
+
+**The era × weather split sharpens the question.** Beach behavior by era
+and rain state:
+
+| era | dry ≥7d: geo-mean / over / clean | wet <3d: geo-mean / over / clean |
+|---|---|---|
+| 2000–2013 (pre-bridge) | 16 / **5%** / 48% | 34 / 23% / 25% |
+| 2014–15 (construction) | 24 / 15% / 38% | 85 / 36% / 41% |
+| 2016–2026 (post) | 75 / **46%** / 14% | 284 / 71% / 4% |
+
+Before 2014 the beach behaved like a place with **only storm-driven
+pollution**: bone-dry weeks failed 5% of the time and were completely
+clean half the time. Since 2016 it behaves like a place with a
+**year-round source**: dry weeks fail 46% of the time. Both regimes
+worsened by roughly the same factor (~8× in geo-mean), which fits either
+hypothesis — a widened channel conveys in all weathers, and a larger
+source loads in all weathers — so the beach record alone cannot separate
+them.
+
+**What would decide it:** the Surfrider BWTF creek-mouth record (12+
+years, reaching before 2014; export pending via the Coalition). If the
+creek itself already ran high before the bridge work, conveyance gains
+weight; if the creek jumped in 2014, the source did. Second: city records
+on whether utilities were relocated during the bridge project. For context, the mouth itself was
 rebuilt much earlier (managed retreat, constructed 2001–2003 — including
 the Anza pump station renovation), predating every shift in this record.
 
