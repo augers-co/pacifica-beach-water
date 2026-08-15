@@ -64,6 +64,18 @@ high water the ocean holds it pinned at the mouth. Consistent with that,
 same-morning tide *height* terciles stay flat (next section) — what varies
 is the phase geometry, not the water level.
 
+**Era restriction (same day).** The Ledger's explorer defaults this
+comparison to 2014→ — when the beach's decline began (see the
+clean-readings analysis below) — so the levels shown reflect today's beach
+rather than an average diluted by the clean decade. The contrast by era:
+full record RR 1.27 [1.01–1.60] p=0.04 (n=419/332); **2014→ RR 1.24,
+p=0.06** (n=226/193, window geo-means 70 vs 86 — every window well above
+the 35 geometric-mean standard); 2020→ RR 1.07, p=0.69 (n=126/99) — on the
+recent, saturated beach (typical results ≈100, about half of single tests
+failing at every phase) the tide's modest push is undetectable in a small
+sample. The practical statement for today's beach is therefore: **no tide
+window is reliably clean**; the phase pattern is a full-record finding.
+
 The v8 beach-model "ebb+" coefficient and the "flood 0.86×" good-news line
 were computed on SF timing and carry the same alias; their predictive value
 was validated out-of-sample and stands, but their mechanistic label should
