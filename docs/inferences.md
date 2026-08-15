@@ -103,10 +103,11 @@ If you can improve one of these, the maintainers want to hear it.
   (12 turns compared). An earlier version of this register had the direction
   backwards. Pacifica, on the open coast, tracks Princeton far more closely
   than SF; phase computed from SF timing therefore *understates* local phase
-  by up to ~1 h. This blurs turn-adjacent classification and biases measured
-  tide contrasts toward zero (the v9 ebb/flood ratio is an underestimate),
-  and shifts phase-curve labels: the observed minimum sits at local high
-  water, the maximum near local low.
+  by up to ~1 h. The initial reading of this error as "attenuation only" was
+  itself wrong: relabeling an hour of each cycle moved the clean around-high
+  window into the "flood" class wholesale, which *manufactured* the v9
+  first-publication ebb/flood split rather than understating it (see the
+  findings-v9 correction).
 - **Residual error:** the coastal tide propagates northward, so Pacifica
   turns an estimated ~5–10 min after Princeton — negligible against the
   12.4 h cycle. The switch's lesson (findings-v9 correction): an hour-scale
