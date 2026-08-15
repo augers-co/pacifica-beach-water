@@ -270,6 +270,50 @@ the 2026 dry season) — in the ADMS reach, the exact stretch the source
 hunt targets. 2026 samples land during and after this construction;
 interpret the year's creek data with that in mind.
 
+### The fuller construction timeline (verified 2026-08-15)
+
+Beyond the Hwy-1 bridge, several dated creek projects bracket the record.
+Each below was checked against a primary source (an LLM-drafted list was the
+starting point; unverifiable items were dropped):
+
+- **2000–2003 — flood control + managed retreat.** Army Corps / city
+  rebuilt the lower channel to a meander, removed two oceanfront homes, and
+  restored the mouth wetlands ([ResilientCA](https://resilientca.org/projects/0d7cdcb8-3035-46f1-9042-b852f8d38bb9/)).
+  Predates the record's shifts.
+- **2004 — Capistrano Ave bridge fish passage.** A failed fish ladder was
+  removed and the mid-reach channel regraded around a 19-ft bed drop
+  ([CEQA 2003052028](https://ceqanet.lci.ca.gov/2003052028/3); [SCC](https://scc.ca.gov/webmaster/ftp/pdf/sccbb/2004/0405/0405Board08_San_Pedro_Creek.pdf)).
+  Upstream, fish-focused; low beach relevance.
+- **2014–2016 — Hwy 1 bridge replaced + channel widened** (above). The one
+  spanning the beach's break.
+- **2018–2020 — storm runoff diverted from the pump stations to treatment
+  wetlands.** This one is directly on point and cuts the other way from the
+  bridge hypothesis. Funded by Prop 13, the city diverted the **first flush**
+  of storm runoff away from the **Linda Mar and Anza pump stations** — the
+  Anza station discharges at the lower third of Linda Mar beach — into
+  constructed treatment wetlands, **expressly to reduce the coliform / E.
+  coli reaching the beach** ([City of Pacifica](https://www.cityofpacifica.org/departments/public-works/wastewater-treatment/calera-creek-water-recycling/linda-mar-san-pedro-creek-wetlands); [CEQA 2012061091](https://ceqanet.lci.ca.gov/Project/2012061091)).
+  **A project built to make the beach cleaner went in around 2018–2020 — and
+  the beach did not recover** (2022–2024 were among the worst years on
+  record). Read carefully: it treats *storm* first-flush, so it targets the
+  wet-weather pathway, not the chronic *dry-weather* source. Its apparent
+  failure to move the beach is therefore evidence *for* the project's central
+  claim — the beach's problem is the year-round dry-weather source, not storm
+  runoff or the pump stations, which were addressed without effect.
+- **2026 — Adobe Drive culvert → bridge** (above).
+
+Dropped as unverifiable or not construction: a 2021–2022 CDFW *study* (no
+in-creek work) and 2024–2025 volunteer debris clearing (minor, not
+flow-altering).
+
+**The net for the 2014 question:** there is now more than one infrastructure
+change that could touch beach bacteria (the 2014 bridge; the 2018–2020
+diversion). That widens, not narrows, the caution: the beach record alone
+can't assign the 2014 break to the bridge specifically. But the 2018–2020
+result is a genuine, independent data point — the one project *designed* to
+clean the beach did not, which fits a chronic dry-weather source that none of
+these projects addressed.
+
 ## Advocacy read
 
 Clean is not a hypothetical for this beach — it is the **demonstrated
