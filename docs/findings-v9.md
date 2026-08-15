@@ -316,19 +316,38 @@ capacity-driven sewer overflows. MND December 2016, construction from ~July
 2017, completion accepted 2020 (City Resolution 37-2020). It is creek-
 *adjacent* sewer infrastructure, not in-channel work.
 
-This matters because its ~2019–2020 completion **coincides with the 2020–21
-clean stretch** that findings v7 attributes to dry-winter carryover — so
-those calm years now have two candidate causes: the dry La Niña winters
-(less stored water feeding the creek) *and* the new basin (fewer
-capacity-driven sewer spills reaching the system). The two are hard to
-separate because dry winters independently reduce both carryover and
-storm-driven SSOs. Two things keep the chronic-source thesis intact anyway:
-the basin targets *wet-weather* overflow capacity, not the *dry-weather*
-leakage the source hunt is after; and **2022–2024 returned to the worst
-levels on record with the basin fully operational** — a completed
-SSO-capacity fix did not hold the beach clean. The honest revision: the
-2020–21 attribution is now ambiguous (weather vs. basin), but nothing about
-the basin explains the chronic dry-weather signal that dominates the record.
+Its ~2019–2020 completion **coincides with the 2020–21 clean stretch** that
+findings v7 attributes to dry-winter carryover — and the sewer-overflow
+record now lets us test the basin's effect directly. It comes out *against*
+reported spills as the chronic driver, and hard. The chronic capacity-
+overflow cluster (483–500 Linda Mar Blvd, the Linda Mar lift station,
+Anza @ Arguello) sits within ~200 m of the creek-mouth reach, 100%
+surface-reaching. Routine wet-winter capacity overflows there **ceased after
+the basin**: valley SSO totals ran 17 spills / 886,210 gal in 2013–mid-2017
+and 2 / 48,150 during construction, and post-basin the routine cluster
+overflows stopped (the large post-2020 volumes are the Oct-2021 lift-station
+failure — a pump facility, not the gravity lines the basin relieves — and
+the Jan-2023 atmospheric-river sequence, not routine capacity). **Yet the
+creek's storm-window response is statistically unchanged** (samples ≤3 days
+after rain, E. coli vs 320; verified against `data/pacifica.db`):
+
+| era | n | geo-mean | % over 320 | median storm |
+|---|---|---|---|---|
+| pre-basin 2015–19 | 61 | 734 | 67% | 19.4 mm |
+| dry 2020–21 | 19 | 255 | 42% | 5.0 mm |
+| post-basin 2022–26 | 63 | 654 | 60% | 12.6 mm |
+
+2022–26 ≈ pre-basin, and the 2020–21 dip tracks the *small median storm*
+those years (5 mm vs ~13–19 mm — dry winters) far more than the basin. The
+beach ran the same way: 59% → 58% → 75% over 104. So a completed, verified
+fix to the reported-overflow pathway did not change the storm response and
+did not hold the beach — the **strongest evidence yet that reported /
+preventable sewer overflows are not the chronic driver**. The 2020–21
+attribution stays honestly two-cause (dry winters vs. a marginal basin
+contribution that cannot be excluded), but nothing about the basin explains
+the chronic dry-weather signal that dominates the record. Sources: SCH
+2016122016, City Resolution 37-2020, the Regional Board Cease-and-Desist
+order.
 
 Also verified, not added as construction bands: **Serra Drive outfall
 repair** (SCH 2021020381, in-channel rip-rap, approved Feb 2021 — build date
