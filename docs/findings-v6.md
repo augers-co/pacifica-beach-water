@@ -67,10 +67,23 @@ grid cell hardly sees the marine layer — median Jun–Oct csi is 0.87
 ("mostly clear"), which is not the coastal reality — so true fog variation is
 measured with a poor instrument; (2) the warm/cloudy interaction cell runs
 highest (warm+cloudy 531 vs warm+clear 369; cool cells 226/282, n≈46–49
-each), consistent with fog shielding UV when warmth matters. Verdict:
-warmth confirmed; the fog-shielding hypothesis is open pending a real fog
-record (Half Moon Bay AWOS ceilometer via the IEM archive — access
-confirmed — and/or GOES/MODIS satellite cloud products).
+each), consistent with fog shielding UV when warmth matters.
+
+**Resolved same day with a real fog record.** Pulled the Half Moon Bay AWOS
+ceilometer archive (IEM; 326,757 obs 2015–2026) and built a daily morning
+marine-layer metric (share of 06–12h observations BKN/OVC with ceiling
+≤2,000 ft; regional proxy for Linda Mar per local knowledge — "more or
+less" representative). Against stable-weather Jun–Oct creek samples
+(n=176): **r(logC, fog) = +0.04**, terciles non-monotonic (340/309/386),
+and in the warm/fog two-way, warmth dominates (warm ≈ 463–476 regardless of
+fog; cool ≈ 225–317). ERA5's clear-sky index tracks real coastal fog only
+weakly (r = −0.25), confirming the instrument critique — but even the real
+instrument finds no material fog effect. **Verdict: the fog/solar die-off
+thread is closed for the daily-scale model; warmth carries the summer
+mechanism. Solar/fog is dropped as a forecast input; temperature stays.**
+(The within-day morning-high pattern stands on its own; hour-of-day remains
+an input regardless of whether its mechanism is overnight accumulation or
+daytime die-off. No satellite pipeline needed for the bacteria question.)
 
 ## Caveats
 
