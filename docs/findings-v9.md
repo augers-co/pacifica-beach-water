@@ -233,11 +233,34 @@ hypothesis — a widened channel conveys in all weathers, and a larger
 source loads in all weathers — so the beach record alone cannot separate
 them.
 
-**What would decide it:** the Surfrider BWTF creek-mouth record (12+
-years, reaching before 2014; export pending via the Coalition). If the
-creek itself already ran high before the bridge work, conveyance gains
-weight; if the creek jumped in 2014, the source did. Second: city records
-on whether utilities were relocated during the bridge project. For context, the mouth itself was
+**The BWTF creek-mouth record now speaks to this** (Surfrider SMC's public
+export, `pipeline/fetch_bwtf.py`, fetched 2026-08-15). Two things it settles
+and one it can't:
+
+- **Two independent programs agree the surf was clean before 2014.**
+  Surfrider's own beach transects (Linda Mar North/South) read geo-mean 14,
+  4% over the standard across 2012–early 2014 (n=112) — matching the county
+  station's clean pre-2014 beach exactly. Not one program's artifact.
+- **The creek mouth was already heavily contaminated before construction.**
+  Surfrider's creek-mouth station (same reach as SPCM) read geo-mean 412,
+  **96% over the standard**, in the Dec 2013 – May 2014 window (n=24) — the
+  six months *before* the June 2014 bridge work began. In that same window
+  the surf 200 m away sat at 14. The contamination was in the creek and not
+  yet in the surf zone.
+- **What it can't settle:** creek-mouth sampling began Dec 2013 — ~6 months
+  pre-construction, winter/spring only — so this is a narrow, wet-season
+  window, not a multi-year baseline. "Polluted for years before" is
+  plausible but unproven; and post-construction the creek mouth did not
+  worsen (geo-mean 211), though season confounds that.
+
+**Net:** the source predates the bridge, and before 2014 the creek's load
+was not reaching the surf zone the way it does now — which is exactly the
+conveyance picture, and matches the intuition that the creek "was polluted
+all along." It is corroboration, not proof: the pre-construction creek
+window is thin, and the source clearly also moves on its own (the 2020–21
+dip and 2022 jump happened with no channel change). The remaining
+tie-breaker is documentary — city/Caltrans records on whether sewer or
+utility lines were relocated or disturbed during the bridge project. For context, the mouth itself was
 rebuilt much earlier (managed retreat, constructed 2001–2003 — including
 the Anza pump station renovation), predating every shift in this record.
 
