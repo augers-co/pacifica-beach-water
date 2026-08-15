@@ -70,6 +70,17 @@ was validated out-of-sample and stands, but their mechanistic label should
 be read as "tide phase," and model v2 should refit tide features on
 Princeton timing with a phase term.
 
+## The creek itself shows no tide pattern
+
+Same phase windows on the county creek station's timed samples (n=523):
+**49.7% over the standard around high water vs 44.6% around low** (perm
+p=0.35; the middle bin is highest — noise, not trend). This matches direct
+observation by residents: the creek visibly flows out; the tide does not
+push upstream past the beach. The tide does not change what the creek
+carries — it changes where the plume sits on the beach face. The pairing
+sharpens the source argument: the source runs on its own schedule, and the
+ocean only moves the result around.
+
 ## Height stays null
 
 Tide-height terciles (Princeton datum): 29.5% / 30.7% / 27.9% exceedance.

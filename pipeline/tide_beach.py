@@ -229,6 +229,42 @@ def main():
     window_contrast(b, "ALL DAYS")
     window_contrast(dry3, "DRY >=3 DAYS")
 
+    # creek station: same phase windows — no pattern expected (the creek
+    # flows out regardless of tide; confirmed by residents' observation)
+    con2 = sqlite3.connect(DB)
+    ck = pd.read_sql(
+        """SELECT SampleDate, CollectionTime, Result FROM ceden_raw
+           WHERE StationName LIKE '%San Pedro Creek%'
+           AND Analyte LIKE '%E. coli%'""", con2)
+    tide2 = pd.read_sql("SELECT dt, height_m FROM tide_hourly", con2)
+    con2.close()
+    ck["date"] = pd.to_datetime(ck.SampleDate).dt.normalize()
+    ck["hhmm"] = pd.to_datetime(ck.CollectionTime, errors="coerce").dt.strftime("%H:%M")
+    ck = ck[ck.hhmm != "00:00"]
+    ck["v"] = pd.to_numeric(ck.Result, errors="coerce")
+    ck = (ck.dropna(subset=["v"]).groupby("date", as_index=False)
+          .agg(hhmm=("hhmm", "first"), v=("v", "max")))
+    ck["ts"] = pd.to_datetime(ck.date.dt.strftime("%Y-%m-%d ") + ck.hhmm)
+    tide2["dt"] = pd.to_datetime(tide2.dt)
+    tide2["h"] = pd.to_numeric(tide2.height_m)
+    tide2 = tide2.sort_values("dt")
+    t2 = tide2.dt.values.astype("datetime64[s]").astype(np.int64)
+    h2 = tide2.h.values
+    s2 = ck.ts.values.astype("datetime64[s]").astype(np.int64)
+    m2 = (h2[1:-1] >= h2[:-2]) & (h2[1:-1] > h2[2:])
+    i2 = np.where(m2)[0] + 1
+    d2 = h2[i2 - 1] - 2 * h2[i2] + h2[i2 + 1]
+    o2 = np.where(d2 < 0, 0.5 * (h2[i2 - 1] - h2[i2 + 1]) / d2, 0.0)
+    highs2 = t2[i2] + o2 * 3600
+    nr = np.clip(np.searchsorted(highs2, s2), 1, len(highs2) - 1)
+    ck["ph"] = np.where(s2 - highs2[nr - 1] <= highs2[nr] - s2,
+                        s2 - highs2[nr - 1], -(highs2[nr] - s2)) / 3600.0
+    ck["ex"] = ck.v > 320
+    chi_, clo_ = ck[ck.ph.abs() <= 2.07], ck[ck.ph.abs() >= 4.14]
+    print(f"\nCREEK CHECK (county E. coli, n={len(ck)} timed): "
+          f"around high {chi_.ex.mean():.1%} over vs around low {clo_.ex.mean():.1%} "
+          f"— no tide pattern at the creek station.")
+
     # height (stage) check — expected null from prior work
     print("\nTide HEIGHT terciles (all days):")
     b["htier"] = pd.qcut(b.tide_h, 3, labels=["low", "mid", "high"])
