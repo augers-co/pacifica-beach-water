@@ -27,14 +27,23 @@ condition (r=0.46) — TC is mostly environmental organisms.
 
 ## 2. The rain-derived indices are now gauge-checked
 
-`flow_idx` (quick store, storm input split day 0/1) tracks San Gregorio
-Creek's measured daily flow at **r = 0.71** (log–log, 4,243 days).
-`ground_idx` (slow store charged by quick-store drainage — crests days
-after storms, dries over months) tracks dry-season donor baseflow — which
-physically is groundwater discharge — at **r = 0.74** (n=1,460 rain-free
-warm-season days). Formulas in `pipeline/features.py`; the ledger's Methods
-carry the same numbers. No water-temperature proxy exists (San Gregorio's
-sensor ended 1979); air temperature remains the warmth proxy.
+Validated against **eight regional gauges** (San Gregorio, Pescadero,
+Pilarcitos, Soquel, San Lorenzo, San Francisquito, Corralitos, Lagunitas —
+`donor_flow_daily`), so no single creek anchors the claim:
+
+- `flow_idx` (quick store, storm input split day 0/1): **r = 0.69–0.79
+  log–log daily across all eight** (San Gregorio 0.71, mid-pack); ensemble
+  (median z of eight) r = 0.75.
+- `ground_idx` (slow store charged by quick-store drainage — crests days
+  after storms, dries over months) vs dry-season baseflow (= groundwater
+  discharge): **r = 0.64–0.74 across the unregulated creeks**; ensemble
+  0.71. The one low value — Lagunitas, 0.51 — is the dam-regulated creek,
+  exactly where managed releases should land, which itself confirms the
+  index measures natural recession.
+
+Formulas in `pipeline/features.py`. No water-temperature proxy exists
+anywhere in the region (San Gregorio's sensor ended 1979); air temperature
+remains the warmth proxy.
 
 ## 3. Model v1: honest walk-forward results
 
@@ -73,6 +82,73 @@ Read plainly:
   named drivers (the app's "why" layer — demo in model.py output).
 - Coefficient signs all match the findings that motivated them (flow +,
   warmth +, hour −, baseline +), which is what defensible looks like.
+
+## 4. The reframe: borderline by default; forecast the departures
+
+The product frame that matches the statistics (and resets expectations
+honestly): **Linda Mar's resting state is borderline** — the stable-weather
+creek geometric mean *equals* the standard, so "pollution is likely present"
+is the default message, not a prediction. Safe-vs-unsafe on an ordinary day
+is a coin the measurement itself can't call (two labs disagree 20% of the
+time). The forecast's job is **flagging departures** — the days that are a
+different animal — where the high-signal drivers (storm shadow, event size,
+tide, baseline) actually operate.
+
+Out-of-sample tier calibration supports this:
+
+**Creek** (predicted tier → actual): cleaner 198 geo-mean / 11% big-deal
+(>1000) → typical 322 / 13% → elevated 518 / 24% → high 1,843 / 50%.
+Creek big-deal AUC is only 0.61 because many creek extremes are *dry-day
+source pulses* — invisible to weather by definition. That is a
+source-evidence fact, and a reason the creek product is a monitor, not a
+forecast.
+
+**Beach (LM5) — the user-facing product** (`pipeline/model_beach.py`,
+`models/beach_v1.json`; adds creek state + tide at sampling moment):
+
+| OOS metric | value |
+|---|---|
+| AUC exceedance (>104) | 0.63 (rain rule 0.59) |
+| AUC serious days (>3× std, n=79) | **0.69** |
+| AUC big-deal days (>10× std, n=28) | **0.67** (single years up to 0.92) |
+
+| predicted tier (OOS) | n | actual geo-mean | >104 | >10× std |
+|---|---|---|---|---|
+| cleaner (<52) | 49 | 54 | 35% | 2% |
+| typical (52–208) | 228 | 96 | 48% | 6% |
+| elevated (208–1,040) | 95 | 191 | 66% | **15%** |
+
+Monotone, honest, and a 7× big-deal separation between tiers. Beach
+coefficients independently re-derive the physics: est. creek flow dominant
+(+0.26), ebb tide + (the v2 transport finding), beach baseline +, trend +.
+
+**Product language that follows:** never "safe/unsafe." Default: "Typical
+for Linda Mar — borderline; pollution likely present." Departures: "Elevated
+— storm influence, real added risk" / "High — stay out." Rare: "Cleaner
+window than usual." Each with its drivers named (attribution) and its
+calibration stated.
+
+### The good-news side, measured (LM5 modern era, base 48% / geo-mean 92)
+
+| stacked condition | n | exceed | geo-mean | rel. risk | >10× std |
+|---|---|---|---|---|---|
+| dry ≥7d | 354 | 44% | 68 | 0.91× | 3% |
+| dry ≥7d + creek 3-wk avg passing | 142 | 35% | 58 | 0.74× | 2% |
+| + flood tide | 76 | 33% | 58 | 0.69× | 3% |
+| + cool season (all four) | 42 | **29%** | 57 | **0.60×** | 2% |
+
+- The best defensible "quieter window" is ~**0.6× the usual risk with
+  big-spike risk ~2%** — meaningful, honestly communicable ("about half the
+  typical risk; extreme days near zero"), never "safe."
+- **Tide height does nothing** (high tide alone: 47%, geo-mean *higher* at
+  104) — the "high tide dilutes" intuition is not supported. **Tide
+  direction matters modestly** (flood 0.86×): it's the water's movement,
+  not its level.
+- The strongest single good-news lever is the **creek being quiet**
+  (3-week average passing → 0.74×) — the vector state, not the weather.
+- The unbeatable good-news lever remains **location**: north of the pump
+  station runs 2–8% while the creek mouth runs 48–78%. "Walk north" beats
+  every weather condition by 4–10×.
 
 ## What v2 should target (in order)
 

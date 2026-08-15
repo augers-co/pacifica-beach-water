@@ -173,6 +173,22 @@ def main():
         fpr = (fl & ~o.exceed).sum() / (~o.exceed).sum()
         print(f"  {name:22s} catches {sens*100:3.0f}% of bad days | wrongly kills {fpr*100:3.0f}% of good days")
 
+    # tier framing: default = "typical/borderline"; the forecast's job is
+    # flagging departures. Tiers on predicted concentration, verified OOS.
+    print("\n== TIER CALIBRATION (out-of-sample): 'flag the big-deal days' ==")
+    o = o.assign(predC=10 ** o.pred)
+    tiers = [("cleaner (<160)", 0, 160), ("typical (160-640)", 160, 640),
+             ("elevated (640-2000)", 640, 2000), ("high (>2000)", 2000, 1e9)]
+    for name, lo, hi in tiers:
+        g = o[(o.predC >= lo) & (o.predC < hi)]
+        if len(g) == 0:
+            continue
+        gm = 10 ** g.logc.mean()
+        print(f"  {name:20s} n={len(g):3d}  actual geo-mean {gm:6.0f}  "
+              f">320: {(g.value>320).mean()*100:3.0f}%  >1000: {(g.value>1000).mean()*100:3.0f}%")
+    print(f"  AUC for 'big-deal' days (>1000): {auc(o.pred, o.value>1000):.2f}")
+    print(f"  AUC for extreme days (>3200):    {auc(o.pred, o.value>3200):.2f}")
+
     # final model on all data + attribution demo
     fill = df.prev_logc.mean()
     df.loc[:, "prev_logc"] = df.prev_logc.fillna(fill)
