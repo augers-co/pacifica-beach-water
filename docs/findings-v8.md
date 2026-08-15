@@ -27,19 +27,33 @@ condition (r=0.46) — TC is mostly environmental organisms.
 
 ## 2. The rain-derived indices are now gauge-checked
 
-Validated against **eight regional gauges** (San Gregorio, Pescadero,
-Pilarcitos, Soquel, San Lorenzo, San Francisquito, Corralitos, Lagunitas —
-`donor_flow_daily`), so no single creek anchors the claim:
+Analog criteria (a gauge is an *analog* only if it matches San Pedro Creek
+on the things that govern hydrology): drains west off the Santa Cruz
+Mountains / coastal ranges to the open coast or Monterey Bay, unregulated,
+inside the marine-layer climate. By these criteria:
 
-- `flow_idx` (quick store, storm input split day 0/1): **r = 0.69–0.79
-  log–log daily across all eight** (San Gregorio 0.71, mid-pack); ensemble
-  (median z of eight) r = 0.75.
-- `ground_idx` (slow store charged by quick-store drainage — crests days
-  after storms, dries over months) vs dry-season baseflow (= groundwater
-  discharge): **r = 0.64–0.74 across the unregulated creeks**; ensemble
-  0.71. The one low value — Lagunitas, 0.51 — is the dam-regulated creek,
-  exactly where managed releases should land, which itself confirms the
-  index measures natural recession.
+- **Core analogs (5):** San Gregorio, Pescadero, Soquel, San Lorenzo —
+  and Pilarcitos, flagged (partly regulated upstream, but coastal-side and
+  Montara-adjacent).
+- **Contrast gauges (3), reported but not part of the claim:** San
+  Francisquito (bay side), Corralitos (interior Pajaro tributary),
+  Lagunitas (Marin, drains to Tomales Bay, dam-regulated).
+
+Results on the **core analog panel**:
+
+- `flow_idx` (quick store, storm input split day 0/1): **r = 0.69–0.73
+  log–log daily across all five** (San Gregorio 0.71 — mid-pack, not an
+  outlier).
+- `ground_idx` (slow store charged by quick-store drainage) vs dry-season
+  baseflow (= groundwater discharge): **r = 0.65–0.74 across all five**.
+
+The contrasts behave as contrasts should — instructively. Lagunitas posts
+the *highest* storm-flow correlation (0.79: winter storms synchronize the
+whole region regardless of geography) but collapses on the baseflow test
+(0.51: summer releases are managed, not natural recession). That split is
+the demonstration that the baseflow test, not the storm test, is the
+discriminating one — and that panel membership must be argued from
+geography, exactly the scrutiny applied here.
 
 Formulas in `pipeline/features.py`. No water-temperature proxy exists
 anywhere in the region (San Gregorio's sensor ended 1979); air temperature
