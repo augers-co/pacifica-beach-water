@@ -73,6 +73,24 @@ def build(p: pd.Series) -> pd.DataFrame:
             s = k * s + v
             vals.append(s)
         f[name] = vals
+
+    # physically-lagged display indices (linear reservoir cascade):
+    #   flow_idx: quick store, storm input split across day 0 and day 1
+    #     F_t = 0.90 F_{t-1} + 0.5 P_t + 0.5 P_{t-1}
+    #   ground_idx: charged by the quick store's drainage, so it crests
+    #     days after the storm and drains over months
+    #     G_t = 0.97 G_{t-1} + 0.10 F_{t-1}
+    Fv, Gv, F, G, Fprev = [], [], 0.0, 0.0, 0.0
+    pv = p.fillna(0).tolist()
+    for i, rain in enumerate(pv):
+        prev_rain = pv[i - 1] if i else 0.0
+        Fprev = F
+        F = 0.90 * F + 0.5 * rain + 0.5 * prev_rain
+        G = 0.97 * G + 0.10 * Fprev
+        Fv.append(F)
+        Gv.append(G)
+    f["flow_idx"] = Fv
+    f["ground_idx"] = Gv
     return f
 
 
