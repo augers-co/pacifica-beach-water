@@ -306,6 +306,37 @@ starting point; unverifiable items were dropped):
   runoff or the pump stations, which were addressed without effect.
 - **2026 — Adobe Drive culvert → bridge** (above).
 
+**The missing 2016–2026 project — and a confound it creates.** A CEQAnet
+sweep (2026-08-15) found the item that fills the gap: the **Wet Weather
+Equalization Basin** at 540 Crespi Dr (SCH 2016122016) — a ~$19M, 2.1-
+million-gallon sanitary-sewer equalization basin with diversion structures
+off the Linda Mar and Arguello sewer lines (the recurring-SSO locations in
+our CIWQS data), built under a Regional Board Cease-and-Desist order to end
+capacity-driven sewer overflows. MND December 2016, construction from ~July
+2017, completion accepted 2020 (City Resolution 37-2020). It is creek-
+*adjacent* sewer infrastructure, not in-channel work.
+
+This matters because its ~2019–2020 completion **coincides with the 2020–21
+clean stretch** that findings v7 attributes to dry-winter carryover — so
+those calm years now have two candidate causes: the dry La Niña winters
+(less stored water feeding the creek) *and* the new basin (fewer
+capacity-driven sewer spills reaching the system). The two are hard to
+separate because dry winters independently reduce both carryover and
+storm-driven SSOs. Two things keep the chronic-source thesis intact anyway:
+the basin targets *wet-weather* overflow capacity, not the *dry-weather*
+leakage the source hunt is after; and **2022–2024 returned to the worst
+levels on record with the basin fully operational** — a completed
+SSO-capacity fix did not hold the beach clean. The honest revision: the
+2020–21 attribution is now ambiguous (weather vs. basin), but nothing about
+the basin explains the chronic dry-weather signal that dominates the record.
+
+Also verified, not added as construction bands: **Serra Drive outfall
+repair** (SCH 2021020381, in-channel rip-rap, approved Feb 2021 — build date
+unconfirmed); 505 San Pedro Ave and 570 Crespi developments (creek-adjacent,
+2018 / 2025 approvals); Pedro Point Headlands sediment work (watershed,
+~2021–23). A CEQAnet "Las Vegas/San Pedro Creeks" record (2011051083) is a
+Goleta project, not ours — flagged to avoid the trap.
+
 Dropped as unverifiable or not construction: a 2021–2022 CDFW *study* (no
 in-creek work) and 2024–2025 volunteer debris clearing (minor, not
 flow-altering).
