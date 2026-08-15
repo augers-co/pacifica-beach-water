@@ -190,6 +190,39 @@ wrong way to read that: it means every geo-mean cited for LM5 slightly
 **overstates** how much bacteria was present. Exceedance statistics are
 unaffected (the floor sits far below 104).
 
+## What changed in 2014? A documented candidate
+
+The record's break has a dated, in-creek event that exactly spans it:
+**Caltrans replaced the Highway 1 bridge over San Pedro Creek and widened
+the creek channel** (approved July 2013; in-creek construction began June
+2014, detour through ~October 2015) at the crossing just above the mouth.
+The county's creek station began sampling September 2015 — immediately
+after — so no creek data exists from before the bridge work.
+
+Two distinct hypotheses fit, and they are not exclusive:
+
+1. **Conveyance:** a widened channel at the crossing delivers the creek's
+   existing load to the surf-zone station more efficiently — the beach's
+   "new normal" without any change in the source. Consistent with the
+   coalition's localization of the dry-weather load *upstream* at
+   ADMS→PRLT, far above the bridge.
+2. **Source:** construction-era damage or disturbance to buried
+   infrastructure near the crossing, or a coincidental change elsewhere
+   (sewer aging does not follow the calendar). Whether utility lines were
+   relocated during the bridge project is a city-records question worth
+   asking.
+
+Neither is asserted; both are testable, and DNA source-tracking remains
+the arbiter of *what* the material is. For context, the mouth itself was
+rebuilt much earlier (managed retreat, constructed 2001–2003 — including
+the Anza pump station renovation), predating every shift in this record.
+
+**Current-work note:** the RCD of San Mateo County is replacing the Adobe
+Drive culvert with a free-span bridge (CEQA NOE Feb 2026; in-creek work in
+the 2026 dry season) — in the ADMS reach, the exact stretch the source
+hunt targets. 2026 samples land during and after this construction;
+interpret the year's creek data with that in mind.
+
 ## Advocacy read
 
 Clean is not a hypothetical for this beach — it is the **demonstrated
