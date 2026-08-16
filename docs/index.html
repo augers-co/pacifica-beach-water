@@ -197,7 +197,7 @@
       <div class="date" id="geodate">—</div>
       <input type="range" id="geoslider" min="0" value="0" aria-label="Week">
       <button id="geoplay">▶ Play the record</button>
-      <div class="leg">Filled circle = enterococcus, ring = E. coli (set by the Bacteria filter above); size = concentration (log scale); numbers = that morning's readings.
+      <div class="leg" id="geoleg">Filled circle = enterococcus, ring = E. coli (set by the Bacteria filter above); size = concentration (log scale); numbers = that morning's readings.
       <b style="color:var(--std)">Red</b> = over the standard; dashed circle = not sampled that week.
       Orange = passed. Weekly same-morning snapshots: the coalition’s four creek sites plus the county beach station (LM5), Jul 2024 → present.</div>
     </div>
@@ -774,13 +774,13 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     b.innerHTML=`<span class="swd" style="background:var(${col})"></span>${label}`;
     b.onclick=()=>{ sampleOn.has(id)?sampleOn.delete(id):sampleOn.add(id);
       clearViewHighlight();
-      syncPanel(); render(centerDate()); };
+      syncPanel(); render(centerDate()); geoRebuild(); };
     spanel.appendChild(b); });
   { const b=document.createElement("button"); b.id="bysite"; b.setAttribute("aria-pressed","false");
     b.innerHTML=`<span class="swd" style="background:linear-gradient(90deg,var(--s2),var(--s3),var(--prlt),var(--wtemp))"></span>Color by source`;
     attachTip(b,"Color by source",
       "Off, color answers how bad: every sample shares one color and red alone marks results over the standard. On, color answers where from: each sampling program keeps its own color even when a result is over the standard — judge pass/fail by height against the dashed lines. Hovering a name in this row spotlights one program\u2019s dots either way.",null);
-    b.onclick=()=>{ colorBySite=!colorBySite; clearViewHighlight(); syncBySite(); render(centerDate()); };
+    b.onclick=()=>{ colorBySite=!colorBySite; clearViewHighlight(); syncBySite(); render(centerDate()); geoLegend(); if(gdates.length) geoFrame(+document.getElementById("geoslider").value); };
     spanel.appendChild(b); }
   function syncBySite(){
     const bs=document.getElementById("bysite"); if(bs) bs.setAttribute("aria-pressed",String(colorBySite));
@@ -981,7 +981,23 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     jumps.value=""; };
 
   // ---- GEO VIEW ----
-  const GEO=DATA.geo, gdates=[...new Set(DATA.sites.map(r=>r.d))].sort();
+  const GEO=DATA.geo;
+  // --- merged multi-source model: the map mirrors the SELECTED sample sources, over the full record ---
+  const siteRd=(d,code)=>{ const st=siteBy.get(d), r=st&&st[code]; return r?{ent:r.ent,ec:r.ec}:null; };
+  const GSRC={
+    beach:{pt:"LM5", get:d=>{const r=bcBy.get(d);return r?{ent:r.v,ec:r.ec}:null;}, std:"LM5"},
+    creek:{pt:"SPCM",get:d=>{const r=ckBy.get(d);return r?{ent:r.ent,ec:r.v}:null;}, std:"SPCM"},
+    bwtf: {pt:"SPCM",get:d=>{const r=bwBy.get(d);return r?{ent:r.v,ec:r.ec}:null;}, std:"SPCM"},
+    LMMS:{pt:"LMMS",get:d=>siteRd(d,"LMMS"),std:"LMMS"},
+    ADMS:{pt:"ADMS",get:d=>siteRd(d,"ADMS"),std:"ADMS"},
+    PRLT:{pt:"PRLT",get:d=>siteRd(d,"PRLT"),std:"PRLT"},
+    SPCM:{pt:"SPCM",get:d=>siteRd(d,"SPCM"),std:"SPCM"}};
+  const SRCDATES={beach:[...bcBy.keys()],creek:[...ckBy.keys()],bwtf:[...bwBy.keys()],LMMS:[],ADMS:[],PRLT:[],SPCM:[]};
+  DATA.sites.forEach(r=>{ if(SRCDATES[r.s]) SRCDATES[r.s].push(r.d); });
+  const SRCFIRST={}; for(const id in SRCDATES){ SRCFIRST[id]=SRCDATES[id].length?SRCDATES[id].reduce((a,b)=>a<b?a:b):null; }
+  const effSrcs=()=>{ const s=new Set(sampleOn); if(s.has("AVG")){ SITES.forEach(x=>s.add(x)); s.delete("AVG"); } return [...s].filter(id=>GSRC[id]); };
+  const geoDates=()=>{ const set=new Set(); effSrcs().forEach(id=>SRCDATES[id].forEach(d=>set.add(d))); return [...set].sort(); };
+  let gdates=[];
   const M=BASEMAP.meta, GW=400, GH=Math.round(GW*M.h/M.w);
   const mY=lat=>Math.asinh(Math.tan(lat*Math.PI/180));
   const GX=lon=>(lon-M.lonW)/(M.lonE-M.lonW)*GW;
@@ -990,36 +1006,46 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
   const GYT=Math.round(GY(37.600)), GYB=Math.round(GY(37.578)), GHC=GYB-GYT;
   gm.setAttribute("viewBox",`0 ${GYT} ${GW} ${GHC}`); gm.setAttribute("height",GHC);
   const HALO=`paint-order="stroke" stroke="#ffffff" stroke-width="3"`;
-  function geoBase(){
+  function geoBase(active){
     let s=`<image href="${BASEMAP.url}" x="0" y="0" width="${GW}" height="${GH}"></image>`;
     const OFFC={SPCM:[13,12,"start"],LM5:[-12,2,"end"]};
     for(const [c,g] of Object.entries(GEO)){
+      if(active&&!active.has(c)) continue;
       const [dx,dy,an]=OFFC[c]||[12,4,"start"];
       s+=`<text x="${GX(g.lon)+dx}" y="${GY(g.lat)+dy}" text-anchor="${an}" font-size="10.5" font-weight="700" fill="#1b201e" ${HALO}>${c}</text>`; }
     s+=`<text x="${GW-4}" y="${GYB-5}" text-anchor="end" font-size="8" fill="#555" ${HALO}>© OpenStreetMap</text>`;
     return s;
   }
   function geoFrame(k){
-    const d=gdates[k], row=siteBy.get(d)||{};
-    document.getElementById("geodate").textContent=d;
-    let s=geoBase();
-    for(const [c,g] of Object.entries(GEO)){
-      const rec=row[c]||{};
-      const OFFV={SPCM:[13,25,"start"],LM5:[-12,15,"end"]};
-      const [vdx,vdy,van]=OFFV[c]||[12,17,"start"];
-      const vs=[];
-      if(anOn.has("ent")&&rec.ent!=null) vs.push(["ent",rec.ent]);
-      if(anOn.has("ec")&&rec.ec!=null) vs.push(["ec",rec.ec]);
-      if(!vs.length){ s+=`<circle cx="${GX(g.lon)}" cy="${GY(g.lat)}" r="5" fill="none" stroke="#666" stroke-width="1.4" stroke-dasharray="2 2"></circle>
-        <text x="${GX(g.lon)+vdx}" y="${GY(g.lat)+vdy}" text-anchor="${van}" font-size="9" fill="#666" ${HALO}>no sample</text>`; continue; }
-      let anyOver=false;
-      vs.forEach(([an,v])=>{ const over=v>stdFor(c,an); anyOver=anyOver||over;
-        const rr=(4+Math.max(0,Math.min(1,Math.log10(Math.max(v,10)/10)/3))*13).toFixed(1);
-        const col=over?css('--std'):css('--samp');
-        s+= an==="ent"
-          ? `<circle cx="${GX(g.lon)}" cy="${GY(g.lat)}" r="${rr}" fill="${col}" opacity=".78" stroke="#ffffff" stroke-width="1.2"><title>${GEO[c].name} entero: ${v}</title></circle>`
-          : `<circle cx="${GX(g.lon)}" cy="${GY(g.lat)}" r="${rr}" fill="none" stroke="${col}" stroke-width="2.4"><title>${GEO[c].name} E. coli: ${v}</title></circle>`; });
-      s+=`<text x="${GX(g.lon)+vdx}" y="${GY(g.lat)+vdy}" text-anchor="${van}" font-size="10" font-weight="700" fill="${anyOver?"#c22":"#1b201e"}" ${HALO}>${vs.map(([a2,v])=>Math.round(v).toLocaleString()).join(" / ")}</text>`;
+    const d=gdates[k];
+    document.getElementById("geodate").textContent=d||"—";
+    const srcs=d?effSrcs():[];
+    const active=new Set(); srcs.forEach(id=>{ if(SRCFIRST[id]&&d>=SRCFIRST[id]) active.add(GSRC[id].pt); });
+    let s=geoBase(active);
+    if(d){
+      const byPt={}; srcs.forEach(id=>{ const p=GSRC[id].pt; (byPt[p]=byPt[p]||[]).push(id); });
+      srcs.forEach(id=>{
+        const src=GSRC[id], g=GEO[src.pt]; if(!g) return;
+        const grp=byPt[src.pt], slot=grp.indexOf(id), n=grp.length;
+        const cx=GX(g.lon)+(slot-(n-1)/2)*(n>1?18:0), cy=GY(g.lat);
+        const rd=src.get(d), vs=[];
+        if(rd){ if(anOn.has("ent")&&rd.ent!=null) vs.push(["ent",rd.ent]); if(anOn.has("ec")&&rd.ec!=null) vs.push(["ec",rd.ec]); }
+        const scol=SERCOL[id]||"--samp";
+        if(!vs.length){
+          if(SRCFIRST[id]&&d>=SRCFIRST[id]) s+=`<circle cx="${cx}" cy="${cy}" r="5" fill="none" stroke="${colorBySite?css(scol):'#888'}" stroke-width="1.4" stroke-dasharray="2 2" opacity=".65"></circle>`;
+          return; }
+        let anyOver=false;
+        vs.forEach(([an,v])=>{ const over=v>stdFor(src.std,an); anyOver=anyOver||over;
+          const rr=(4+Math.max(0,Math.min(1,Math.log10(Math.max(v,10)/10)/3))*13).toFixed(1);
+          const col=colorBySite?css(scol):(over?css('--std'):css('--samp'));
+          const ttl=`${g.name} — ${id} ${an==="ent"?"entero":"E. coli"}: ${Math.round(v).toLocaleString()}${over?" ✕":""}`;
+          s+= an==="ent"
+            ? `<circle cx="${cx}" cy="${cy}" r="${rr}" fill="${col}" opacity=".78" stroke="#ffffff" stroke-width="1.2"><title>${ttl}</title></circle>`
+            : `<circle cx="${cx}" cy="${cy}" r="${rr}" fill="none" stroke="${col}" stroke-width="2.4"><title>${ttl}</title></circle>`; });
+        const num=vs.map(([a2,v])=>Math.round(v).toLocaleString()).join(" / ");
+        const lcol=colorBySite?css(scol):(anyOver?"#c22":"#1b201e");
+        s+=`<text x="${cx}" y="${cy+18+slot*11}" text-anchor="middle" font-size="9.5" font-weight="700" fill="${lcol}" ${HALO}>${num}${(colorBySite&&anyOver)?" ✕":""}</text>`;
+      });
     }
     gm.innerHTML=s;
   }
@@ -1035,16 +1061,34 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
   document.getElementById("geoplay").onclick=function(){
     if(playing){ clearInterval(playing); playing=null; this.textContent="▶ Play the record"; return; }
     if(matchMedia("(prefers-reduced-motion: reduce)").matches){ return; }
-    let k=+slider.value>=gdates.length-1?0:+slider.value;
+    const n=gdates.length; if(n<2) return;
+    let k=+slider.value>=n-1?0:+slider.value;
+    let iv=Math.round(38000/n), stride=1;
+    if(iv>260) iv=260; else if(iv<80){ stride=Math.ceil(n*80/38000); iv=80; }
     this.textContent="⏸ Pause";
-    playing=setInterval(()=>{ if(k>=gdates.length-1){ clearInterval(playing); playing=null;
-        document.getElementById("geoplay").textContent="▶ Play the record"; return; }
-      k++; slider.value=k; geoSync=true; geoFrame(k); graphTo(gdates[k]); geoSync=false; },260);
+    playing=setInterval(()=>{
+      k=Math.min(k+stride,n-1); slider.value=k; geoSync=true; geoFrame(k); graphTo(gdates[k]); geoSync=false;
+      if(k>=n-1){ clearInterval(playing); playing=null; document.getElementById("geoplay").textContent="▶ Play the record"; }
+    },iv);
   };
   document.getElementById("mapbtn").onclick=function(){
     const g=document.getElementById("geo"); g.hidden=!g.hidden; geoFollow=!g.hidden;
     this.setAttribute("aria-pressed",String(!g.hidden)); };
-  geoFrame(gdates.length-1);
+  function geoRebuild(){
+    const cur=gdates[+slider.value];
+    gdates=geoDates(); slider.max=Math.max(gdates.length-1,0);
+    let k=gdates.length-1;
+    if(cur&&gdates.length){ let bd=Infinity; for(let j=0;j<gdates.length;j++){ const dd=Math.abs(+new Date(gdates[j])-+new Date(cur)); if(dd<bd){bd=dd;k=j;} } }
+    slider.value=k; geoFrame(k);
+  }
+  function geoLegend(){
+    const el=document.getElementById("geoleg"); if(!el) return;
+    const mode=colorBySite
+      ? 'Each source shows in its own color; <b>✕</b> marks a reading over the limit.'
+      : '<b style="color:var(--std)">Red</b> = over the limit, orange = under.';
+    el.innerHTML='Filled circle = enterococcus, ring = E. coli (set by the Bacteria filter); size = concentration (log scale); numbers = that day’s readings. '+mode+' Dashed = a selected source not sampled that week; each site appears only from when its program began.';
+  }
+  geoLegend(); geoRebuild();
 
   // ---- FACTOR EXPLORER ----
   const dailyBy=new Map(D.map(r=>[r.d,r]));
