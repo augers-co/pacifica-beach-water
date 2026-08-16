@@ -50,7 +50,14 @@ not ocean quality per se.
 
 ## Status
 
-v2 findings done. Next: Surfrider BWTF export (requested), stacked creek-state model with honest cross-validation, then live dashboard.
+The public ledger is live: https://augers-co.github.io/pacifica-beach-water/ —
+a single-page evidence product (`docs/index.html`, also the canonical working
+copy) refreshed weekly by the Actions workflow when its verification gates
+pass. The findings register (`docs/findings-v*.md`) carries the dated,
+falsifiable record. Model v1 (creek + beach) is saved in `models/`; an honest
+walk-forward showed creek forecasting adds nothing over persistence — itself
+evidence for the chronic-source thesis (findings v8 §3) — so the
+forward-looking product is parked until the beach nowcast case is made.
 
 ## North star
 
