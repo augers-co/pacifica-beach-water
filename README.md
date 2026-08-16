@@ -2,7 +2,7 @@
 
 **▶ The live ledger: [What's polluting Pacifica State Beach?](https://augers-co.github.io/pacifica-beach-water/)** — every water test since 2000, day by day, alongside the conditions that raise and lower it. Every claim links to its raw source.
 
-A dashboard for ocean and beach water quality in Pacifica, CA — surf/swim safety at Linda Mar (Pacifica State Beach), Rockaway Beach, and Sharp Park, with a focus on the San Pedro Creek outflow at Linda Mar.
+Creek and beach water quality at Linda Mar (Pacifica State Beach) in Pacifica, CA — San Pedro Creek, its outflow, and the surf zone it reaches.
 
 Built in support of the **Linda Mar Water Quality Coalition**, a grassroots alliance of Surfrider San Mateo County's Blue Water Task Force, Salted Roots, the San Pedro Creek Watershed Coalition, Cultivar Foundation, and the Pedro Point Surf Club. The Coalition runs weekly bacteria testing along San Pedro Creek (85% of creek samples over the past two years exceeded state fecal-bacteria standards, with DNA source-tracking pointing at human contamination from suspected sewer leaks) and is documenting community health impacts via the [Linda Mar Health Impacts Survey](https://survey.alchemer.com/s3/8923478/Linda-Mar-Health-Impacts-Survey) — earaches, eye/sinus infections, rashes, GI illness after water contact — to inform public agencies and elected officials.
 
