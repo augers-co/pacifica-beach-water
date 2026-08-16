@@ -1,0 +1,63 @@
+name: Weekly data refresh
+
+# Rebuilds the database from public sources, re-runs the ledger export, and
+# injects fresh DATA into docs/index.html — but only when every verification
+# gate passes. A gate failure fails this workflow (red X + notification) and
+# commits nothing: the public page can go stale, never wrong.
+
+on:
+  schedule:
+    - cron: "23 16 * * 5"   # Fridays 16:23 UTC ≈ 9:23am Pacific
+  workflow_dispatch:
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Skip until the page lives in the repo
+        id: gate
+        run: |
+          if [ -f docs/index.html ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "docs/index.html not committed yet — nothing to refresh."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-python@v5
+        if: steps.gate.outputs.present == 'true'
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pipeline/requirements.txt
+
+      - name: Install dependencies
+        if: steps.gate.outputs.present == 'true'
+        run: pip install -r pipeline/requirements.txt
+
+      - name: Refresh with gates (cold DB rebuild from public sources)
+        if: steps.gate.outputs.present == 'true'
+        run: python pipeline/refresh.py --inject
+
+      - name: Commit and publish if anything changed
+        if: steps.gate.outputs.present == 'true'
+        run: |
+          git add docs/index.html pipeline/ledger_data.json
+          if git diff --cached --quiet; then
+            echo "No data changes this week."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Weekly data refresh (automated, all gates passed)"
+          git push

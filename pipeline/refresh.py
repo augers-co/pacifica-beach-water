@@ -35,12 +35,11 @@ DB = ROOT / "data" / "pacifica.db"
 PY = sys.executable
 PIPE = ROOT / "pipeline"
 
-# Current canonical locations of the export script and ledger HTML (the working
-# copies live outside the repo; override with --export / --html when they move).
-DEFAULT_EXPORT = Path(
-    "/private/tmp/claude-501/-Users-joshuawiese-Claude-Projects/"
-    "cdeb5c5f-eec0-4444-a2ac-a89648327a95/scratchpad/export_ledger.py")
-DEFAULT_HTML = DEFAULT_EXPORT.parent / "san-pedro-ledger.html"
+# Canonical locations: both live in the repo. The committed
+# pipeline/ledger_data.json is the durable gate baseline (series may never
+# shrink relative to it), which also makes cold-start CI runs fully guarded.
+DEFAULT_EXPORT = PIPE / "export_ledger.py"
+DEFAULT_HTML = ROOT / "docs" / "index.html"
 
 LMWQ_PAGE = "https://www.lindamarwaterquality.org/test-results"
 SSO_BASE = "https://www.waterboards.ca.gov/water_issues/programs/sso/docs/data_files/"
@@ -151,7 +150,10 @@ def fetch_sso():
                 fail(f"{fname}: no WDID column (columns changed?)")
                 continue
             sub = df[df[wcol[0]].astype(str).str.strip() == WDID]
-            prev = con.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
+            try:
+                prev = con.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
+            except sqlite3.OperationalError:
+                prev = 0  # cold start: no baseline table yet
             if len(sub) < prev:
                 fail(f"{table}: fetched {len(sub)} rows < existing {prev} — refusing to shrink")
                 continue
@@ -253,8 +255,11 @@ def main():
         print("-- table deltas")
         for t in GATE_TABLES:
             b, n = before.get(t), after.get(t)
-            if b is None or n is None:
-                warn(f"{t}: missing table")
+            if n is None:
+                warn(f"{t}: missing after fetch")
+                continue
+            if b is None:
+                print(f"   {t}: (cold start) {n} rows")
                 continue
             if n < b:
                 fail(f"{t} shrank: {b} -> {n}")
