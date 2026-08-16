@@ -197,9 +197,7 @@
       <div class="date" id="geodate">—</div>
       <input type="range" id="geoslider" min="0" value="0" aria-label="Week">
       <button id="geoplay">▶ Play the record</button>
-      <div class="leg" id="geoleg">Filled circle = enterococcus, ring = E. coli (set by the Bacteria filter above); size = concentration (log scale); numbers = that morning's readings.
-      <b style="color:var(--std)">Red</b> = over the standard; dashed circle = not sampled that week.
-      Orange = passed. Weekly same-morning snapshots: the coalition’s four creek sites plus the county beach station (LM5), Jul 2024 → present.</div>
+      <div class="leg" id="geoleg">Filled circle = enterococcus, ring = E. coli (set by the Bacteria filter); size = concentration (log scale); numbers = that day’s readings. <b style="color:var(--std)">Red</b> = over the limit, orange = under. Dashed = a selected source not sampled that week; each site appears only from when its program began.</div>
     </div>
   </div>
   </div>
@@ -1063,13 +1061,12 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     if(matchMedia("(prefers-reduced-motion: reduce)").matches){ return; }
     const n=gdates.length; if(n<2) return;
     let k=+slider.value>=n-1?0:+slider.value;
-    let iv=Math.round(38000/n), stride=1;
-    if(iv>260) iv=260; else if(iv<80){ stride=Math.ceil(n*80/38000); iv=80; }
     this.textContent="⏸ Pause";
+    // deliberate day-by-day pace: every frame shown, held long enough to read the change
     playing=setInterval(()=>{
-      k=Math.min(k+stride,n-1); slider.value=k; geoSync=true; geoFrame(k); graphTo(gdates[k]); geoSync=false;
+      k=Math.min(k+1,n-1); slider.value=k; geoSync=true; geoFrame(k); graphTo(gdates[k]); geoSync=false;
       if(k>=n-1){ clearInterval(playing); playing=null; document.getElementById("geoplay").textContent="▶ Play the record"; }
-    },iv);
+    },500);
   };
   document.getElementById("mapbtn").onclick=function(){
     const g=document.getElementById("geo"); g.hidden=!g.hidden; geoFollow=!g.hidden;
