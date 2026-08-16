@@ -59,6 +59,6 @@ pollution in San Pedro Creek, (2) help locate the sources, (3) make the
 information useful enough to ordinary beach users that it builds public and
 political will, and (4) support actual fixes. Every analysis and product
 choice should trace to one of those four. Evidence standards are set for
-skeptical review: the likely remedies are expensive and land on homeowners,
+skeptical review: the likely remedies are expensive and land on taxpayers,
 so claims ship with stated falsifiable tests, dated predictions, and the raw
 record alongside every summary.
