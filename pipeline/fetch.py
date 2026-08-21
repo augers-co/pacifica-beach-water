@@ -112,6 +112,30 @@ def fetch_weather(con):
     print(f"weather_daily: {len(df)} rows ({df['date'].min()} .. {df['date'].max()})")
 
 
+def fetch_wx_extra(con):
+    """Daily temperature + solar (the ledger's warmth signal and the inferred
+    water temperature both derive from temp_mean). Originally a one-off pull;
+    promoted into the chain when the CI cold rebuild exposed it as an orphan."""
+    r = requests.get(
+        "https://archive-api.open-meteo.com/v1/archive",
+        params={
+            "latitude": WX_LAT,
+            "longitude": WX_LON,
+            "start_date": "2000-01-01",
+            "end_date": pd.Timestamp.now().strftime("%Y-%m-%d"),
+            "daily": "temperature_2m_mean,temperature_2m_max,shortwave_radiation_sum",
+            "timezone": "America/Los_Angeles",
+        },
+        timeout=180,
+    )
+    r.raise_for_status()
+    d = r.json()["daily"]
+    df = pd.DataFrame({"date": pd.to_datetime(d["time"]), "temp_mean": d["temperature_2m_mean"],
+                       "solar_mj": d["shortwave_radiation_sum"], "temp_max": d["temperature_2m_max"]})
+    df.to_sql("wx_extra_daily", con, if_exists="replace", index=False)
+    print(f"wx_extra_daily: {len(df)} rows ({d['time'][0]} .. {d['time'][-1]})")
+
+
 def main():
     DB.parent.mkdir(exist_ok=True)
     con = sqlite3.connect(DB)
@@ -120,6 +144,7 @@ def main():
     print("== BeachWatch ==")
     fetch_beachwatch(con)
     print("== Weather (Open-Meteo ERA5) ==")
+    fetch_wx_extra(con)
     fetch_weather(con)
     con.close()
     print(f"done -> {DB}")

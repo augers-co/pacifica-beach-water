@@ -54,7 +54,8 @@ CEDEN_EXPECTED_ANALYTES = {"E. coli", "Enterococcus", "Coliform, Total", "Colifo
 LMWQ_EXPECTED_ANALYTES = {"ecoli", "ent"}
 
 GATE_TABLES = ["ceden_raw", "lmwq_long", "bwtf_lindamar", "tide_hourly",
-               "weather_daily", "rain_context", "sso_pacifica_old", "sso_pacifica_new"]
+               "weather_daily", "wx_extra_daily", "rain_context",
+               "sso_pacifica_old", "sso_pacifica_new"]
 
 FAILURES: list[str] = []
 WARNINGS: list[str] = []
