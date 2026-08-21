@@ -32,6 +32,7 @@ import requests
 
 ROOT = Path(__file__).resolve().parent.parent
 DB = ROOT / "data" / "pacifica.db"
+DB.parent.mkdir(parents=True, exist_ok=True)  # cold start: data/ is gitignored
 PY = sys.executable
 PIPE = ROOT / "pipeline"
 
