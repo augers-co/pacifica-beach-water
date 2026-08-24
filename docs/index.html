@@ -170,7 +170,7 @@
   <details class="guide"><summary>How to use the graph below</summary>
     <ul>
       <li>The graph opens with every raw sample: the coalition’s four creek sites (weekly since July 2024 — the density jump that summer is the coalition’s program beginning), the county’s creek station (weekly since 2015), and the county’s beach record (weekly since 2000). The sites average and Surfrider’s creek-mouth series are in the Samples row.</li>
-      <li><b style="color:var(--std)">Red dots</b> are samples over the health standard (dashed line); orange dots passed. With Color by source on, dots keep their source’s color instead — judge by the dashed lines. Each gridline on the bacteria scale is ten times the one below it.</li>
+      <li><b style="color:var(--std)">Red dots</b> are samples over the health standard (dashed line); orange dots passed. Every bacteria count on this page is in MPN per 100 mL — the most probable number of bacteria colonies in a 100-milliliter water sample, the standard measure used by all three labs. With Color by source on, dots keep their source’s color instead — judge by the dashed lines. Each gridline on the bacteria scale is ten times the one below it.</li>
       <li>Estimated flow, ground wetness, and water temperature are calculated from rainfall and air temperature records, not measured — no instruments in the valley measure them directly. Methods describes how each estimate was checked.</li>
       <li>Zoom with a two-finger pinch or Ctrl/⌘ + scroll. Turn layers on and off in the filters.</li>
     </ul>
@@ -197,7 +197,7 @@
       <div class="date" id="geodate">—</div>
       <input type="range" id="geoslider" min="0" value="0" aria-label="Week">
       <button id="geoplay">▶ Play the record</button>
-      <div class="leg" id="geoleg">Filled circle = enterococcus, ring = E. coli (set by the Bacteria filter); size = concentration (log scale); numbers = that day’s readings. <b style="color:var(--std)">Red</b> = over the limit, orange = under. Dashed = a selected source not sampled that week; each site appears only from when its program began.</div>
+      <div class="leg" id="geoleg">Filled circle = enterococcus, ring = E. coli (set by the Bacteria filter); size = concentration (log scale); numbers = that day’s readings, in MPN per 100 mL. <b style="color:var(--std)">Red</b> = over the limit, orange = under. Dashed = a selected source not sampled that week; each site appears only from when its program began.</div>
     </div>
   </div>
   </div>
@@ -389,7 +389,7 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     gm:"The primary test: a rolling six-week geometric mean of E. coli results must stay under 100 — the single-sample line is its companion, not the main event. Since 2015 the creek's running average has been over this line in about 9 of every 10 six-week stretches; the main exception was 2021, after a dry winter. The trend lines are what this standard judges. Sources are linked in Methods."};
 
   const TRACKS = [
-    {id:"bact", name:"BACTERIA", sub:"per 100 mL", h:150, log:true},
+    {id:"bact", name:"BACTERIA", sub:"MPN per 100 mL", h:150, log:true},
     {id:"rain",  name:"RAIN",   sub:"mm / day", h:64, max:80, ticks:[0,40,80]},
     {id:"wy",    name:"RAIN VS NORMAL", sub:"% of typical year", h:52, max:260, ticks:[100,200]},
     {id:"flow",  name:"FLOW (EST.)", sub:"index, from rain", h:64, sqrt:true, max:FMAX, ticks:[10,50,150]},
@@ -912,7 +912,7 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
       if(parts.length) h+=`<span>sites (coalition): ${parts.join(" · ")}</span>`; }
     if(sampleOn.has("bwtf")){ const w=bwBy.get(r.d); if(w) h+=`<span>${lab("creek mouth (Surfrider)","--bwtf")} <b class="${(!idm&&w.v>110)?'over':''}">${w.v}</b>${w.v>110?' ✕':''} <i style="font-style:normal;color:var(--muted)">(entero)</i></span>`; }
     if(sp) h+=`<span class="over">▲ spill ${sp.gal.toLocaleString()} gal — ${sp.loc}</span>`;
-    const dtx=document.getElementById("dtext"); if(dtx) dtx.innerHTML=h; curI=i;
+    const dtx=document.getElementById("dtext"); if(dtx) dtx.innerHTML=h+(/county|Surfrider|coalition|sites/i.test(h)?' <i style="font-style:normal;color:var(--muted)">· bacteria in MPN per 100 mL</i>':""); curI=i;
     if(geoFollow && !geoSync && typeof gdates!=="undefined"){
       const t=+new Date(r.d); let best=-1, bd=6*864e5;
       for(let k=0;k<gdates.length;k++){ const dd=Math.abs(+new Date(gdates[k])-t); if(dd<bd){ bd=dd; best=k; } }
@@ -1083,7 +1083,7 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     const mode=colorBySite
       ? 'Each source shows in its own color; <b>✕</b> marks a reading over the limit.'
       : '<b style="color:var(--std)">Red</b> = over the limit, orange = under.';
-    el.innerHTML='Filled circle = enterococcus, ring = E. coli (set by the Bacteria filter); size = concentration (log scale); numbers = that day’s readings. '+mode+' Dashed = a selected source not sampled that week; each site appears only from when its program began.';
+    el.innerHTML='Filled circle = enterococcus, ring = E. coli (set by the Bacteria filter); size = concentration (log scale); numbers = that day’s readings, in MPN per 100 mL. '+mode+' Dashed = a selected source not sampled that week; each site appears only from when its program began.';
   }
   geoLegend(); geoRebuild();
 

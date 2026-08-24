@@ -40,9 +40,12 @@ UA = "pacifica-beach-water research (Linda Mar Water Quality Coalition ally)"
 def fetch():
     RAW.mkdir(parents=True, exist_ok=True)
     frames = []
+    fresh = {pd.Timestamp.now().year, pd.Timestamp.now().year - 1}
     for y in YEARS:
         cache = RAW / f"{y}.csv"
-        if cache.exists():
+        # closed years are stable; the recent two must always be re-pulled or
+        # new rows never arrive on a machine that has fetched before
+        if cache.exists() and y not in fresh:
             text = cache.read_text()
         else:
             r = requests.get(
@@ -70,7 +73,12 @@ def fetch():
 
 def main():
     lm = fetch()
-    lm["collection_date"] = pd.to_datetime(lm["collection date"], errors="coerce")
+    # The portal's formatted date column intermittently emits literal
+    # "Invalid Date"; stored collectionTime (UTC) is the durable field.
+    cd = pd.to_datetime(lm["collection date"], errors="coerce")
+    stored = pd.to_datetime(lm["stored collectionTime"], errors="coerce", utc=True)
+    lm["collection_date"] = cd.fillna(
+        stored.dt.tz_convert("America/Los_Angeles").dt.tz_localize(None).dt.normalize())
     lm["entero"] = pd.to_numeric(lm["Enterococcus (mpn/100mL)"], errors="coerce")
     lm["ecoli"] = pd.to_numeric(lm["Ecoli (mpn/100mL)"], errors="coerce")
     con = sqlite3.connect(DB)
