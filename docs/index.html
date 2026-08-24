@@ -174,6 +174,7 @@
     <ul>
       <li>The graph opens with every raw sample: the coalition’s four creek sites (weekly since July 2024 — the density jump that summer is the coalition’s program beginning), the county’s creek station (weekly since 2015), and the county’s beach record (weekly since 2000). The sites average and Surfrider’s creek-mouth series are in the Samples row.</li>
       <li><b style="color:var(--std)">Red dots</b> are samples over the health standard (dashed line); orange dots passed. Every bacteria count on this page is in MPN per 100 mL — the most probable number of bacteria colonies in a 100-milliliter water sample, the standard measure used by all three labs. A ✕ beside a number marks it over its health standard. With Color by source on, dots keep their source’s color instead — judge by the dashed lines. Each gridline on the bacteria scale is ten times the one below it.</li>
+      <li>The two organisms counted — E. coli and enterococcus — are <b>fecal indicator bacteria</b>: mostly harmless themselves, they are counted because finding them means fecal contamination is in the water, and fecal contamination is what carries the germs that do make people sick. The ocean is full of microbes that pose no threat to people; these two are measured precisely because they should not be there.</li>
       <li>Estimated flow, ground wetness, and water temperature are calculated from rainfall and air temperature records, not measured — no instruments in the valley measure them directly. Methods describes how each estimate was checked.</li>
       <li>Zoom with a two-finger pinch or Ctrl/⌘ + scroll. Turn layers on and off in the filters.</li>
     </ul>
@@ -271,6 +272,13 @@
     samples at four creek sites (both organisms, 2024→), plus county LM5 taken the same mornings, from
     lindamarwaterquality.org. Replicates collapsed to the maximum. Values per 100 mL. The sites average shown
     is a calculated value: the geometric mean of whichever of the four sites were sampled that week (at least two required).</dd>
+    <dt>Why these two organisms</dt>
+    <dd>E. coli and enterococcus are the standard fecal indicator bacteria: strains that live in the guts
+    of warm-blooded animals and are usually harmless on their own. Finding them in a creek or surf zone
+    means fecal material is present — and with it, potentially, the viruses, bacteria, and parasites that
+    actually cause illness. Sea water teems with microbes that pose no threat; these two are singled out
+    because they do not belong there. The standards below come from epidemiological studies linking
+    indicator counts to swimmer illness rates.</dd>
     <dt>Standards</dt>
     <dd>Freshwater E. coli 320; freshwater enterococcus 110; ocean enterococcus 104; ocean E. coli 320
     (single-sample values). The map applies the standard matching each site and organism. These are health-based
@@ -910,16 +918,16 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     let h=`<b>${r.d}</b>`;
     const conds=`<span>rain <b>${r.mm}mm</b></span><span>flow <b>${r.f}</b></span><span>ground <b>${r.s}</b></span><span>winter <b>${r.wy??"–"}%</b></span><span>air temp <b>${fT(r.t)}</b></span><span>water temp <b>${fT(r.wt)}</b> est.</span>`;
     const idm=colorBySite, lab=(t,cv)=>idm?`<i style="font-style:normal;font-weight:600;color:${css(cv)}">${t}</i>`:t;
-    if(c){ const cv=c.v!=null?`<b class="${(!idm&&c.v>320)?'over':''}">${c.v}</b>${c.v>320?' ✕':''}`:"";
+    if(c){ const cv=c.v!=null?`E.coli <b class="${(!idm&&c.v>320)?'over':''}">${c.v}</b>${c.v>320?' ✕':''}`:"";
       const ce=c.ent!=null?`${c.v!=null?" · ":""}ent <b class="${(!idm&&c.ent>110)?'over':''}">${c.ent}</b>${c.ent>110?' ✕':''}`:"";
       h+=`<span>${lab("creek (county)","--creek")} ${cv}${ce} <i style="font-style:normal;color:var(--muted)">(rain ${c.dsr}d ago; ${c.hr??"–"}h)</i></span>`; }
     if(b){ const bt=b.hr!=null?`${Math.floor(b.hr)}:${String(Math.round((b.hr%1)*60)).padStart(2,"0")}`:null;
       const tide=(sampleOn.has("beach")&&b.th!=null)?` <i style="font-style:normal;color:var(--muted)">(${bt?bt+" · ":""}tide ${b.th} ft ${b.ti?"↑ in":"↓ out"})</i>`:"";
       const be=b.ec!=null?` · E.coli <b class="${(!idm&&b.ec>320)?'over':''}">${b.ec}</b>${b.ec>320?' ✕':''}`:"";
-      h+=`<span>${lab("beach (county)","--beach")} <b class="${(!idm&&b.v>104)?'over':''}">${b.nd?"&lt;10":b.v}</b>${b.v>104?' ✕':''}${b.nd?' <i style="font-style:normal;color:var(--muted)">none detected</i>':''}${be}${tide}</span>`; }
+      h+=`<span>${lab("beach (county)","--beach")} entero <b class="${(!idm&&b.v>104)?'over':''}">${b.nd?"&lt;10":b.v}</b>${b.v>104?' ✕':''}${b.nd?' <i style="font-style:normal;color:var(--muted)">none detected</i>':''}${be}${tide}</span>`; }
     if(st){ const parts=SITES.filter(x=>st[x]&&[...anOn].some(a2=>st[x][a2]!=null)).map(x=>{
         return lab(x,SERCOL[x])+" "+[...anOn].filter(a2=>st[x][a2]!=null).map(a2=>{
-          const v=st[x][a2], ov=v>stdFor(x,a2); return `<b class="${(!idm&&ov)?'over':''}">${v}</b>${ov?'✕':''}`; }).join("/"); });
+          const v=st[x][a2], ov=v>stdFor(x,a2); return `${a2==="ent"?"ent":"E.coli"} <b class="${(!idm&&ov)?'over':''}">${v}</b>${ov?'✕':''}`; }).join(" / "); });
       if(parts.length) h+=`<span>sites (coalition): ${parts.join(" · ")}</span>`; }
     if(sampleOn.has("bwtf")){ const w=bwBy.get(r.d); if(w) h+=`<span>${lab("creek mouth (Surfrider)","--bwtf")} <b class="${(!idm&&w.v>110)?'over':''}">${w.v}</b>${w.v>110?' ✕':''} <i style="font-style:normal;color:var(--muted)">(entero)</i></span>`; }
     if(sp) h+=`<span class="over">▲ spill ${sp.gal.toLocaleString()} gal — ${sp.loc}</span>`;
