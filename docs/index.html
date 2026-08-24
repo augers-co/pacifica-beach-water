@@ -80,7 +80,7 @@
   @media (max-width:900px){ #stage{flex-direction:column;} .geo.docked{width:100%; flex:1 1 auto;} }
   button:focus-visible{outline:2px solid var(--creek); outline-offset:2px;}
   .detail{position:sticky; bottom:6px; z-index:5; background:var(--card); border:1px solid var(--line);
-    border-radius:8px; padding:6px 14px; margin:8px 0; font-size:12.5px; height:58px; overflow-y:auto; overscroll-behavior:contain;
+    border-radius:8px; padding:6px 14px; margin:8px 0; font-size:12.5px; min-height:58px; max-height:108px; overflow-y:auto; overscroll-behavior:contain;
     display:flex; gap:6px 14px; flex-wrap:wrap; align-content:flex-start; align-items:center; color:var(--ink2);}
   .detail b{color:var(--ink); font-variant-numeric:tabular-nums;}
   .detail .over{color:var(--std); font-weight:650;}
@@ -904,7 +904,8 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
   function show(i){
     const r=D[i]; if(!r) return;
     const c=ckBy.get(r.d), b=bcBy.get(r.d), sp=spBy.get(r.d), st=siteBy.get(r.d);
-    let h=`<b>${r.d}</b><span>rain <b>${r.mm}mm</b></span><span>flow <b>${r.f}</b></span><span>ground <b>${r.s}</b></span><span>winter <b>${r.wy??"–"}%</b></span><span>air temp <b>${fT(r.t)}</b></span><span>water temp <b>${fT(r.wt)}</b> est.</span>`;
+    let h=`<b>${r.d}</b>`;
+    const conds=`<span>rain <b>${r.mm}mm</b></span><span>flow <b>${r.f}</b></span><span>ground <b>${r.s}</b></span><span>winter <b>${r.wy??"–"}%</b></span><span>air temp <b>${fT(r.t)}</b></span><span>water temp <b>${fT(r.wt)}</b> est.</span>`;
     const idm=colorBySite, lab=(t,cv)=>idm?`<i style="font-style:normal;font-weight:600;color:${css(cv)}">${t}</i>`:t;
     if(c){ const cv=c.v!=null?`<b class="${(!idm&&c.v>320)?'over':''}">${c.v}</b>${c.v>320?' ✕':''}`:"";
       const ce=c.ent!=null?`${c.v!=null?" · ":""}ent <b class="${(!idm&&c.ent>110)?'over':''}">${c.ent}</b>${c.ent>110?' ✕':''}`:"";
@@ -919,6 +920,7 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
       if(parts.length) h+=`<span>sites (coalition): ${parts.join(" · ")}</span>`; }
     if(sampleOn.has("bwtf")){ const w=bwBy.get(r.d); if(w) h+=`<span>${lab("creek mouth (Surfrider)","--bwtf")} <b class="${(!idm&&w.v>110)?'over':''}">${w.v}</b>${w.v>110?' ✕':''} <i style="font-style:normal;color:var(--muted)">(entero)</i></span>`; }
     if(sp) h+=`<span class="over">▲ spill ${sp.gal.toLocaleString()} gal — ${sp.loc}</span>`;
+    h+=conds;
     const dtx=document.getElementById("dtext"); if(dtx) dtx.innerHTML=h+(/county|Surfrider|coalition|sites/i.test(h)?' <i style="font-style:normal;color:var(--muted)">· bacteria in MPN per 100 mL · \u2715 = over the health standard</i>':""); curI=i;
     if(geoFollow && !geoSync && typeof gdates!=="undefined"){
       const t=+new Date(r.d); let best=-1, bd=6*864e5;
