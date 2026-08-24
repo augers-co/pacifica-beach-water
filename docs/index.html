@@ -192,6 +192,10 @@
     </div>
     <select id="jumps" aria-label="Jump to year"></select>
     <button id="mapbtn" aria-pressed="false">Map view</button>
+    <div class="view" role="group" aria-label="Temperature units">
+      <button id="degc" aria-pressed="true">°C</button>
+      <button id="degf" aria-pressed="false">°F</button>
+    </div>
   </div>
 
   <div id="stage"><div class="tl"><div class="gutter" id="gutter"></div><div class="scroller" id="scroller"></div><div id="tourbox" hidden></div></div>
@@ -828,11 +832,10 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
       clearViewHighlight();
       syncPanel(); render(centerDate()); };
     panel.appendChild(b); });
-  { const b=document.createElement("button"); b.id="degf"; b.setAttribute("aria-pressed","false");
-    attachTip(b,"\u00b0F / \u00b0C","Show temperatures in Fahrenheit instead of Celsius. Display only \u2014 the water-temperature estimate is computed in Celsius either way.",null);
-    b.textContent="show \u00b0F";
-    b.onclick=()=>{ degF=!degF; b.setAttribute("aria-pressed",String(degF)); b.textContent=degF?"show \u00b0C":"show \u00b0F"; gutter(); if(curI!=null) show(curI); };
-    panel.appendChild(b); }
+  { const bc=document.getElementById("degc"), bf=document.getElementById("degf");
+    const setU=f=>{ degF=f; bc.setAttribute("aria-pressed",String(!f)); bf.setAttribute("aria-pressed",String(f)); gutter(); if(curI!=null) show(curI); };
+    if(bc&&bf){ attachTip(bf,"\u00b0F","Show temperatures in Fahrenheit. Display only \u2014 the water-temperature estimate is computed in Celsius either way.",null);
+      bc.onclick=()=>setU(false); bf.onclick=()=>setU(true); } }
   const NTIP={shadow:"Shades the days after each storm when risk stays raised. Fades at the measured rate — risk halves about every 2 days.",
     warm:"Tints stretches that are warm AND rain-free — the conditions where bacteria persist. Darker = warmer estimated water.",
     dryrings:"Circles whichever displayed samples were taken 30+ days after any rain. If these still fail, weather isn't the cause.",
