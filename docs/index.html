@@ -70,6 +70,9 @@
   .controls .view button:last-child{border-radius:0 8px 8px 0; margin-left:-1px;}
   .controls .view button[aria-pressed="true"]{background:var(--tint); color:var(--ink); font-weight:600;}
   .controls select{font:13px system-ui; padding:6px 10px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--ink2);}
+  .tunits{display:inline-flex; border:1px solid var(--line); border-radius:99px; overflow:hidden; background:var(--card);}
+  .tunits button{font:12.5px system-ui; padding:5px 13px; border:none; background:transparent; color:var(--muted); cursor:pointer;}
+  .tunits button[aria-pressed="true"]{background:var(--ink); color:var(--page); font-weight:600;}
   #mapbtn{font:13px system-ui; padding:6px 12px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--ink2); cursor:pointer;}
   #mapbtn[aria-pressed="true"]{background:var(--tint); color:var(--ink); font-weight:600;}
   #stage{display:flex; gap:14px; align-items:stretch;}
@@ -192,7 +195,7 @@
     </div>
     <select id="jumps" aria-label="Jump to year"></select>
     <button id="mapbtn" aria-pressed="false">Map view</button>
-    <div class="view" role="group" aria-label="Temperature units">
+    <div class="tunits" role="group" aria-label="Temperature units">
       <button id="degc" aria-pressed="true">°C</button>
       <button id="degf" aria-pressed="false">°F</button>
     </div>
