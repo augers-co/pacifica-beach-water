@@ -82,6 +82,9 @@
   .detail{position:sticky; bottom:6px; z-index:5; background:var(--card); border:1px solid var(--line);
     border-radius:8px; padding:6px 14px; margin:8px 0; font-size:12.5px; min-height:58px; max-height:108px; overflow-y:auto; overscroll-behavior:contain;
     display:flex; gap:6px 14px; flex-wrap:wrap; align-content:flex-start; align-items:center; color:var(--ink2);}
+  .detail{scrollbar-width:thin; scrollbar-color:var(--muted) transparent;}
+  .detail::-webkit-scrollbar{width:8px;}
+  .detail::-webkit-scrollbar-thumb{background:var(--line); border-radius:4px;}
   .detail b{color:var(--ink); font-variant-numeric:tabular-nums;}
   .detail .over{color:var(--std); font-weight:650;}
   .detail .dnav{flex:0 0 auto; font:12px system-ui; padding:2px 9px; border-radius:6px; border:1px solid var(--line);
