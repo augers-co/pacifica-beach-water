@@ -170,7 +170,7 @@
   <details class="guide"><summary>How to use the graph below</summary>
     <ul>
       <li>The graph opens with every raw sample: the coalition’s four creek sites (weekly since July 2024 — the density jump that summer is the coalition’s program beginning), the county’s creek station (weekly since 2015), and the county’s beach record (weekly since 2000). The sites average and Surfrider’s creek-mouth series are in the Samples row.</li>
-      <li><b style="color:var(--std)">Red dots</b> are samples over the health standard (dashed line); orange dots passed. Every bacteria count on this page is in MPN per 100 mL — the most probable number of bacteria colonies in a 100-milliliter water sample, the standard measure used by all three labs. With Color by source on, dots keep their source’s color instead — judge by the dashed lines. Each gridline on the bacteria scale is ten times the one below it.</li>
+      <li><b style="color:var(--std)">Red dots</b> are samples over the health standard (dashed line); orange dots passed. Every bacteria count on this page is in MPN per 100 mL — the most probable number of bacteria colonies in a 100-milliliter water sample, the standard measure used by all three labs. A ✕ beside a number marks it over its health standard. With Color by source on, dots keep their source’s color instead — judge by the dashed lines. Each gridline on the bacteria scale is ten times the one below it.</li>
       <li>Estimated flow, ground wetness, and water temperature are calculated from rainfall and air temperature records, not measured — no instruments in the valley measure them directly. Methods describes how each estimate was checked.</li>
       <li>Zoom with a two-finger pinch or Ctrl/⌘ + scroll. Turn layers on and off in the filters.</li>
     </ul>
@@ -395,7 +395,7 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     {id:"flow",  name:"FLOW (EST.)", sub:"index, from rain", h:64, sqrt:true, max:FMAX, ticks:[10,50,150]},
     {id:"grnd",  name:"GROUND (EST.)", sub:"index, from rain", h:64, max:SMAX, ticks:[100,300]},
     {id:"air",   name:"AIR TEMP", sub:"daily °C", h:52, min2:6, max:24, ticks:[10,15,20]},
-    {id:"wtemp", name:"WATER (EST.)", sub:"°C, from air", h:52, min2:6, max:24, ticks:[10,15,20]},
+    {id:"wtemp", name:"WATER TEMP (EST.)", sub:"°C, from air", h:52, min2:6, max:24, ticks:[10,15,20]},
     {id:"sp",    name:"SPILLS", sub:"reported", h:26},
   ];
   const on = new Set(["rain","flow","wtemp"]); // conditions
@@ -420,7 +420,7 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     const g=document.getElementById("gutter"); g.style.height=H+"px"; g.innerHTML="";
     for(const [id,tr] of Object.entries(LAY)){
       g.insertAdjacentHTML("beforeend",`<div class="name" style="top:${tr.y0-2}px">${tr.name}</div>
-        <div class="sub" style="top:${tr.y0+11}px">${tr.sub||""}</div>`);
+        <div class="sub" style="top:${tr.y0+11}px">${id==="air"?(degF?"daily \u00b0F":"daily \u00b0C"):id==="wtemp"?(degF?"\u00b0F, from air":"\u00b0C, from air"):(tr.sub||"")}</div>`);
       if(tr.log){ [10,100,1000,10000].forEach(v=>g.insertAdjacentHTML("beforeend",
           `<div class="tick" style="top:${Y(id,v)-7}px">${v>=1000?(v/1000)+"k":v}</div>`));
         const ecOn=anOn.has("ec") && (sampleOn.has("creek")||sampleOn.has("beach")||["AVG",...SITES].some(s=>sampleOn.has(s)));
@@ -431,7 +431,7 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
         if(entOn) mkstd(Y(id,104)+1,"104 entero",STDTIP.ent);
         if(ann.has("trend")&&(sampleOn.has("creek")||sampleOn.has("AVG"))) mkstd(Y(id,100)+1+(entOn?11:0),"100 geo-mean",STDTIP.gm); }
       else if(tr.ticks) tr.ticks.forEach(v=>g.insertAdjacentHTML("beforeend",
-          `<div class="tick" style="top:${Y(id,v)-7}px">${v}</div>`));
+          `<div class="tick" style="top:${Y(id,v)-7}px">${(id==="air"||id==="wtemp")&&degF?Math.round(v*9/5+32):v}</div>`));
     }
   }
 
@@ -817,6 +817,11 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
       clearViewHighlight();
       syncPanel(); render(centerDate()); };
     panel.appendChild(b); });
+  { const b=document.createElement("button"); b.id="degf"; b.setAttribute("aria-pressed","false");
+    attachTip(b,"\u00b0F / \u00b0C","Show temperatures in Fahrenheit instead of Celsius. Display only \u2014 the water-temperature estimate is computed in Celsius either way.",null);
+    b.textContent="show \u00b0F";
+    b.onclick=()=>{ degF=!degF; b.setAttribute("aria-pressed",String(degF)); b.textContent=degF?"show \u00b0C":"show \u00b0F"; gutter(); if(curI!=null) show(curI); };
+    panel.appendChild(b); }
   const NTIP={shadow:"Shades the days after each storm when risk stays raised. Fades at the measured rate — risk halves about every 2 days.",
     warm:"Tints stretches that are warm AND rain-free — the conditions where bacteria persist. Darker = warmer estimated water.",
     dryrings:"Circles whichever displayed samples were taken 30+ days after any rain. If these still fail, weather isn't the cause.",
@@ -894,10 +899,12 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
   const detail=document.getElementById("detail");
   const ckBy=new Map(DATA.creek.map(p=>[p.d,p])), bcBy=new Map(DATA.beach.map(p=>[p.d,p])), bwBy=new Map((DATA.bwtf||[]).map(p=>[p.d,p]));
   const spBy=new Map(DATA.spills.map(p=>[p.d,p]));
+  let degF=false;
+  const fT=v=>v==null?"\u2013":(degF?Math.round(v*9/5+32)+"\u00b0F":v+"\u00b0C");
   function show(i){
     const r=D[i]; if(!r) return;
     const c=ckBy.get(r.d), b=bcBy.get(r.d), sp=spBy.get(r.d), st=siteBy.get(r.d);
-    let h=`<b>${r.d}</b><span>rain <b>${r.mm}mm</b></span><span>flow <b>${r.f}</b></span><span>ground <b>${r.s}</b></span><span>winter <b>${r.wy??"–"}%</b></span><span>water <b>${r.wt??"–"}°C</b> est.</span>`;
+    let h=`<b>${r.d}</b><span>rain <b>${r.mm}mm</b></span><span>flow <b>${r.f}</b></span><span>ground <b>${r.s}</b></span><span>winter <b>${r.wy??"–"}%</b></span><span>air temp <b>${fT(r.t)}</b></span><span>water temp <b>${fT(r.wt)}</b> est.</span>`;
     const idm=colorBySite, lab=(t,cv)=>idm?`<i style="font-style:normal;font-weight:600;color:${css(cv)}">${t}</i>`:t;
     if(c){ const cv=c.v!=null?`<b class="${(!idm&&c.v>320)?'over':''}">${c.v}</b>${c.v>320?' ✕':''}`:"";
       const ce=c.ent!=null?`${c.v!=null?" · ":""}ent <b class="${(!idm&&c.ent>110)?'over':''}">${c.ent}</b>${c.ent>110?' ✕':''}`:"";
@@ -912,7 +919,7 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
       if(parts.length) h+=`<span>sites (coalition): ${parts.join(" · ")}</span>`; }
     if(sampleOn.has("bwtf")){ const w=bwBy.get(r.d); if(w) h+=`<span>${lab("creek mouth (Surfrider)","--bwtf")} <b class="${(!idm&&w.v>110)?'over':''}">${w.v}</b>${w.v>110?' ✕':''} <i style="font-style:normal;color:var(--muted)">(entero)</i></span>`; }
     if(sp) h+=`<span class="over">▲ spill ${sp.gal.toLocaleString()} gal — ${sp.loc}</span>`;
-    const dtx=document.getElementById("dtext"); if(dtx) dtx.innerHTML=h+(/county|Surfrider|coalition|sites/i.test(h)?' <i style="font-style:normal;color:var(--muted)">· bacteria in MPN per 100 mL</i>':""); curI=i;
+    const dtx=document.getElementById("dtext"); if(dtx) dtx.innerHTML=h+(/county|Surfrider|coalition|sites/i.test(h)?' <i style="font-style:normal;color:var(--muted)">· bacteria in MPN per 100 mL · \u2715 = over the health standard</i>':""); curI=i;
     if(geoFollow && !geoSync && typeof gdates!=="undefined"){
       const t=+new Date(r.d); let best=-1, bd=6*864e5;
       for(let k=0;k<gdates.length;k++){ const dd=Math.abs(+new Date(gdates[k])-t); if(dd<bd){ bd=dd; best=k; } }
