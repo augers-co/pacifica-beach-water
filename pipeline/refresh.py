@@ -96,10 +96,29 @@ def download_lmwq():
     """Scrape the Coalition's test-results page for the two xlsx links (URLs
     change with every upload) and download them to the paths parse_lmwq expects."""
     print("-- coalition xlsx (scrape + download)")
-    page = requests.get(LMWQ_PAGE, timeout=60).text
-    links = list(dict.fromkeys(re.findall(r'https://[^"\'\s]+\.xlsx[^"\'\s]*', page)))
+    XLSX = re.compile(r'https://[^"\'\s]+\.xlsx[^"\'\s]*')
+    UA = {"User-Agent": "Mozilla/5.0 (compatible; pacifica-beach-water refresh)"}
+    def harvest(url):
+        try:
+            html = requests.get(url, timeout=60, headers=UA).text
+        except requests.RequestException as e:
+            warn(f"could not fetch {url}: {e}")
+            return "", []
+        return html, XLSX.findall(html)
+    page, links = harvest(LMWQ_PAGE)
+    # The Coalition periodically restructures the Wix site (2026-09: results split
+    # onto per-organism subpages, with mislabeled copy-of slugs). Crawl every
+    # internal page whose slug mentions test-results and harvest xlsx links from
+    # all of them; the content-sniff below decides which workbook is which, so
+    # slugs and page titles never need to be trusted.
+    slugs = set(re.findall(r'"([a-z0-9-]*test-results[a-z0-9-]*)"', page))
+    slugs.discard("test-results")
+    for slug in sorted(slugs)[:6]:
+        _, more = harvest(f"https://www.lindamarwaterquality.org/{slug}")
+        links += more
+    links = list(dict.fromkeys(links))
     if len(links) < 2:
-        fail(f"expected 2 xlsx links on {LMWQ_PAGE}, found {len(links)}")
+        fail(f"expected 2 xlsx links across {LMWQ_PAGE} + {len(slugs)} subpage(s), found {len(links)}")
         return
     # Wix file URLs are opaque — identify each workbook by sniffing its contents.
     def sniff(url):
@@ -113,7 +132,7 @@ def download_lmwq():
         is_eco = bool(re.search(r"e\.?\s?_?-?coli", text, re.I))
         return blob, is_ent, is_eco
     found = {}
-    for url in links[:4]:
+    for url in links[:6]:
         try:
             blob, is_ent, is_eco = sniff(url)
         except Exception as e:
