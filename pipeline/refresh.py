@@ -44,7 +44,12 @@ DEFAULT_HTML = ROOT / "docs" / "index.html"
 
 LMWQ_PAGE = "https://www.lindamarwaterquality.org/test-results"
 SSO_BASE = "https://www.waterboards.ca.gov/water_issues/programs/sso/docs/data_files/"
-SSO_FILES = {"sso_pacifica_old": "SSO.txt", "sso_pacifica_new": "Cat1-2-3-Spills.txt"}
+# The legacy system's record (2007 - 2023-06) is closed history: the state
+# replaced SSO.txt with an empty stub in 2026-10, so the Pacifica extract made
+# before retirement is committed at pipeline/sso_legacy_pacifica.csv and loaded
+# from there. Only the current-era file is live-fetched.
+SSO_LEGACY_SNAPSHOT = PIPE / "sso_legacy_pacifica.csv"
+SSO_FILES = {"sso_pacifica_new": "Cat1-2-3-Spills.txt"}
 WDID = "2SSO10100"
 
 # Schema-drift expectations. New values WARN (county adding enterococcus at the
@@ -161,6 +166,12 @@ def fetch_sso():
     filtered to Pacifica's WDID."""
     print("-- CIWQS spill files")
     con = sqlite3.connect(DB)
+    legacy = pd.read_csv(SSO_LEGACY_SNAPSHOT, low_memory=False)
+    if len(legacy) < 157:
+        fail(f"sso legacy snapshot has {len(legacy)} rows, expected 157 — snapshot corrupted?")
+    else:
+        legacy.to_sql("sso_pacifica_old", con, if_exists="replace", index=False)
+        print(f"   sso_pacifica_old: {len(legacy)} rows (committed snapshot; legacy system closed 2023-06)")
     for table, fname in SSO_FILES.items():
         try:
             raw = requests.get(SSO_BASE + fname, timeout=180).content
