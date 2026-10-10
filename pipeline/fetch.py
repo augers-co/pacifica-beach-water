@@ -81,15 +81,24 @@ def fetch_ceden(con):
 
 
 def fetch_beachwatch(con):
-    recs, _ = ckan_fetch_all(BEACHWATCH_RESULTS, q="Linda Mar")
-    df = pd.DataFrame(recs)
-    df.to_sql("beachwatch_raw", con, if_exists="replace", index=False)
-    print(f"beachwatch_raw: {len(df)} rows")
-
-    adv, _ = ckan_fetch_all(BEACHWATCH_ADVISORIES, q="Pacifica")
-    if adv:
-        pd.DataFrame(adv).to_sql("advisories_raw", con, if_exists="replace", index=False)
-    print(f"advisories_raw: {len(adv)} rows")
+    """Context tables only — neither feeds the ledger export, so a broken
+    upstream resource warns and moves on instead of killing the run (2026-10-09:
+    the state re-uploaded the advisories CSV without re-indexing its datastore,
+    and the resulting 404 took the weather fetch down with it)."""
+    try:
+        recs, _ = ckan_fetch_all(BEACHWATCH_RESULTS, q="Linda Mar")
+        df = pd.DataFrame(recs)
+        df.to_sql("beachwatch_raw", con, if_exists="replace", index=False)
+        print(f"beachwatch_raw: {len(df)} rows")
+    except requests.RequestException as e:
+        print(f"warn: beachwatch results fetch failed ({e}) — keeping existing table")
+    try:
+        adv, _ = ckan_fetch_all(BEACHWATCH_ADVISORIES, q="Pacifica")
+        if adv:
+            pd.DataFrame(adv).to_sql("advisories_raw", con, if_exists="replace", index=False)
+        print(f"advisories_raw: {len(adv)} rows")
+    except requests.RequestException as e:
+        print(f"warn: advisories fetch failed ({e}) — keeping existing table")
 
 
 def fetch_weather(con):
