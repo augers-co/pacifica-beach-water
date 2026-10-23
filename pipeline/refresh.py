@@ -282,6 +282,12 @@ def run_export(export_path: Path):
         fail("creek enterococcus attachments < 4 (spring-2026 samples lost?)")
     if sum(1 for row in d.get("sites", []) if row.get("ec") is not None) < 344:
         fail("coalition E. coli in sites < 344 (the 'ecoli' analyte mapping regressed?)")
+    ret = d.get("retained") or {}
+    if ret.get("values"):
+        warn(f"carrying {ret['values']} published Coalition results ({ret['first']} -> {ret['last']}) "
+             "that their current files no longer include")
+    for nd, pd_ in ret.get("redated", []):
+        warn(f"Coalition file dates a published week {nd} (published {pd_}); values identical, kept {pd_}")
     d["built"] = date.today().isoformat()
     out_json.write_text(json.dumps(d, separators=(",", ":"), allow_nan=False))
     changes = {k: (len(d.get(k, [])) - prev.get(k, 0)) for k in prev} if prev else {}
@@ -343,7 +349,11 @@ def main():
             if b is None:
                 print(f"   {t}: (cold start) {n} rows")
                 continue
-            if n < b:
+            if n < b and t == "lmwq_long":
+                # The Coalition's files can drop history; the export retains
+                # published results and its per-field gates guard the page.
+                warn(f"{t} shrank: {b} -> {n} (Coalition files dropped history; export retains it)")
+            elif n < b:
                 fail(f"{t} shrank: {b} -> {n}")
             else:
                 print(f"   {t}: {b} -> {n} (+{n - b})")

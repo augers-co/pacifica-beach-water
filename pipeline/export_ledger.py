@@ -254,6 +254,54 @@ SITES = [{"d": r.date.strftime("%Y-%m-%d"), "s": r.code,
           "ec": None if pd.isna(getattr(r, "ec", np.nan)) else round(float(r.ec), 1)}
          for r in wide.itertuples()]
 
+# ---- retention: Coalition results stay published -------------------------
+# The Coalition's downloadable files have dropped history before (2026-10: the
+# enterococcus workbook was cut to 2026 only, though the site still showed every
+# year). A result published here stays published unless a newer edition of the
+# files gives it a different value: corrections win, omissions don't erase.
+# Every run reports what it carried forward, so a deliberate retraction is
+# visible rather than silently preserved.
+RETAINED = {"values": 0, "rows": 0, "first": None, "last": None, "redated": []}
+if OUT.exists():
+    prior = json.loads(OUT.read_text()).get("sites", [])
+    pk = {(r["d"], r["s"]): r for r in prior}
+    cur = {(r["d"], r["s"]): r for r in SITES}
+    # Same sample, different date: a new result whose values exactly match a
+    # published result within three days at the same site, where the new files
+    # don't also report that field on the published date, is a re-dated copy
+    # (2026-10: the 2026-07-06 week appeared as 07-05, a Sunday, in the
+    # enterococcus file only). Keep the published date rather than show it twice.
+    reported = {f: {k for k, r in cur.items() if r.get(f) is not None} for f in ("ent", "ec")}
+    for k, r in list(cur.items()):
+        if k in pk:
+            continue
+        fields = [f for f in ("ent", "ec") if r.get(f) is not None]
+        for dd in (-1, 1, -2, 2, -3, 3):
+            k2 = ((pd.Timestamp(k[0]) + pd.Timedelta(days=dd)).strftime("%Y-%m-%d"), k[1])
+            o = pk.get(k2)
+            if (o and fields and all(o.get(f) == r[f] for f in fields)
+                    and not any(k2 in reported[f] for f in fields)):
+                del cur[k]
+                if [k[0], k2[0]] not in RETAINED["redated"]:
+                    RETAINED["redated"].append([k[0], k2[0]])
+                break
+    for old in prior:
+        k, kept = (old["d"], old["s"]), 0
+        if k not in cur:
+            cur[k] = dict(old)
+            kept = sum(old.get(f) is not None for f in ("ent", "ec"))
+            RETAINED["rows"] += 1
+        else:
+            for f in ("ent", "ec"):
+                if cur[k].get(f) is None and old.get(f) is not None:
+                    cur[k][f] = old[f]
+                    kept += 1
+        if kept:
+            RETAINED["values"] += kept
+            RETAINED["first"] = min(filter(None, [RETAINED["first"], old["d"]]))
+            RETAINED["last"] = max(filter(None, [RETAINED["last"], old["d"]]))
+    SITES = sorted(cur.values(), key=lambda r: (r["d"], r["s"]))
+
 # ---- Surfrider BWTF creek mouth (enterococcus, 2013-12 ->) -----------------
 bw = pd.read_sql(
     """SELECT collection_date, "collection time (America/Los_Angeles)" AS ctime, entero
@@ -270,7 +318,8 @@ BWTF = sample_rows(bw)
 con.close()
 
 data = {"daily": DAILY, "creek": CREEK, "beach": BEACH,
-        "spills": SPILLS, "sites": SITES, "bwtf": BWTF, "geo": GEO}
+        "spills": SPILLS, "sites": SITES, "bwtf": BWTF, "geo": GEO,
+        "retained": RETAINED}
 OUT.write_text(json.dumps(data, separators=(",", ":"), allow_nan=False))
 print(f"daily {len(DAILY)} ({DAILY[0]['d']} -> {DAILY[-1]['d']})")
 print(f"creek {len(CREEK)}  beach {len(BEACH)} (nd={sum(1 for b in BEACH if b['nd'])})")
@@ -279,6 +328,11 @@ print(f"creek ent {sum(1 for r in CREEK if 'ent' in r)}  beach ec {sum(1 for r i
 from collections import Counter
 print("site rows by code:", dict(Counter(r['s'] for r in SITES)))
 print("sites with ec:", sum(1 for r in SITES if r.get('ec') is not None))
+if RETAINED["values"]:
+    print(f"sites retained: {RETAINED['values']} published results ({RETAINED['rows']} whole rows), "
+          f"{RETAINED['first']} -> {RETAINED['last']}, absent from the current Coalition files")
+for nd, pd_ in RETAINED["redated"]:
+    print(f"sites re-dated in source: {nd} matches published {pd_} exactly; kept {pd_}")
 print(f"bwtf {len(BWTF)} ({BWTF[0]['d']} -> {BWTF[-1]['d']}, "
       f"pre-2015-09: {sum(1 for r in BWTF if r['d'] < '2015-09-21')})")
 print(f"json {OUT.stat().st_size/1024:.0f} KB")
