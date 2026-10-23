@@ -210,6 +210,27 @@ def analyte_drift():
     con.close()
 
 
+TEXT_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+TEXT_UNSAFE = re.compile("[<>\x00-\x1f\x7f\u200b-\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff\U000e0000-\U000e007f]|javascript:", re.I)
+
+
+def unsafe_strings(d):
+    """Every non-date string in the export ends up on a public page; none may
+    carry markup, control characters, or invisible Unicode."""
+    hits = []
+    def walk(x, path):
+        if isinstance(x, dict):
+            for k, v in x.items():
+                walk(v, f"{path}.{k}")
+        elif isinstance(x, list):
+            for v in x:
+                walk(v, path)
+        elif isinstance(x, str) and not TEXT_DATE.match(x) and TEXT_UNSAFE.search(x):
+            hits.append((path, x[:60]))
+    walk(d, "DATA")
+    return hits
+
+
 def field_counts(d):
     """Non-null values per field per series. Rows can survive while one field's
     values vanish (e.g. a source drops a year of one organism), so row counts
@@ -249,6 +270,8 @@ def run_export(export_path: Path):
         n_new = len(d.get(k, []))
         if n_new < n_prev:
             fail(f"series '{k}' shrank: {n_prev} -> {n_new}")
+    for path, val in unsafe_strings(d)[:5]:
+        fail(f"unsafe text in {path}: {val!r}")
     new_fields = field_counts(d)
     for k, cp in prev_fields.items():
         for f, n_prev in cp.items():
@@ -274,7 +297,11 @@ def inject(html_path: Path, out_json: Path):
         fail("DATA line does not end with ';' — HTML layout changed, not injecting")
         return
     shutil.copy2(html_path, html_path.with_suffix(".html.bak"))
-    s = s[:i0] + "const DATA = " + out_json.read_text(encoding="utf-8") + ";" + s[i1:]
+    # "<" etc. only ever occur inside JSON strings, so \u-escaping them is lossless
+    # and guarantees no value can close the <script> block it is injected into.
+    payload = (out_json.read_text(encoding="utf-8").replace("<", "\\u003c").replace(">", "\\u003e")
+               .replace("&", "\\u0026").replace("\u2028", "\\u2028").replace("\u2029", "\\u2029"))
+    s = s[:i0] + "const DATA = " + payload + ";" + s[i1:]
     html_path.write_text(s, encoding="utf-8")
     m = re.findall(r"<script>(.*?)</script>", s, re.S)
     ck = html_path.parent / "_refresh_ck.js"

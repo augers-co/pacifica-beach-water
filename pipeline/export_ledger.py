@@ -6,6 +6,7 @@ empty before that), spills join 2007+. Adds `nd` (non-detect, "<10") flags
 to beach samples and fixes the spill `loc` field (was a pandas repr bug).
 """
 
+import re
 import sys
 import json
 import sqlite3
@@ -93,6 +94,11 @@ new["d"] = pd.to_datetime(new.sd, errors="coerce")
 new["gal"] = pd.to_numeric(new.surf, errors="coerce").fillna(
     pd.to_numeric(new.tot, errors="coerce"))
 sp = pd.concat([old[["d", "gal", "loc"]], new[["d", "gal", "loc"]]], ignore_index=True)
+# Spill locations are free text typed into a state system and shown on a public
+# page: drop markup characters, control characters, and invisible Unicode
+# (zero-width, direction overrides, tag characters) before they go anywhere.
+_UNSAFE = re.compile("[<>\x00-\x1f\x7f\u200b-\u200f\u202a-\u202e\u2060-\u2064\u2066-\u2069\ufeff\U000e0000-\U000e007f]")
+sp["loc"] = sp["loc"].map(lambda v: _UNSAFE.sub("", v) if isinstance(v, str) else v)
 sp = sp[(sp.gal > 0) & sp.d.notna() & (sp.d >= START)].sort_values("d")
 SPILLS = [{"d": r.d.strftime("%Y-%m-%d"), "gal": int(round(r.gal)),
            "loc": str(r.loc).strip().title() if pd.notna(r.loc) and str(r.loc).strip() else "location not given"}
