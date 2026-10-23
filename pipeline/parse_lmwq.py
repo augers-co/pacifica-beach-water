@@ -38,8 +38,22 @@ def clean_value(v):
 
 def parse_sheet(path, analyte):
     raw = pd.read_excel(path, header=None)
-    orgs = raw.iloc[2].ffill()
-    sites = raw.iloc[3]
+    cells = raw.astype(str).apply(lambda col: col.str.strip())
+    # Header rows are located, not assumed: the Coalition added a title and
+    # legend block above the header in 2026-10, and may stack year sections
+    # vertically, so each block runs from its "Date" header row to the next.
+    hdrs = [i for i in range(len(raw)) if (cells.iloc[i] == "Date").any()]
+    rows = []
+    for bi, h in enumerate(hdrs):
+        end = hdrs[bi + 1] if bi + 1 < len(hdrs) else len(raw)
+        org_i = next((i for i in range(h - 1, max(h - 6, -1), -1)
+                      if cells.iloc[i].str.contains("Coalition|County", case=False).any()), None)
+        orgs = raw.iloc[org_i].ffill() if org_i is not None else pd.Series([None] * raw.shape[1])
+        rows += _parse_block(raw, analyte, raw.iloc[h], orgs, h + 1, end)
+    return pd.DataFrame(rows)
+
+
+def _parse_block(raw, analyte, sites, orgs, start, end):
     date_cols = [c for c in raw.columns if str(sites[c]).strip() == "Date"]
     rows = []
     for c in raw.columns:
@@ -49,7 +63,7 @@ def parse_sheet(path, analyte):
         # each value column belongs to the nearest Date column to its left
         dcol = max([d for d in date_cols if d < c], default=date_cols[0])
         org = str(orgs[c]).strip()
-        for i in range(4, len(raw)):
+        for i in range(start, end):
             date = pd.to_datetime(raw.iloc[i][dcol], errors="coerce")
             if pd.isna(date):
                 continue
@@ -64,7 +78,7 @@ def parse_sheet(path, analyte):
                     rain_flag=str(raw.iloc[i][1]).strip() if pd.notna(raw.iloc[i][1]) else None,
                 )
             )
-    return pd.DataFrame(rows)
+    return rows
 
 
 def main():

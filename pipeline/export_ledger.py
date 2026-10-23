@@ -6,6 +6,7 @@ empty before that), spills join 2007+. Adds `nd` (non-detect, "<10") flags
 to beach samples and fixes the spill `loc` field (was a pandas repr bug).
 """
 
+import sys
 import json
 import sqlite3
 from pathlib import Path
@@ -28,6 +29,7 @@ GEO = {
 NAME2CODE = {v["name"]: k for k, v in GEO.items()}
 NAME2CODE["San Pedro Cr Mouth"] = "SPCM"
 NAME2CODE["LM 5 - Pacific Ocean at San Pedro Cr"] = "LM5"
+NAME2CODE["LM 5 - Pacific Ocean at San Pedro Creek"] = "LM5"
 
 con = sqlite3.connect(DB)
 
@@ -234,7 +236,10 @@ lm = pd.read_sql("""SELECT date, analyte, site, value FROM lmwq_long
 lm["analyte"] = lm.analyte.map({"ecoli": "ec", "ent": "ent"})
 lm = lm.dropna(subset=["analyte"])
 lm["code"] = lm.site.map(NAME2CODE)
-lm = lm.dropna(subset=["code"])
+unmapped = sorted(lm.loc[lm.code.isna(), "site"].unique())
+if unmapped:
+    sys.exit(f"unmapped coalition/LM5 site name(s) {unmapped}: add them to NAME2CODE "
+             "rather than silently dropping their results")
 lm["date"] = pd.to_datetime(lm.date)
 wide = (lm.groupby(["date", "code", "analyte"]).value.max().unstack("analyte")
         .reset_index().sort_values(["date", "code"]))

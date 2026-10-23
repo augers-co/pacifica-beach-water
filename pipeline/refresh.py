@@ -210,13 +210,30 @@ def analyte_drift():
     con.close()
 
 
+def field_counts(d):
+    """Non-null values per field per series. Rows can survive while one field's
+    values vanish (e.g. a source drops a year of one organism), so row counts
+    alone cannot catch it."""
+    out = {}
+    for k, v in d.items():
+        if isinstance(v, list) and v and isinstance(v[0], dict):
+            c = {}
+            for row in v:
+                for f, x in row.items():
+                    if x is not None:
+                        c[f] = c.get(f, 0) + 1
+            out[k] = c
+    return out
+
+
 def run_export(export_path: Path):
     print(f"-- export ({export_path})")
     out_json = export_path.parent / "ledger_data.json"
-    prev = {}
+    prev, prev_fields = {}, {}
     if out_json.exists():
         d = json.loads(out_json.read_text())
         prev = {k: len(v) for k, v in d.items() if isinstance(v, list)}
+        prev_fields = field_counts(d)
     r = subprocess.run([PY, str(export_path)], capture_output=True, text=True)
     print("   " + r.stdout.strip().replace("\n", "\n   "))
     if r.returncode != 0:
@@ -232,6 +249,12 @@ def run_export(export_path: Path):
         n_new = len(d.get(k, []))
         if n_new < n_prev:
             fail(f"series '{k}' shrank: {n_prev} -> {n_new}")
+    new_fields = field_counts(d)
+    for k, cp in prev_fields.items():
+        for f, n_prev in cp.items():
+            n_new = new_fields.get(k, {}).get(f, 0)
+            if n_new < n_prev:
+                fail(f"'{k}.{f}' values shrank: {n_prev} -> {n_new}")
     if sum(1 for row in d.get("creek", []) if "ent" in row) < 4:
         fail("creek enterococcus attachments < 4 (spring-2026 samples lost?)")
     if sum(1 for row in d.get("sites", []) if row.get("ec") is not None) < 344:
