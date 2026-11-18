@@ -221,13 +221,14 @@
 
 
 
-  <h2>Ask the data a question</h2>
+  <h2 id="ask">Ask the data a question</h2>
   <p class="dek">Years of testing point to a handful of things that actually move the creek — warmth, rain and its
   aftermath, the winter’s stored water, when and where the sample was taken, and, at the beach, the tide. Each
   question below puts one of them to the record: days are split into three groups, from low to high, and the
   typical result of each group is compared. Bars that climb mean the factor matters; bars that look alike mean
-  it doesn’t — and the questions that show nothing are reported just as plainly. Each card names the data it
-  uses and explains what the pattern suggests.</p>
+  it doesn’t — and the questions that show nothing are reported just as plainly. One question, the winter’s
+  rain, is drawn summer by summer instead, because it turns on only a handful of summers. Each card names the
+  data it uses and explains what the pattern suggests.</p>
   <div class="frow bound"><span class="flbl">Question</span><div class="panel chips" id="xf"></div></div>
   <div class="frow bound"><span class="flbl">Only look at</span><div class="panel chips" id="xr"></div></div>
   <div class="frow bound"><span class="flbl">Compare</span><div class="panel chips">
@@ -236,7 +237,7 @@
   </div></div>
   <div id="xwrap" class="bound"><div id="xplot" style="overflow-x:auto"></div>
     <div id="xcard"><div id="xread"></div>
-      <div class="xkey"><div>How to read it: each bar is the typical result (geometric mean) for that group of days.
+      <div class="xkey"><div id="xhow">How to read it: each bar is the typical result (geometric mean) for that group of days.
       The short T-shaped marks crossing each bar's top are the uncertainty range — a small T means the
       estimate is precise. n = number of water tests.</div>
       <p id="xfoot" style="margin:6px 0 0"></p></div></div></div>
@@ -523,15 +524,10 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
         return s2; }},
     verdicts:{label:"Winter carryover", col:"--ground",
       draw:(X)=>{ if(!LAY.bact) return ""; let s2="";
-        for(let yy=2015; yy<=2026; yy++){
+        for(const sm of summerRows()){ const yy=sm.y, cls=sm.cls;
           const j0=idxOf.get(`${yy}-06-01`), j1=idxOf.get(`${yy}-09-30`);
           if(j0==null) continue;
-          const wyv=(D[idxOf.get(`${yy}-06-15`)]||{}).wy;
-          if(wyv==null) continue;
-          const cls=wyv>130?"wet":(wyv<70?"dry":"norm");
-          const vals=DATA.creek.filter(pp=>{ const m=+pp.d.slice(5,7);
-            return pp.d.startsWith(String(yy))&&m>=6&&m<=9&&pp.dsr!=null&&pp.dsr>=7; }).map(pp=>pp.v);
-          const gmv=vals.length>=5?Math.round(10**(vals.reduce((a,v)=>a+Math.log10(Math.max(v,1)),0)/vals.length)):null;
+          const gmv=sm.n>=5?Math.round(sm.gm):null;
           const x0=X(j0), w2=((j1??j0+120)-j0)*PPD;
           if(cls!=="norm") s2+=`<rect x="${x0}" y="${LAY.bact.y0}" width="${w2}" height="${LAY.bact.h}" fill="${cls==="wet"?css('--ground'):css('--flow')}" opacity="${cls==="wet"?0.13:0.09}"></rect>`;
           if(w2>120){ const col=cls==="wet"?css('--ground'):(cls==="dry"?css('--flow'):css('--muted'));
@@ -693,7 +689,7 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     vbar.innerHTML="Choose a view above to set the graph and read an explanation of what it shows."; }
   const LONG={
     storm:`<b>Rainstorms.</b> When it rains, the creek rises and runoff carries contamination into the water. The shaded blue bands mark the days after each storm while that influence fades; on this record the added risk drops by about half every two days. Creek samples taken within a day of rain exceed the standard 75% of the time, falling to 44% by day two or three. At the beach it falls from 77% to 28% by day four to seven. Note the red dots outside any shaded band — rain does not explain those. The water level itself stays high about three times longer than the added risk does, which suggests the first flush of a storm carries most of the contamination.`,
-    carry:`<b>Wet winters.</b> The idea: a wet winter stores water in the ground, and that stored water keeps feeding the creek through the following summer. Each summer on the graph is labeled with the winter that came before it and the typical creek level during weeks with no rain: about 165 after dry winters and about 496 after wet ones — 28% versus 68% of samples over the standard. Read this as a lead, not a settled finding. It rests on eleven summers; the low dry-winter figure comes mostly from two of them, 2020 and 2021; and summer 2018 followed a dry winter yet tested as high as the wet-winter summers. Past well readings across Pacifica (2002–2018; no well in the valley is read today) tell the same loose story: the summer water table usually, but not always, stood higher after a wet winter. The next test is dated: if this El Niño winter ends above 130% of normal rainfall, summer 2027 would be expected to look like the wet-winter summers.`,
+    carry:`<b>Wet winters.</b> The idea: a wet winter stores water in the ground, and that stored water keeps feeding the creek through the following summer. Each summer on the graph is labeled with the winter that came before it and the typical creek level during weeks with no rain: about 165 after dry winters and about 496 after wet ones — 28% versus 68% of samples over the standard. Read this as a lead, not a settled finding. It rests on eleven summers; the low dry-winter figure comes mostly from two of them, 2020 and 2021; and summer 2018 followed a dry winter yet tested as high as the wet-winter summers. Past well readings across Pacifica (2002–2018; no well in the valley is read today) tell the same loose story: the summer water table usually, but not always, stood higher after a wet winter. The next test is dated: if this El Niño winter ends above 130% of normal rainfall, summer 2027 would be expected to look like the wet-winter summers. <a data-ask="wy" style="cursor:pointer">See every summer plotted</a>.`,
     warm:`<b>Warm water.</b> Bacteria survive and regrow better in warm water. The amber bands mark periods that were warm with no recent rain, using water temperature estimated from air temperature (the method was checked against a neighboring creek's 1965–1979 measurements, r = 0.85). In rain-free summer weeks, cool periods typically measure 241 and warm periods 452.`,
     chronic:`<b>Contamination without rain.</b> The circled samples were taken more than 30 days after any rain. There are 172 of them, and 53% still exceed the standard; the typical level in rain-free weeks sits at about the health limit. Turn on the four creek sites and the pattern shows where: in dry weather the level roughly doubles between Adobe Sanchez and Peralta Bridge. Something is feeding the creek year-round. DNA source-tracking is designed to find it.`,
     spills:`<b>Reported sewer spills — and the fix that proved a point.</b> Ringed samples fall within a week of a spill reported to the State — just 18 of 523. Before 2017, ordinary wet winters overflowed the sewer lines beside the creek mouth by hundreds of thousands of gallons. A $19 million storage basin, finished in 2020 under a Water Board order, stopped those overflows almost entirely — the slate-blue block on the Construction strip. Yet the creek’s storm results stayed where they were, and the beach’s worst years followed. Eliminating the biggest known discrete source barely moved the water: the evidence points at what never gets reported — continuous leakage from aging pipes.`,
@@ -747,6 +743,10 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
   vbar.addEventListener("click",e=>{
     const tb=e.target.closest("a[data-tour]");
     if(tb){ TOUR={k:tb.dataset.tour, idx:0}; tourStep(); return; }
+    const ask=e.target.closest("a[data-ask]");
+    if(ask){ const q=FACT.find(f=>f[0]===ask.dataset.ask), xf=document.getElementById("xf");
+      const qb=q&&[...xf.querySelectorAll("button")].find(x=>x.textContent===q[1]);
+      if(qb){ qb.click(); document.getElementById("ask").scrollIntoView({block:"start"}); } return; }
     const a=e.target.closest("a[data-d]"); if(!a) return;
     TOUR=null; exNote={i0:dayIdx(a.dataset.d), text:a.dataset.n||""};
     PPD=targetPPD=parseFloat(a.dataset.z); syncViewButtons(); render(a.dataset.d);
@@ -1124,6 +1124,18 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
   }
   geoLegend(); geoRebuild();
 
+  // One row per summer: the winter before it (rain as % of normal on June 15) and the
+  // typical result of that summer's rain-free creek tests (June–September, 7+ days after rain).
+  // Shared by the Wet winters labels on the timeline and the summer-by-summer chart below.
+  function summerRows(){ const out=[], last=+D[N-1].d.slice(0,4);
+    for(let yy=2015; yy<=last; yy++){
+      const wyv=(D[idxOf.get(`${yy}-06-15`)]||{}).wy; if(wyv==null) continue;
+      const vals=DATA.creek.filter(pp=>{ const m=+pp.d.slice(5,7);
+        return pp.v!=null&&pp.d.startsWith(String(yy))&&m>=6&&m<=9&&pp.dsr!=null&&pp.dsr>=7; }).map(pp=>pp.v);
+      const gm=vals.length?10**(vals.reduce((a,v)=>a+Math.log10(Math.max(v,1)),0)/vals.length):null;
+      out.push({y:yy, wy:wyv, cls:wyv>130?"wet":(wyv<70?"dry":"norm"), n:vals.length, gm, vals}); }
+    return out; }
+
   // ---- FACTOR EXPLORER ----
   const dailyBy=new Map(D.map(r=>[r.d,r]));
   const XS=DATA.creek.filter(p=>p.v!=null).map(p=>({...p, dl:dailyBy.get(p.d)})).filter(p=>p.dl);
@@ -1139,8 +1151,9 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
       ["Little runoff — what remains may be the year-round source.","","High flow follows storms."]],
     ["grnd","Does wet ground matter?",p=>p.dl.s,"",["dry ground","middle","wet ground"],
       ["Little water moving underground.","","Wet ground keeps feeding the creek after the rain ends."]],
-    ["wy","Does the winter's rain matter?",p=>p.wy,"%",["dry year","normal","wet year"],
-      ["After a dry winter the ground holds less water, and summer tests have mostly run cleaner.","","After a wet winter, stored water keeps feeding the creek for months, and may carry contamination with it. That would explain why summers after wet winters have tested worse."]],
+    ["wy","Does the winter's rain matter?",null,"%",["dry winters","normal","wet winters"],
+      ["After a dry winter the ground holds less water, and summer tests have mostly run cleaner.","","After a wet winter, stored water keeps feeding the creek for months, and may carry contamination with it. That would explain why summers after wet winters have tested worse."],
+      "County creek record, June through September, tests taken at least 7 days after rain. One dot per summer."],
     ["site","Does the location matter?",null,"cat",null,null,
       "Coalition data, 2024 onward, E. coli. One bar per site, upstream to downstream. Restrictions still apply."],
     ["hr","Does time of day matter?",p=>p.hr,"h",["early","mid-morning","later"],
@@ -1158,7 +1171,7 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     ev:"The more rain a storm brings, the worse the following days test. The effect climbs steadily with storm size rather than switching on at a threshold.",
     flow:"Results track the creek's estimated flow: high flow follows storms and carries runoff in. The low-flow days that still test high are the ones weather cannot explain.",
     grnd:"Wet ground keeps feeding the creek after storms end, and the tests follow: the wetter the ground, the worse the results, even days after the rain stops.",
-    wy:"The winter's total appears to echo for months. Summers after wet winters have tested roughly three times worse in rain-free weeks than summers after dry winters — on eleven summers of record, so treat it as a lead to keep testing.",
+    wy:"The winter's total appears to echo for months: a wet winter leaves more water in the ground, and the summers that follow have mostly tested worse. But a handful of summers cannot settle it, and the dots do not all fall in line. Treat this as a lead to keep testing. The Wet winters view shows the same summers on the timeline.",
     hr:"Morning samples run higher than late-morning ones. Part of the week-to-week difference is simply what time the bottle was filled.",
     site:"What this suggests: water flows Linda Mar Bridge → Sanchez Adobe → Peralta Bridge → the creek mouth. On rain-free days the level climbs through the middle of that path and eases again by the mouth. Storm runoff cannot produce a pattern that persists without rain; a steady entry in the Sanchez Adobe–to–Peralta Bridge stretch can. That reading is consistent with the DNA source-tracking, which points to human waste — and that stretch is where the search for the source is focused.",
     tide:"Since the decline began in 2014, the typical result sits well above the geometric-mean standard in every tide window — no tide window makes today\u2019s beach reliably clean — and tests near low tide fail modestly more often than tests near high tide, which fits the creek\u2019s plume being drawn across the beach as the water drops. The full record since 2001 shows the same pattern, about 1.3×. The creek itself shows no tide pattern at all — it flows out regardless of tide, as anyone standing at it can see: the tide does not change what the creek carries, it moves the creek\u2019s plume around on the beach. Tide height on its own, and direction — coming in versus going out — show no effect either way."};
@@ -1169,8 +1182,10 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     for(const k in acc) bl.set(k, acc[k].reduce((a,b)=>a+b,0)/acc[k].length); }
   const qtl=(arr,f)=>{ const s=[...arr].sort((a,b)=>a-b); return s[Math.floor(f*(s.length-1))]; };
   const fmtv=v=>v>=100?String(Math.round(v)):(v>=10?v.toFixed(0):v.toFixed(1));
+  const XHOW=document.getElementById("xhow").textContent;
   function xrender(){
     const fd=FACT.find(f=>f[0]===xfSel);
+    document.getElementById("xhow").textContent=XHOW;
     if(fd[0]==="site"){
       const ORDER=["LMMS","ADMS","PRLT","SPCM"], SUB={LMMS:"upstream",ADMS:"mid-valley",PRLT:"lower valley",SPCM:"creek mouth"};
       const SN={LMMS:"Top of the urban reach — water arriving from the parkland forks.",
@@ -1259,6 +1274,77 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
       document.getElementById("xfoot").textContent="Bars are typical results (geometric means), so the dashed line is the ocean geometric-mean standard, 35 — the stricter primary standard. Single tests are judged against 104; the verdict counts how often tests exceed it. County beach station, enterococcus per 100 mL, at the recorded sampling minute; tide from NOAA predictions (Half Moon Bay open-coast station); fixed ~2-hour windows around each turn. Whiskers are 95% bootstrap confidence intervals.";
       return;
     }
+    if(fd[0]==="wy"){
+      const S=summerRows().filter(s2=>s2.gm!=null), ok=S.filter(s2=>s2.n>=5);
+      if(ok.length<4){ document.getElementById("xplot").innerHTML="";
+        document.getElementById("xread").textContent="Not enough summers on record yet.";
+        document.getElementById("xfoot").textContent=""; return; }
+      // fit the chart to narrow screens: the comparison is left against right, so it must not scroll sideways
+      const W=Math.max(300,Math.min(440,document.getElementById("xwrap").clientWidth||440)), H=256, L=40, R=W-26, T=24, B=204;
+      const ws=S.map(s2=>s2.wy), gs=S.map(s2=>s2.gm);
+      const lo=Math.min(30,Math.floor((Math.min(...ws)-8)/10)*10), hi=Math.max(190,Math.ceil((Math.max(...ws)+8)/10)*10);
+      const ymin=Math.min(40,Math.min(...gs)*0.8), ymax=Math.max(1000,Math.max(...gs)*1.25);
+      const X=v=>L+(v-lo)/(hi-lo)*(R-L);
+      const Y=v=>B-(Math.log10(v)-Math.log10(ymin))/(Math.log10(ymax)-Math.log10(ymin))*(B-T);
+      const pool=cls=>{ const v=S.filter(s2=>s2.cls===cls).flatMap(s2=>s2.vals); if(!v.length) return null;
+        return {n:v.length, gm:10**(v.reduce((a2,x)=>a2+Math.log10(Math.max(x,1)),0)/v.length), over:v.filter(x=>x>320).length/v.length}; };
+      const dry=pool("dry"), wet=pool("wet");
+      const nDry=ok.filter(s2=>s2.cls==="dry").length, nWet=ok.filter(s2=>s2.cls==="wet").length;
+      const wetLow=Math.min(...ok.filter(s2=>s2.cls==="wet").map(s2=>s2.gm));
+      const odd=ok.filter(s2=>s2.cls==="dry"&&s2.gm>=wetLow).map(s2=>s2.y);
+      let sv=`<svg width="${W}" height="${H}" role="img" aria-label="One dot per summer: the winter's rain against that summer's typical rain-free result.">`;
+      [50,100,200,400,800].filter(v=>v>=ymin&&v<=ymax).forEach(v=>{
+        sv+=(v===100
+          ? `<line x1="${L}" x2="${R}" y1="${Y(v)}" y2="${Y(v)}" stroke="${css('--std')}" stroke-dasharray="1 3" opacity=".85"></line>`
+          : `<line x1="${L}" x2="${R}" y1="${Y(v)}" y2="${Y(v)}" stroke="${css('--line')}"></line>`)
+          +`<text x="${L-6}" y="${Y(v)+3}" text-anchor="end" font-size="9.5" fill="${css('--muted')}">${v}</text>`; });
+      sv+=`<text x="6" y="12" font-size="10" fill="${css('--muted')}">each summer’s typical result</text>
+        <text x="${R}" y="${Y(100)-4}" text-anchor="end" font-size="9" fill="${css('--std')}">geo-mean std 100</text>
+        <line x1="${L}" x2="${R}" y1="${B}" y2="${B}" stroke="${css('--muted')}" opacity=".55"></line>`;
+      [70,130].forEach(v=>{ sv+=`<line x1="${X(v)}" x2="${X(v)}" y1="${T}" y2="${B}" stroke="${css('--muted')}" stroke-dasharray="3 4" opacity=".6"></line>`; });
+      [50,100,150,200].filter(v=>v>lo&&v<hi).forEach(v=>{
+        sv+=`<text x="${X(v)}" y="${B+13}" text-anchor="middle" font-size="9.5" fill="${css('--muted')}">${v}%</text>`; });
+      [[(lo+70)/2,0],[100,1],[(130+hi)/2,2]].forEach(([v,i])=>{ const note=(fd[5]&&fd[5][i])||"";
+        sv+=`<text x="${X(v)}" y="${B+29}" text-anchor="middle" font-size="10.5" fill="${css('--ink2')}"${note?` data-note="${note}" style="cursor:default"`:""}>${fd[4][i]}</text>`; });
+      sv+=`<text x="${(L+R)/2}" y="${B+46}" text-anchor="middle" font-size="10" fill="${css('--muted')}">rain in the winter before, as % of normal</text>`;
+      // year labels: take the first spot beside each dot that touches no other dot or label
+      // (most crowded dots choose first; if every spot touches something, take the one that overlaps least)
+      S.forEach(s2=>{ s2.px=X(s2.wy); s2.py=Y(s2.gm); });
+      const boxes=[[R-90,Y(100)-14,R,Y(100)-1]].concat(S.map(s2=>[s2.px-6.5,s2.py-6.5,s2.px+6.5,s2.py+6.5]));
+      const ovl=(b,skip)=>boxes.reduce((a2,o,i)=>i===skip?a2:a2+Math.max(0,Math.min(b[2],o[2])-Math.max(b[0],o[0]))*Math.max(0,Math.min(b[3],o[3])-Math.max(b[1],o[1])),0);
+      const crowd=s2=>S.filter(o=>o!==s2&&Math.abs(o.px-s2.px)<44&&Math.abs(o.py-s2.py)<26).length;
+      [...S].sort((a2,b2)=>crowd(b2)-crowd(a2)||a2.y-b2.y).forEach(s2=>{ const {px,py}=s2, lw=27, own=1+S.indexOf(s2);
+        const spots=[["start",px+9,py+3.5,[px+8,py-6,px+8+lw,py+6]],["end",px-9,py+3.5,[px-8-lw,py-6,px-8,py+6]],
+                    ["middle",px,py-10,[px-lw/2,py-19,px+lw/2,py-8]],["middle",px,py+18,[px-lw/2,py+8,px+lw/2,py+20]],
+                    ["start",px+6,py-8,[px+5,py-18,px+5+lw,py-6.6]],["start",px+6,py+15,[px+5,py+6.6,px+5+lw,py+18]],
+                    ["end",px-6,py-8,[px-5-lw,py-18,px-5,py-6.6]],["end",px-6,py+15,[px-5-lw,py+6.6,px-5,py+18]]];
+        const inside=spots.filter(c=>c[3][0]>=L-2&&c[3][2]<=W-2&&c[3][1]>=T-10&&c[3][3]<=B+1), cand=inside.length?inside:spots;
+        s2.lab=cand.find(c=>ovl(c[3],own)===0)||[...cand].sort((a2,b2)=>ovl(a2[3],own)-ovl(b2[3],own))[0];
+        boxes.push(s2.lab[3]); });
+      S.forEach(s2=>{ const few=s2.n<5, call=odd.includes(s2.y);
+        const note=`Summer ${s2.y}: typical ${Math.round(s2.gm)} across ${s2.n} rain-free test${s2.n===1?"":"s"}, ${s2.vals.filter(x=>x>320).length} over the single-test standard (320). The winter before brought ${Math.round(s2.wy)}% of normal rain.${few?" Too few tests to judge this summer.":""}`;
+        sv+=(few
+          ? `<circle cx="${s2.px}" cy="${s2.py}" r="4.5" fill="${css('--card')}" stroke="${css('--muted')}" stroke-width="1.4" opacity=".8"></circle>`
+          : `<circle cx="${s2.px}" cy="${s2.py}" r="5.5" fill="${css('--creek')}" stroke="${css('--card')}" stroke-width="2"></circle>`)
+          +`<text x="${s2.lab[1]}" y="${s2.lab[2]}" text-anchor="${s2.lab[0]}" font-size="10.5" font-weight="${call?650:400}" fill="${css(few?'--muted':(call?'--ink':'--ink2'))}">${s2.y}</text>
+          <circle cx="${s2.px}" cy="${s2.py}" r="13" fill="transparent" data-note="${note}"></circle>`; });
+      document.getElementById("xplot").innerHTML=sv+"</svg>";
+      const yrs=odd.length>1?odd.slice(0,-1).join(", ")+" and "+odd[odd.length-1]:String(odd[0]);
+      const read=(dry&&wet&&nDry&&nWet
+        ? `<b>${fd[1]}</b> Each dot is one summer. After wet winters the creek’s rain-free summer tests have typically run <b>${(wet.gm/dry.gm).toFixed(1)}×</b> those after dry winters (${Math.round(wet.gm)} vs ${Math.round(dry.gm)}; ${Math.round(wet.over*100)}% vs ${Math.round(dry.over*100)}% over the standard). That rests on <b>${ok.length} summers</b> — ${nWet} after wet winters, ${nDry} after dry.`
+          +(odd.length?` Summer${odd.length>1?"s":""} ${yrs} followed ${odd.length>1?"dry winters":"a dry winter"} yet tested as high as the wet-winter summers.`:"")
+        : `<b>${fd[1]}</b> Each dot is one summer. There are not yet enough dry-winter and wet-winter summers to compare.`);
+      document.getElementById("xread").innerHTML=read+`<div class="small" style="margin-top:5px">${fd[6]}</div>`
+        +(ELAB.wy?`<div style="margin-top:6px">${ELAB.wy}</div>`:"");
+      document.getElementById("xhow").textContent="How to read it: each dot is one summer. Left to right is how much rain the winter before brought; up and down is that summer’s typical result (geometric mean) in rain-free weeks. If wet winters make for worse summers, the dots climb from lower left to upper right. Hover over or tap a dot for its numbers.";
+      const rk2=v=>{ const o=v.map((x,i)=>[x,i]).sort((a2,b2)=>a2[0]-b2[0]), out=new Array(v.length); o.forEach(([_,i],r2)=>out[i]=r2); return out; };
+      const rx2=rk2(ok.map(s2=>s2.wy)), ry2=rk2(ok.map(s2=>s2.gm)), m2=(ok.length-1)/2; let nu=0, d1=0, d2=0;
+      for(let i=0;i<rx2.length;i++){ nu+=(rx2[i]-m2)*(ry2[i]-m2); d1+=(rx2[i]-m2)**2; d2+=(ry2[i]-m2)**2; }
+      const xc3=document.getElementById("xcard");
+      if(xc3){ xc3.classList.remove("xpulse"); void xc3.offsetWidth; xc3.classList.add("xpulse"); }
+      document.getElementById("xfoot").textContent=`Each dot is the geometric mean of one summer’s tests, so the dotted line is the geometric-mean standard, 100 — the stricter primary standard; single tests are judged against 320. Winter rain is the season’s total on June 15 as a percent of the long-term average for that date, from the weather-model rain record. The dashed lines at 70% and 130% divide dry, normal and wet winters, as in the Wet winters view. Faint rings are summers with fewer than 5 such tests. Expert footnote: Spearman ρ = ${(nu/Math.sqrt(d1*d2)).toFixed(2)} across the ${ok.length} summers with 5 or more tests — on so few points, suggestive rather than established. Grouping the tests into bars would hide how few summers there are, which is why each one is drawn.`;
+      return;
+    }
     const g=XS.filter(p=>[...xres].every(id=>RES.find(r=>r[0]===id)[2](p)));
     const rows=g.map(p=>({x:fd[2](p), y:Math.log10(Math.max(p.v,1))-(xdep?bl.get(bkey(p)):0), raw:p.v}))
                 .filter(r=>r.x!=null&&isFinite(r.x));
@@ -1329,7 +1415,7 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     decline:["2014 → (the decline era)","The county beach record turns in 2014. Before it, the beach passed almost every test — 9% of tests over the standard, typical level 19. Since: 35% over (typical 57) through 2021, then 61% over (typical 155) from 2022 on. On by default for the tide question so the comparison reflects today\u2019s beach; turn it off — or press All days — to include the cleaner early record. The beach used to be clean view tells this story on the timeline."],
     modern:["2022 → (after the level jump)","In 2022 the creek\u2019s typical level jumped to roughly four times its calmest years — 2020\u201321 ran near the geometric-mean standard, with only 20% of tests over the single-test standard — and it has stayed near that higher level since. The current regime. The jump is documented in the project findings; this restriction checks whether a pattern still holds in these recent years."]};
   const QCHIPS={wt:["dry","summer","modern"], dsr:["modern"], ev:["modern"],
-    flow:["dry","summer","modern"], grnd:["dry","summer","modern"], wy:["dry","summer","modern"],
+    flow:["dry","summer","modern"], grnd:["dry","summer","modern"], wy:[],
     site:["dry","summer"], hr:["dry","summer","modern"], tide:["decline","dry","summer","modern"]};
   RES.forEach(([id,label])=>{ const b=document.createElement("button"); b.textContent=label; b.dataset.r=id;
     b.setAttribute("aria-pressed","false");
@@ -1340,6 +1426,9 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     RES.forEach(([id])=>{ if(!vis.includes(id)) xres.delete(id); });
     if(xfSel==="tide") xres.add("decline");
     xrp.querySelectorAll("button").forEach(b2=>{ if(b2.dataset.r) b2.style.display=vis.includes(b2.dataset.r)?"":"none"; });
+    const own=xfSel==="wy";   // this question sets its own scope (rain-free summer tests)
+    xrp.closest(".frow").style.display=own?"none":"";
+    document.getElementById("xv-raw").closest(".frow").style.display=own?"none":"";
     syncXres(); }
   syncConflicts();
   document.getElementById("xv-raw").onclick=()=>{ xdep=false; syncXV(); };

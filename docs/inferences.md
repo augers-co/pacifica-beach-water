@@ -215,6 +215,12 @@ If you can improve one of these, the maintainers want to hear it.
   wet ones; 28%, 53% and 68% of samples over the single-sample standard
   (54, 60 and 63 samples). Recomputed 2026-11-18; findings v7 (August 2026)
   had 161 and 27% for the dry group.
+- **Where it appears:** the Wet winters view labels each summer on the
+  timeline, and the question "Does the winter's rain matter?" plots one dot
+  per summer — the winter's rain against that summer's typical level (since
+  2026-11-18; before that it drew three bars of pooled tests, which hid how
+  few summers the comparison rests on). Both read the same per-summer
+  computation (`summerRows` in `docs/index.html`).
 - **How much it rests on:** twelve summers, eleven with five or more samples.
 
   | summer | winter, % of normal | group | samples | typical | over 320 |
