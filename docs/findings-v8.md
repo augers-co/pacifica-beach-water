@@ -1,5 +1,7 @@
 # Findings v8 — analyte fingerprints; grounded indices; model v1 (2026-08-14)
 
+> **Erratum (2026-11-18):** the two creek labels were swapped in this project until this date. The creek this note calls San Gregorio is USGS gauge 11162500, which is Pescadero Creek, and the one it calls Pescadero is gauge 11162570, San Gregorio Creek. That includes the 1965–1979 water-temperature record, which is Pescadero Creek's. The data and results are unchanged.
+
 ## 1. Bacteria types differentiate, and the fingerprints converge
 
 The record carries more analytes than we'd used: county creek has Total

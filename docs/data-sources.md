@@ -21,11 +21,26 @@ added or die. (Verification dates: 2026-08-14 unless noted.)
 | **ERA5 daily precip** (watershed 37.585,-122.47) | Open-Meteo archive API, free, no key | 1998 → present, daily | `weather_daily` | ✅ live |
 | **ERA5 hourly precip** (intensity features) | same, `hourly=precipitation` | 2015 → present | `rain_hourly` | ✅ live |
 | **NOAA CO-OPS tide predictions** — Princeton/Half Moon Bay station **9414131** (open-coast reference station; Pacifica trails it ~5–10 min; deterministic → exact retroactively and forecastable ahead). SF gauge 9414290 used before 2026-08-15 — it runs 30–65 min behind the coast (inferences §6) | CO-OPS API, hourly predictions | 2000 → present (full LM5 era; extendable any range) | `tide_hourly` | ✅ live |
-| **Donor stream gauges** — core analogs (coastal-draining, unregulated, marine-layer): San Gregorio 11162500, Pescadero 11162570, Soquel 11160000, San Lorenzo 11160500, + Pilarcitos 11162630 (flagged: partly regulated). Contrast-only, not analogs: San Francisquito 11164500 (bay side), Corralitos 11159200 (interior), Lagunitas 11460400 (Marin/Tomales Bay, regulated) | USGS OGC API `api.waterdata.usgs.gov` collection `daily`, param 00060 | 2014 → present, daily cfs | `donor_flow_daily` | ✅ live — core panel: flow_idx r=0.69–0.73, ground_idx r=0.65–0.74 |
+| **Donor stream gauges** — core analogs (coastal-draining, unregulated, marine-layer): Pescadero 11162500, San Gregorio 11162570, Soquel 11160000, San Lorenzo 11160500, + Pilarcitos 11162630 (flagged: partly regulated). Contrast-only, not analogs: San Francisquito 11164500 (bay side), Corralitos 11159200 (interior), Lagunitas 11460400 (Marin/Tomales Bay, regulated). **Names verified against USGS 2026-11-18 — the first two were swapped in this project before that date** | USGS water data API `api.waterdata.usgs.gov` collection `daily`, param 00060 (falls back to the older `waterservices.usgs.gov` daily-values service); `pipeline/fetch_flow.py`, in the weekly refresh | 2000 → present, daily cfs | `donor_flow_daily` | ✅ live — core panel: flow_idx r=0.69–0.73, ground_idx r=0.65–0.74 |
+| **Dry-weather flow index** (groundwater stand-in) — 7-day minimum flow at Pescadero, San Gregorio and Pilarcitos, averaged in log space (inferences §10) | derived in `pipeline/fetch_flow.py` | 2000 → present, daily | `baseflow_daily` | ✅ live — tracks the valley's measured water table at +0.71 |
+| **Valley monitoring wells** (the only measured groundwater in the valley) | State Water Board GeoTracker county exports: `documents.geotracker.waterboards.ca.gov/data_download/geo_by_county/SanMateoGeoWell.zip` (depth to water) and `SanMateoGeoXY.zip` (well coordinates); `pipeline/validate_baseflow.py` | five cleanup sites in the valley, 2002–2016 (22 across Pacifica, to 2021); water table ~4–6.4 ft below ground | — (downloaded on demand) | ✅ validation only — nothing current |
 | San Pedro Creek gauge | USGS 11162655 | 2 spot measurements ever (1977, 2015) | — | ❌ none exists |
 | Groundwater (USGS wells 15G001/2M, 14E001M, 14F001M, 27R001M; DWR periodic network) | USGS OGC field-measurements; DWR CKAN `c4de0d7e…` | zero usable series; DWR has no coastal SM County stations | — | ❌ dead end |
 | NWS forecast (QPF, for the forward-looking product) | `api.weather.gov` gridpoint | forecast horizon | — | 🔜 not yet wired |
 | Waves (NDBC 46012 / CDIP), solar & water temp | NDBC/CDIP archives; Open-Meteo radiation | untested covariates | — | 🔜 candidate |
+
+### Probed 2026-11-18 for the forecast work (not wired in)
+
+| Source | Access | What it offers | Finding |
+|---|---|---|---|
+| NWS forecast for the valley | `api.weather.gov/gridpoints/MTR/80,98` | hourly rain, temperature, sky cover, 7 days ahead | needed for any look-ahead tool; nothing to backtest |
+| National Water Model, reach 17687535 (San Pedro Creek) | live: `api.water.noaa.gov/nwps/v1/reaches/17687535/streamflow`; history: v3.0 retrospective (hourly 1979 – Jan 2023) on AWS open data | simulated flow and a groundwater bucket for the creek itself | tested and set aside — see inferences §10 |
+| Rain gauges (CoCoRaHS via ACIS, `data.rcc-acis.org`) | `US1CASM0001` "Pacifica 0.3 W" (3 km north, complete daily since 2008); `US1CASM0033` "Pacifica 1.9 S" (inside the valley, since 2015-12, about half of days) | measured daily rain | ERA5 shows about half the gauge total on 25+ mm days; forecast gains small and not statistically clear |
+| Calera Creek plant daily flow | data.ca.gov eSMR yearly resources, facility "Calera Creek Water Recycling Plant", parameter Flow, location E-001 | rain and groundwater entering the city's sewers, daily since 2014 | flow more than doubles after 25+ mm storms; no forecast gain; published weeks late |
+| County's other stations (same CEDEN resources, q="San Mateo") | as CEDEN above | 36 other creeks and beaches, same mornings | no forecast gain; Linda Mar tracks them at 0.09 in dry weather, 0.47 on storm mornings |
+| Offshore buoy 46237 (San Francisco Bar) | NDBC yearly `stdmet` files | waves, sea temperature | no forecast gain |
+| Modelled soil moisture by depth | Open-Meteo archive, `soil_moisture_*` | ERA5-Land soil moisture | deep layer does not track the valley wells |
+| County flood-warning creek sensors (Colma, El Zanjon, Green Hills, Belmont) | NOAA NWPS gauges API | creek level, 15-minute | only 30 days of history exposed; bay-side urban channels |
 
 ## Infrastructure & events
 

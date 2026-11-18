@@ -337,6 +337,7 @@ def main():
         run_script("fetch.py")
         run_script("fetch_bwtf.py")
         run_script("fetch_covariates.py")
+        run_script("fetch_flow.py")
         run_script("features.py")
         fetch_sso()
         after = table_counts()

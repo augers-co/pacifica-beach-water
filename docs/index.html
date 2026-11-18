@@ -266,7 +266,7 @@
     <dt>Tides</dt><dd><a href="https://tidesandcurrents.noaa.gov/" target="_blank" rel="noopener">NOAA CO-OPS</a> harmonic predictions, Princeton/Half Moon Bay station 9414131 — the open-coast station nearest Linda Mar. (The SF Golden Gate gauge runs 30–65 minutes behind the coast; earlier versions of this page used it.)</dd>
     <dt>Sewer spill reports</dt><dd>State Water Board CIWQS:
       <a href="https://www.waterboards.ca.gov/water_issues/programs/sso/" target="_blank" rel="noopener">sanitary sewer spill data files</a> (City of Pacifica system, WDID 2SSO10100).</dd>
-    <dt>Gauged creeks used to check estimates</dt><dd><a href="https://waterdata.usgs.gov/" target="_blank" rel="noopener">USGS water data</a> — San Gregorio 11162500, Pescadero 11162570, Soquel 11160000, San Lorenzo 11160500, Pilarcitos 11162630.</dd>
+    <dt>Gauged creeks used to check estimates</dt><dd><a href="https://waterdata.usgs.gov/" target="_blank" rel="noopener">USGS water data</a> — Pescadero 11162500, San Gregorio 11162570, Soquel 11160000, San Lorenzo 11160500, Pilarcitos 11162630.</dd>
     <dt>Analysis code &amp; assumptions</dt><dd>Every calculation, inference, and its validation:
       <a href="https://github.com/augers-co/pacifica-beach-water" target="_blank" rel="noopener">github.com/augers-co/pacifica-beach-water</a> (see docs/inferences.md for the assumptions register).</dd>
   </dl>
@@ -320,7 +320,7 @@
     dry-season baseflow (= groundwater discharge) at the five analog creeks: r = 0.65–0.74.
     Formula: G<sub>t</sub> = 0.97·G<sub>t−1</sub> + 0.10·F<sub>t−1</sub>.</dd>
     <dt>Water temperature (inferred from air)</dt>
-    <dd>No creek in the region has measured water temperature since 1979 — but San Gregorio Creek did,
+    <dd>No creek in the region has measured water temperature since 1979 — but Pescadero Creek did,
     daily, 1965–1979. Fitting that record against the same weather-model air temperatures used here:
     <b>water ≈ −1.6 + 1.05 × (7-day mean air)</b>, r = 0.85, typical error ±2°C over 3,932 paired days.
     That transfer, applied to Pacifica's air record, is the water-temperature presumption shown — labeled
@@ -535,7 +535,7 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     carry:{label:"Wet winters", samples:["creek"], show:["wy","grnd"], ann:["verdicts","trend"],
       bar:`<b>Claim:</b> the winter's rain sets the whole following summer. Each summer is labeled with the winter that preceded it and the creek's typical rain-free level. <b>Measured:</b> ~161 after dry winters vs ~496 after wet ones (27% → 68% over the standard). <b>Dated test:</b> if this El Niño winter tops 130% of normal, summer 2027 should run near 68%.`},
     warm:{label:"Warm water", samples:["creek"], show:["air","wtemp"], ann:["warm"],
-      bar:`<b>Claim:</b> warm water lets bacteria persist and regrow — warm rain-free stretches tinted amber, with inferred water temperature drawn (air-to-water transfer fitted on San Gregorio 1965–79, r=0.85). <b>Measured:</b> cool rain-free summer weeks 241 → warm weeks 452.`},
+      bar:`<b>Claim:</b> warm water lets bacteria persist and regrow — warm rain-free stretches tinted amber, with inferred water temperature drawn (air-to-water transfer fitted on Pescadero Creek 1965–79, r=0.85). <b>Measured:</b> cool rain-free summer weeks 241 → warm weeks 452.`},
     chronic:{label:"Contamination without rain", samples:["creek","LMMS","ADMS","PRLT","SPCM"], show:["rain"], ann:["dryrings"], bySite:true,
       bar:`<b>Claim:</b> something feeds the creek with no rain at all — ringed samples are &gt;30 days after any rain (172 of them; 53% still over the standard). The four sites show where: the dry-weather load roughly doubles between Adobe Sanchez and Peralta Bridge. This is what DNA source-tracking targets.`},
     spills:{label:"Reported spills", samples:["creek"], show:["rain","sp"], ann:["spillrings","works"],

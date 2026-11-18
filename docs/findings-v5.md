@@ -1,5 +1,7 @@
 # Findings v5 — the sewer spill record; the dilution test fails (2026-08-14)
 
+> **Erratum (2026-11-18):** this note names gauge 11162500 as San Gregorio Creek. Per USGS it is Pescadero Creek; San Gregorio is 11162570. Wherever this note says San Gregorio, read Pescadero. The data and results are unchanged.
+
 Sources: CIWQS statewide spill flat files filtered to Pacifica (WDID 2SSO10100),
 donor stream gauges (San Gregorio 11162500, Pilarcitos 11162630), county creek
 E. coli 2015–2026. See `docs/data-sources.md`.

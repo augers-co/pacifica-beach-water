@@ -36,11 +36,16 @@ If you can improve one of these, the maintainers want to hear it.
   quick store's drainage — crests days after storms, drains over months).
 - **Validation:** r = 0.65–0.74 against dry-season baseflow (= groundwater
   discharge) at the five analog creeks (rain-free Jun–Oct days, n = 1,460).
-- **Limitations:** stands in for a water table no one measures — the valley's
-  USGS wells have no usable series and DWR has no coastal San Mateo stations.
-  The 0.97 retention is assumed, not fitted to local recession.
-- **To improve:** any shallow piezometer record in the valley; or refit
-  retention to analog-creek recession curves. `pipeline/features.py`.
+- **Checked against measured groundwater (2026-11-18):** monitoring wells at
+  cleanup sites in the valley (State Water Board GeoTracker, 2002–2016) —
+  rank correlation +0.75 with the measured water table across 68 site
+  visits, +0.30 with the seasonal cycle removed. `pipeline/validate_baseflow.py`.
+- **Limitations:** the valley wells stop in 2016, and USGS and DWR have no
+  wells there, so nothing measures the water table today. The 0.97 retention
+  is assumed, not fitted to local recession. See §10 for the measured
+  stand-in that complements this index.
+- **To improve:** refit retention to analog-creek recession curves or to the
+  2002–2016 well record. `pipeline/features.py`.
 
 ## 4. Rain-shadow decay (the storm-influence window)
 
@@ -60,8 +65,10 @@ If you can improve one of these, the maintainers want to hear it.
 
 - **Formula:** water ≈ −1.59 + 1.05 × (7-day trailing mean air temperature),
   applied to ERA5 air at the watershed.
-- **Fitted on:** San Gregorio Creek's daily water-temperature record —
-  1965–1979, 3,935 paired days against ERA5 air at that site. r = 0.85,
+- **Fitted on:** Pescadero Creek's daily water-temperature record (USGS
+  11162500; this register named it San Gregorio Creek until 2026-11-18, when
+  the two gauge labels were found to be swapped — the data and fit are
+  unchanged) — 1965–1979, 3,935 paired days against ERA5 air at that site. r = 0.85,
   RMSE ≈ 2.1 °C.
 - **Stability check:** refit on halves — 1965–71: (−1.35, 1.01);
   1972–79: (−1.86, 1.08) — predictions within ±0.5 °C of each other across
@@ -72,7 +79,7 @@ If you can improve one of these, the maintainers want to hear it.
   creek since (CEDEN carries none for San Pedro Creek). Climate warming since
   1979 enters through the *air* series, but if the air↔water coupling itself
   changed (e.g., via reduced summer baseflow), the transfer would be biased.
-  Cross-creek transfer (San Gregorio → San Pedro) is assumed.
+  Cross-creek transfer (Pescadero → San Pedro) is assumed.
 - **Modern tests (2026-08):** two live USGS water-temp stations exist within
   range — Pilarcitos below Stone Dam (11162620, ~11 mi away) and Alameda Ck
   below Calaveras (11172175) — both **dam-influenced reaches**. On 2024–26
@@ -133,3 +140,30 @@ If you can improve one of these, the maintainers want to hear it.
   log–log r = 0.56 (74 paired days). Single grabs carry ~±half-log noise.
   Every model and display treats this as the irreducible floor; claims are
   made on patterns across weeks, never single results.
+
+## 10. Groundwater stand-in: dry-weather flow at neighbouring creeks (`baseflow_daily`)
+
+- **What it is:** the lowest daily flow of the trailing 7 days at each of the
+  three nearest gauged coastal creeks — Pescadero (USGS 11162500), San
+  Gregorio (11162570), Pilarcitos at Half Moon Bay (11162630) — averaged in
+  log space. In dry weather a creek carries groundwater draining out, so this
+  is a measured signal of how much groundwater the coastal hills are
+  releasing. `pipeline/fetch_flow.py`.
+- **Why it is needed:** San Pedro Creek has no gauge and the valley has had no
+  measured water table since 2016.
+- **Checked against measured groundwater:** the valley's monitoring wells
+  (GeoTracker; five cleanup sites, four with enough repeat readings,
+  2002–2016; water table about 4 ft below ground in Jan–Apr and 6.4 ft in
+  Aug–Oct) — rank correlation +0.71 across 68 site visits, +0.58 across 532
+  visits at all Pacifica sites, +0.38 in the valley with the seasonal cycle
+  removed. `pipeline/validate_baseflow.py` reproduces these.
+- **Alternatives tested and set aside (2026-11-18):** winter rain as percent of
+  normal (+0.18 against the valley wells), modelled deep soil moisture
+  (−0.02), and the National Water Model's simulated flow for San Pedro Creek
+  itself (+0.34; it moves with the three measured creeks at 0.75–0.82 but is
+  far flatter than reality and its archive ends January 2023).
+- **Limitations:** the creeks are 15–35 km south and drain other watersheds;
+  Pilarcitos is regulated upstream; the validation wells end in 2016; the
+  latest days are provisional USGS values. This says how wet the region's
+  ground is, not what is in the water.
+- **To improve:** a staff gauge or level logger on San Pedro Creek itself.
