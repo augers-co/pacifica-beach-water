@@ -28,6 +28,13 @@ Size of the most recent event grades risk on top of recency: 0–3d after
 
 ## The winter-carryover effect (Josh's saturation intuition, sharpened)
 
+> **Later note (2026-11-18).** The comparison below was re-examined summer by
+> summer and against well readings. It rests on eleven summers; the low
+> dry-winter figure comes mostly from 2020 and 2021, and summer 2018 followed
+> a dry winter yet ran as high as the wet-winter summers. Read it as a lead,
+> not a settled finding. The text below is left as written; the current
+> statement and the checks are in `docs/inferences.md` §11.
+
 Split stable-weather samples (>7 days since any rain) by water-year
 percent-of-normal-to-date, then control for season:
 

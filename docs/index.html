@@ -302,7 +302,11 @@
     <dd>Two labs sampling the same reach the same morning agree on pass/fail 80% of the time (74 paired
     days; log–log r = 0.56). Single grabs carry ~±half-log noise; read patterns, not points.</dd>
     <dt>Rain</dt>
-    <dd>ERA5 reanalysis daily precipitation at the watershed. No gauge exists in the valley.</dd>
+    <dd>ERA5 reanalysis daily precipitation at the watershed — a weather-model estimate, not a gauge reading.
+    No rain gauge in the valley has a complete record: the official station (Pacifica 4 SSE) closed in 2012,
+    and the one volunteer gauge there has reported on about half of days since 2015. Where the two can be
+    compared, rain-gauge readings and the weather model drive the ground-wetness index about equally well
+    (0.77 vs 0.75 against the well readings described under Ground wetness).</dd>
     <dt>Estimated flow (inferred from rain)</dt>
     <dd>F<sub>t</sub> = 0.90·F<sub>t−1</sub> + ½P<sub>t</sub> + ½P<sub>t−1</sub>. Checked against five
     comparable gauged coastal creeks: r = 0.69–0.73 (log–log daily). Like ground wetness, the scale is a
@@ -314,10 +318,14 @@
     <dd>An index of how much past storm water the ground is still holding, built with a standard hydrology
     technique — an antecedent wetness index. Each day it keeps 97% of the previous day’s value and adds a
     share of the previous day’s estimated flow, so storms fill it and it drains about 3% a day, taking
-    months to empty. The scale has no units, because nothing in the valley measures groundwater (no wells,
-    no gauge): 0 means fully drained, and the wettest winters on record reach about 300. Only comparisons
+    months to empty. The scale has no units, because nothing in the valley measures groundwater today — the
+    creek has never had a flow gauge, and the monitoring wells once read here stopped in 2016: 0 means fully
+    drained, and the wettest winters on record reach about 300. Only comparisons
     carry meaning — twice the number means twice the stored water. Its rises and falls were checked against
-    dry-season baseflow (= groundwater discharge) at the five analog creeks: r = 0.65–0.74.
+    dry-season baseflow (= groundwater discharge) at the five analog creeks: r = 0.65–0.74. They were also
+    checked against those wells for the years they were read — monitoring wells at cleanup sites, 68 site
+    visits from 2002 to 2016: rank correlation 0.75 with the measured water table, with no delay, and drain
+    rates of 2–4% a day fit the wells about equally well, which brackets the 3% used.
     Formula: G<sub>t</sub> = 0.97·G<sub>t−1</sub> + 0.10·F<sub>t−1</sub>.</dd>
     <dt>Water temperature (inferred from air)</dt>
     <dd>No creek in the region has measured water temperature since 1979 — but Pescadero Creek did,
@@ -326,8 +334,10 @@
     That transfer, applied to Pacifica's air record, is the water-temperature presumption shown — labeled
     inferred, like every estimate on this page.</dd>
     <dt>Rain vs normal (season running total)</dt>
-    <dd>Water-year cumulative rain vs the 1998–2026 day-of-season average. Summers after wet winters run
-    ~3× summers after dry ones in rain-free weeks.</dd>
+    <dd>Water-year cumulative rain vs the 1998–2026 day-of-season average. Summers after wet winters have run
+    ~3× summers after dry ones in rain-free weeks — a lead, not a settled finding: it rests on eleven summers,
+    and the dry-winter side mostly on 2020 and 2021. Past well readings across Pacifica (17 summers,
+    2002–2018) agree only loosely: the summer water table followed the winter’s rain at r = 0.46.</dd>
     <dt>Sewer spills</dt>
     <dd>State CIWQS reports, City of Pacifica system (WDID 2SSO10100); surface-water-reaching spills only.
     Reported spills do not explain the chronic dry-weather signal; they are plotted so that can be checked.</dd>
@@ -533,7 +543,7 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     storm:{label:"Rainstorms", samples:["creek","beach"], show:["rain","flow","sp"], ann:["shadow"],
       bar:`<b>Claim:</b> rain sends bacteria up for a few days, scaled by storm size — the <b>rain shadow</b> fades at the measured rate (risk halves every ~2 days). <b>Measured:</b> creek 75% over 0–1 days after rain → 44% by day 2–3; beach 77% → 28% by day 4–7. The water stays up ~3× longer than the risk — the first flush carries the load.`},
     carry:{label:"Wet winters", samples:["creek"], show:["wy","grnd"], ann:["verdicts","trend"],
-      bar:`<b>Claim:</b> the winter's rain sets the whole following summer. Each summer is labeled with the winter that preceded it and the creek's typical rain-free level. <b>Measured:</b> ~161 after dry winters vs ~496 after wet ones (27% → 68% over the standard). <b>Dated test:</b> if this El Niño winter tops 130% of normal, summer 2027 should run near 68%.`},
+      bar:`<b>Claim:</b> a wet winter raises the creek's level through the following summer. Each summer is labeled with the winter that preceded it and the creek's typical rain-free level. <b>Measured:</b> ~165 after dry winters vs ~496 after wet ones (28% → 68% over the standard) — on eleven summers, the dry-winter figure mostly on 2020–21, so a lead rather than a settled finding. <b>Dated test:</b> if this El Niño winter tops 130% of normal, summer 2027 should run near 68%.`},
     warm:{label:"Warm water", samples:["creek"], show:["air","wtemp"], ann:["warm"],
       bar:`<b>Claim:</b> warm water lets bacteria persist and regrow — warm rain-free stretches tinted amber, with inferred water temperature drawn (air-to-water transfer fitted on Pescadero Creek 1965–79, r=0.85). <b>Measured:</b> cool rain-free summer weeks 241 → warm weeks 452.`},
     chronic:{label:"Contamination without rain", samples:["creek","LMMS","ADMS","PRLT","SPCM"], show:["rain"], ann:["dryrings"], bySite:true,
@@ -683,7 +693,7 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     vbar.innerHTML="Choose a view above to set the graph and read an explanation of what it shows."; }
   const LONG={
     storm:`<b>Rainstorms.</b> When it rains, the creek rises and runoff carries contamination into the water. The shaded blue bands mark the days after each storm while that influence fades; on this record the added risk drops by about half every two days. Creek samples taken within a day of rain exceed the standard 75% of the time, falling to 44% by day two or three. At the beach it falls from 77% to 28% by day four to seven. Note the red dots outside any shaded band — rain does not explain those. The water level itself stays high about three times longer than the added risk does, which suggests the first flush of a storm carries most of the contamination.`,
-    carry:`<b>Wet winters.</b> A wet winter stores water in the ground, and that stored water keeps feeding the creek through the following summer. Each summer on the graph is labeled with the winter that came before it and the typical creek level during weeks with no rain: about 161 after dry winters and about 496 after wet ones — 27% versus 68% of samples over the standard. If this El Niño winter ends above 130% of normal rainfall, summer 2027 would be expected to look like the wet-winter summers.`,
+    carry:`<b>Wet winters.</b> The idea: a wet winter stores water in the ground, and that stored water keeps feeding the creek through the following summer. Each summer on the graph is labeled with the winter that came before it and the typical creek level during weeks with no rain: about 165 after dry winters and about 496 after wet ones — 28% versus 68% of samples over the standard. Read this as a lead, not a settled finding. It rests on eleven summers; the low dry-winter figure comes mostly from two of them, 2020 and 2021; and summer 2018 followed a dry winter yet tested as high as the wet-winter summers. Past well readings across Pacifica (2002–2018; no well in the valley is read today) tell the same loose story: the summer water table usually, but not always, stood higher after a wet winter. The next test is dated: if this El Niño winter ends above 130% of normal rainfall, summer 2027 would be expected to look like the wet-winter summers.`,
     warm:`<b>Warm water.</b> Bacteria survive and regrow better in warm water. The amber bands mark periods that were warm with no recent rain, using water temperature estimated from air temperature (the method was checked against a neighboring creek's 1965–1979 measurements, r = 0.85). In rain-free summer weeks, cool periods typically measure 241 and warm periods 452.`,
     chronic:`<b>Contamination without rain.</b> The circled samples were taken more than 30 days after any rain. There are 172 of them, and 53% still exceed the standard; the typical level in rain-free weeks sits at about the health limit. Turn on the four creek sites and the pattern shows where: in dry weather the level roughly doubles between Adobe Sanchez and Peralta Bridge. Something is feeding the creek year-round. DNA source-tracking is designed to find it.`,
     spills:`<b>Reported sewer spills — and the fix that proved a point.</b> Ringed samples fall within a week of a spill reported to the State — just 18 of 523. Before 2017, ordinary wet winters overflowed the sewer lines beside the creek mouth by hundreds of thousands of gallons. A $19 million storage basin, finished in 2020 under a Water Board order, stopped those overflows almost entirely — the slate-blue block on the Construction strip. Yet the creek’s storm results stayed where they were, and the beach’s worst years followed. Eliminating the biggest known discrete source barely moved the water: the evidence points at what never gets reported — continuous leakage from aging pipes.`,
@@ -821,9 +831,9 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
       syncPanel(); render(centerDate());
       const gs=document.getElementById("geoslider"); if(gs&&gs.max) geoFrame(+gs.value); };
     apanel.appendChild(b); });
-  const CTIP={rain:"Daily rainfall. From a weather model — no rain gauge exists in the valley.",
+  const CTIP={rain:"Daily rainfall, estimated by a weather model. No rain gauge in the valley has a complete daily record.",
     wy:"This season's rain so far, as a % of a normal year to the same date. Computed from the rainfall record.",
-    flow:"How much water we estimate is moving in the creek. Inferred from rain; checked against 5 gauged creeks nearby. Not a measurement — no gauge exists here. Like ground wetness, the scale is an index — compare levels, not absolute numbers.",
+    flow:"How much water we estimate is moving in the creek. Inferred from rain; checked against 5 gauged creeks nearby. Not a measurement — this creek has never had a flow gauge. Like ground wetness, the scale is an index — compare levels, not absolute numbers.",
     grnd:"How wet we estimate the ground is. Inferred from rain — fills in winter, dries over months; checked against nearby creeks' summer flows. The scale is an index, not a unit: each day keeps 97% of yesterday's value and adds a share of yesterday's estimated flow, so 0 means fully drained and the wettest winters on record reach about 300. Compare levels, not absolute numbers — twice the number means twice the stored-water signal. The method is a standard hydrology technique — an antecedent wetness index — with the constants fitted and checked for this creek.",
     air:"Daily air temperature, from weather records.",
     wtemp:"Estimated creek water temperature. Inferred from air temperature with a formula fitted on a nearby creek's 1965–79 measurements. No one measures it today.",
@@ -844,7 +854,7 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     warm:"Tints stretches that are warm AND rain-free — the conditions where bacteria persist. Darker = warmer estimated water.",
     dryrings:"Circles whichever displayed samples were taken 30+ days after any rain. If these still fail, weather isn't the cause.",
     spillrings:"Circles whichever displayed samples fall within a week after a reported sewer spill.",
-    verdicts:"Labels each summer with the winter that came before it, plus the creek's typical level in rain-free weeks — showing how wet winters echo into the following summer.",
+    verdicts:"Labels each summer with the winter that came before it, plus the creek's typical level in rain-free weeks — so you can judge whether wet winters echo into the following summer.",
     works:"Grey blocks in the strip just below the samples mark dated creek construction. Hover any block for what was done and when. Facts, plotted so the record can be read against them — not stated causes.",
     trend:"Running averages, about two months of samples each: county creek results in dark blue, the coalition sites average (E. coli, 2024 onward) in purple, the county beach in dark sienna, and Surfrider\u2019s creek mouth in dark slate \u2014 each when displayed. The Surfrider line is enterococcus rather than E. coli, so it rides lower than the county creek line; its own geometric-mean standard is 30, stated here rather than drawn. The fine dotted line at 100 is the geometric-mean standard — the primary test, which judges the average rather than single samples. Where a trend line rides above it, the creek is failing the standard on average, not just on bad days."};
   const NLEG={shadow:[["block:var(--rain)","shaded days = raised risk after a storm (darker = stronger)"]],
@@ -1130,7 +1140,7 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     ["grnd","Does wet ground matter?",p=>p.dl.s,"",["dry ground","middle","wet ground"],
       ["Little water moving underground.","","Wet ground keeps feeding the creek after the rain ends."]],
     ["wy","Does the winter's rain matter?",p=>p.wy,"%",["dry year","normal","wet year"],
-      ["After a dry winter the ground holds less water, and summer tests run cleaner.","","After a wet winter, stored water keeps feeding the creek for months — carrying contamination with it. That is why summers after wet winters test worse."]],
+      ["After a dry winter the ground holds less water, and summer tests have mostly run cleaner.","","After a wet winter, stored water keeps feeding the creek for months, and may carry contamination with it. That would explain why summers after wet winters have tested worse."]],
     ["site","Does the location matter?",null,"cat",null,null,
       "Coalition data, 2024 onward, E. coli. One bar per site, upstream to downstream. Restrictions still apply."],
     ["hr","Does time of day matter?",p=>p.hr,"h",["early","mid-morning","later"],
@@ -1148,7 +1158,7 @@ const BASEMAP = {"url":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDA
     ev:"The more rain a storm brings, the worse the following days test. The effect climbs steadily with storm size rather than switching on at a threshold.",
     flow:"Results track the creek's estimated flow: high flow follows storms and carries runoff in. The low-flow days that still test high are the ones weather cannot explain.",
     grnd:"Wet ground keeps feeding the creek after storms end, and the tests follow: the wetter the ground, the worse the results, even days after the rain stops.",
-    wy:"The winter's total echoes for months. Summers after wet winters test roughly three times worse in rain-free weeks than summers after dry winters.",
+    wy:"The winter's total appears to echo for months. Summers after wet winters have tested roughly three times worse in rain-free weeks than summers after dry winters — on eleven summers of record, so treat it as a lead to keep testing.",
     hr:"Morning samples run higher than late-morning ones. Part of the week-to-week difference is simply what time the bottle was filled.",
     site:"What this suggests: water flows Linda Mar Bridge → Sanchez Adobe → Peralta Bridge → the creek mouth. On rain-free days the level climbs through the middle of that path and eases again by the mouth. Storm runoff cannot produce a pattern that persists without rain; a steady entry in the Sanchez Adobe–to–Peralta Bridge stretch can. That reading is consistent with the DNA source-tracking, which points to human waste — and that stretch is where the search for the source is focused.",
     tide:"Since the decline began in 2014, the typical result sits well above the geometric-mean standard in every tide window — no tide window makes today\u2019s beach reliably clean — and tests near low tide fail modestly more often than tests near high tide, which fits the creek\u2019s plume being drawn across the beach as the water drops. The full record since 2001 shows the same pattern, about 1.3×. The creek itself shows no tide pattern at all — it flows out regardless of tide, as anyone standing at it can see: the tide does not change what the creek carries, it moves the creek\u2019s plume around on the beach. Tide height on its own, and direction — coming in versus going out — show no effect either way."};

@@ -9,12 +9,31 @@ If you can improve one of these, the maintainers want to hear it.
 
 - **What:** daily & hourly precipitation at the watershed (37.585, −122.47).
 - **Source:** ERA5 reanalysis via Open-Meteo — a weather-model estimate, not a
-  gauge. No rain gauge exists in the valley.
+  gauge.
+- **Rain gauges in and near the valley (corrected 2026-11-18; this register
+  used to say none exists):** none has a complete record, which is why the
+  weather model is the input.
+  - Pacifica 4 SSE (USC00046599), the official cooperative station in the
+    valley: November 1983 to November 2012, then closed.
+  - Pacifica 1.9 S (US1CASM0033), a volunteer CoCoRaHS gauge in the valley:
+    since December 2015, reporting on about half of days (19–61% a year
+    since 2022).
+  - Pacifica 0.3 W (US1CASM0001), a volunteer gauge about 3 km north of the
+    valley: complete daily record since 2008.
+  All three are public through NOAA's ACIS service (`data.rcc-acis.org`).
+- **Checked against measured groundwater (2026-11-18):** the ground index
+  (§3) driven by gauge rain (the valley station to 2012, then Pacifica 0.3 W)
+  tracks the valley's well readings at +0.77, against +0.75 driven by ERA5
+  (+0.37 against +0.30 with the seasonal cycle removed). The gain is small,
+  so ERA5 stays the input: it is complete, uniform from 1998, and does not
+  depend on one volunteer. `pipeline/validate_baseflow.py`, check 3.
 - **Limitations:** single ~9 km grid cell; coastal orographic detail smoothed;
   we showed the same product's *radiation* misses the marine layer, so precip
-  totals deserve similar skepticism at event scale.
-- **To improve:** any local gauge record (even informal) could bias-correct
-  it; NOAA Stage IV/MRMS radar blend is the upgrade path. `pipeline/fetch.py`.
+  totals deserve similar skepticism at event scale. On days with 25 mm or
+  more at the volunteer gauges, ERA5 shows about half the gauge total
+  (probe of 2026-11-18, `docs/data-sources.md`).
+- **To improve:** bias-correct storm totals against the Pacifica 0.3 W gauge;
+  NOAA Stage IV/MRMS radar blend is the upgrade path. `pipeline/fetch.py`.
 
 ## 2. Estimated creek flow (`flow_idx`)
 
@@ -40,12 +59,26 @@ If you can improve one of these, the maintainers want to hear it.
   cleanup sites in the valley (State Water Board GeoTracker, 2002–2016) —
   rank correlation +0.75 with the measured water table across 68 site
   visits, +0.30 with the seasonal cycle removed. `pipeline/validate_baseflow.py`.
+- **Drain rate checked against the wells (2026-11-18):** the index was
+  rebuilt keeping 90% to 99.6% a day and each version scored against the
+  valley wells. Rates of 2–4% a day fit about equally well (kept 0.96: +0.74;
+  0.97: +0.75; 0.98: +0.76); slower rates fit worse (0.99: +0.64; 0.996:
+  +0.34). In 300 resamples of the 68 visits the best rate was 0.98 in 134,
+  0.97 in 55, 0.96 in 53. Wells elsewhere in Pacifica prefer a slower drain
+  (0.99: +0.57 against +0.48 at 0.97). The 0.97 in use sits inside the
+  supported range and is left unchanged. `pipeline/validate_baseflow.py`,
+  check 2.
+- **Timing checked (2026-11-18):** the measured water table does not lag the
+  index — the correlation is highest with the same day's value (+0.75) and
+  falls as the index is read earlier (30 days: +0.62; 60 days: +0.22; 90
+  days: −0.01). Check 4.
 - **Limitations:** the valley wells stop in 2016, and USGS and DWR have no
-  wells there, so nothing measures the water table today. The 0.97 retention
-  is assumed, not fitted to local recession. See §10 for the measured
-  stand-in that complements this index.
-- **To improve:** refit retention to analog-creek recession curves or to the
-  2002–2016 well record. `pipeline/features.py`.
+  wells there, so nothing measures the water table today and the checks
+  above cover 2002–2016 only. The 0.97 retention was chosen, not fitted; the
+  wells support it but cannot pin it more tightly than 2–4% a day. See §10
+  for the measured stand-in that complements this index.
+- **To improve:** a recession-curve refit on the analog creeks would be an
+  independent check on the drain rate. `pipeline/features.py`.
 
 ## 4. Rain-shadow decay (the storm-influence window)
 
@@ -157,6 +190,11 @@ If you can improve one of these, the maintainers want to hear it.
   Aug–Oct) — rank correlation +0.71 across 68 site visits, +0.58 across 532
   visits at all Pacifica sites, +0.38 in the valley with the seasonal cycle
   removed. `pipeline/validate_baseflow.py` reproduces these.
+- **Window and timing checked (2026-11-18):** against the valley wells a
+  3-day low scores +0.73, the 7-day low in use +0.72, a 14-day low +0.64 and
+  a 30-day low +0.49, so a short window is right. The water table does not
+  lag the creeks: read 30 days earlier the flow scores +0.41, 90 days earlier
+  −0.10. `pipeline/validate_baseflow.py`, check 4.
 - **Alternatives tested and set aside (2026-11-18):** winter rain as percent of
   normal (+0.18 against the valley wells), modelled deep soil moisture
   (−0.02), and the National Water Model's simulated flow for San Pedro Creek
@@ -167,3 +205,63 @@ If you can improve one of these, the maintainers want to hear it.
   latest days are provisional USGS values. This says how wet the region's
   ground is, not what is in the water.
 - **To improve:** a staff gauge or level logger on San Pedro Creek itself.
+
+## 11. Winter carry-over (the "Wet winters" view)
+
+- **What the page shows:** county creek samples from June to September taken
+  7 or more days after rain, grouped by the preceding winter's rain as a
+  percent of normal on June 15 (dry under 70%, wet over 130%). Typical level
+  (geometric mean) 165 after dry winters, 354 after normal ones, 496 after
+  wet ones; 28%, 53% and 68% of samples over the single-sample standard
+  (54, 60 and 63 samples). Recomputed 2026-11-18; findings v7 (August 2026)
+  had 161 and 27% for the dry group.
+- **How much it rests on:** twelve summers, eleven with five or more samples.
+
+  | summer | winter, % of normal | group | samples | typical | over 320 |
+  |---|---|---|---|---|---|
+  | 2015 | 69 | dry | 2 | 287 | 1 |
+  | 2016 | 105 | normal | 17 | 293 | 10 |
+  | 2017 | 165 | wet | 12 | 693 | 10 |
+  | 2018 | 69 | dry | 17 | 577 | 12 |
+  | 2019 | 146 | wet | 17 | 603 | 12 |
+  | 2020 | 68 | dry | 18 | 111 | 2 |
+  | 2021 | 42 | dry | 17 | 67 | 0 |
+  | 2022 | 98 | normal | 13 | 465 | 10 |
+  | 2023 | 180 | wet | 16 | 423 | 10 |
+  | 2024 | 134 | wet | 18 | 381 | 11 |
+  | 2025 | 101 | normal | 15 | 436 | 6 |
+  | 2026 | 111 | normal | 15 | 282 | 6 |
+
+  The low dry-winter figure comes from 2020 and 2021. Summer 2018 followed a
+  dry winter and ran as high as the wet-winter summers. Three of the four
+  dry summers (2015, 2018, 2020) sit within two points of the 70% cut-off,
+  on a rain total that is itself a weather-model estimate (§1).
+- **Summer-by-summer test:** across the eleven summers, the summer's typical
+  level against the winter's percent of normal: rank correlation +0.49
+  (permutation p = 0.13), linear r = +0.67 (p = 0.02). Against that summer's
+  dry-weather flow at the three neighbouring creeks (§10): r = +0.72
+  (p = 0.02). `pipeline/validate_baseflow.py`, check 7.
+- **The mechanism step, checked against wells (2026-11-18):** the claim runs
+  wet winter → higher water table through summer → more reaching the creek.
+  For the first step, July–October well readings across Pacifica (17 summers,
+  2002–2018; the valley alone has one summer with enough visits): summer
+  water table against the winter's rain r = +0.46 (p = 0.07); against that
+  summer's three-creek dry-weather flow r = +0.58 (p = 0.01). Carry-over
+  runs longer than one winter: the water table stood 1.0 ft low in summer
+  2016 after a normal winter that followed four below-normal ones, and 0.8 ft high in
+  summer 2018 after a dry winter that followed the very wet 2017 — the same
+  summer the creek tested high. One year, so a lead: it suggests the water
+  table, not the single winter, is the thing to group summers by. Check 5.
+- **The second step cannot be tested with the wells:** the valley's wells
+  were read while the beach mostly passed and stopped as creek testing
+  began. County beach, 51 well visits with rain-free samples nearby,
+  2002–2016: rank correlation −0.02 (+0.16 with the seasonal cycle removed;
+  neither distinguishable from none). Surfrider creek mouth: 8 overlapping
+  visits. County creek: 2. Check 6.
+- **Limitations:** eleven summers; the creek's level also stepped up in 2022
+  for reasons this grouping does not separate (the two cleanest summers,
+  2020–21, are both dry-winter summers and both before the step); no
+  groundwater has been measured in the valley since 2016.
+- **To improve:** summer 2027 is the dated test (the page states it before
+  the winter ends). Grouping summers by the three-creek dry-weather flow
+  instead of the winter's percent of normal would use a measured quantity.
