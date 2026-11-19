@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "generated_at": "2026-11-19T19:29:07Z",
+  "rule_version": "0.1",
+  "note": "No county results have arrived yet for a forecast date.",
+  "tests": [],
+  "summary": [],
+  "caveats": [
+    "This forecast is experimental.",
+    "It is not an official advisory.",
+    "None of the levels means the water is safe.",
+    "It estimates the chance that a county test fails; it does not predict illness."
+  ]
+}

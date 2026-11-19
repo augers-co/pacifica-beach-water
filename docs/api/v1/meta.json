@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "generated_at": "2026-11-19T19:29:07Z",
+  "rule_version": "0.1",
+  "files": [
+    {
+      "name": "forecast.json",
+      "updated": "daily",
+      "holds": "The latest forecast: seven days, each with its level, chance, inputs and logged weather."
+    },
+    {
+      "name": "levels.json",
+      "updated": "when the rule changes",
+      "holds": "The four levels, their chance ranges, the odds seen for each, the standard and the caveats."
+    },
+    {
+      "name": "meta.json",
+      "updated": "when the files change",
+      "holds": "This list, the links, and the note on the address."
+    },
+    {
+      "name": "latest_results.json",
+      "updated": "weekly",
+      "holds": "The most recent county test result for each county series the project's page shows."
+    },
+    {
+      "name": "track_record.json",
+      "updated": "weekly",
+      "holds": "Each county test that had a forecast logged for it, the forecasts, and a summary by level."
+    }
+  ],
+  "links": {
+    "repository": "https://github.com/augers-co/pacifica-beach-water",
+    "open_data_guide": "https://github.com/augers-co/pacifica-beach-water/tree/main/open-data",
+    "api_guide": "https://github.com/augers-co/pacifica-beach-water/tree/main/docs/api",
+    "county_beach_advisories": "https://www.smchealth.org/beaches"
+  },
+  "base_address": "https://augers-co.github.io/pacifica-beach-water/api/v1/",
+  "address_note": "The address of these files may move to another domain later. Keep the base address configurable rather than built into your code.",
+  "caveats": [
+    "This forecast is experimental.",
+    "It is not an official advisory.",
+    "None of the levels means the water is safe.",
+    "It estimates the chance that a county test fails; it does not predict illness."
+  ]
+}

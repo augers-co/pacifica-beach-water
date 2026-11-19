@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "generated_at": "2026-11-19T19:29:07Z",
+  "rule_version": "0.1",
+  "note": "County results reach the state's public database weeks after the sample, so these are not current conditions. For current postings see the county's beach page.",
+  "county_beach_advisories": "https://www.smchealth.org/beaches",
+  "results": [
+    {
+      "series": "lm5_enterococcus",
+      "station": "Beach at creek mouth (county station LM5)",
+      "sampled_by": "San Mateo County Environmental Health",
+      "analyte": "enterococcus",
+      "date": "2026-10-19",
+      "result_mpn": 20,
+      "unit": "MPN per 100 mL",
+      "standard_mpn": 104,
+      "compared_to_standard": "under",
+      "days_old": 31
+    },
+    {
+      "series": "lm5_e_coli",
+      "station": "Beach at creek mouth (county station LM5)",
+      "sampled_by": "San Mateo County Environmental Health",
+      "analyte": "E. coli",
+      "date": "2026-10-19",
+      "result_mpn": 10,
+      "unit": "MPN per 100 mL",
+      "standard_mpn": 320,
+      "compared_to_standard": "under",
+      "days_old": 31
+    },
+    {
+      "series": "creek_e_coli",
+      "station": "San Pedro Creek (county creek station)",
+      "sampled_by": "San Mateo County Environmental Health",
+      "analyte": "E. coli",
+      "date": "2026-10-19",
+      "result_mpn": 160,
+      "unit": "MPN per 100 mL",
+      "standard_mpn": 320,
+      "compared_to_standard": "under",
+      "days_old": 31
+    },
+    {
+      "series": "creek_enterococcus",
+      "station": "San Pedro Creek (county creek station)",
+      "sampled_by": "San Mateo County Environmental Health",
+      "analyte": "enterococcus",
+      "date": "2026-06-01",
+      "result_mpn": 3448,
+      "unit": "MPN per 100 mL",
+      "standard_mpn": 110,
+      "compared_to_standard": "over",
+      "days_old": 171
+    }
+  ],
+  "caveats": [
+    "This forecast is experimental.",
+    "It is not an official advisory.",
+    "None of the levels means the water is safe.",
+    "It estimates the chance that a county test fails; it does not predict illness."
+  ]
+}

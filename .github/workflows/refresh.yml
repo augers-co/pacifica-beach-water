@@ -72,11 +72,12 @@ jobs:
         run: |
           python pipeline/forecast_score.py
           python pipeline/export_open.py
+          python pipeline/export_api.py --weekly
 
       - name: Commit the open-data files if they changed
         if: steps.gate.outputs.present == 'true'
         run: |
-          git add open-data/*.csv open-data/README.md
+          git add open-data/*.csv open-data/README.md docs/api/v1/*.json
           if git diff --cached --quiet; then
             echo "No open-data changes this week."
             exit 0

@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "generated_at": "2026-11-19T19:29:07Z",
+  "rule_version": "0.1",
+  "standard": {
+    "analyte": "enterococcus",
+    "unit": "MPN per 100 mL",
+    "single_sample": 104.0,
+    "far_over_above": 312.0,
+    "text": "A test fails when it is over 104 MPN per 100 mL (single sample); far over means above 312."
+  },
+  "levels_note": "chance_min is included in the level and chance_max is not (except 1.0). tests, fail_share and far_over_share come from the 2022-2026 record, each year predicted from a fit on the other years; they are not a promise.",
+  "levels": [
+    {
+      "key": "lower",
+      "name": "lower than usual",
+      "chance_min": 0.0,
+      "chance_max": 0.5,
+      "tests": 74,
+      "fail_share": 0.365,
+      "far_over_share": 0.081
+    },
+    {
+      "key": "usual",
+      "name": "usual",
+      "chance_min": 0.5,
+      "chance_max": 0.7,
+      "tests": 64,
+      "fail_share": 0.625,
+      "far_over_share": 0.125
+    },
+    {
+      "key": "high",
+      "name": "high",
+      "chance_min": 0.7,
+      "chance_max": 0.85,
+      "tests": 74,
+      "fail_share": 0.757,
+      "far_over_share": 0.351
+    },
+    {
+      "key": "very_high",
+      "name": "very high",
+      "chance_min": 0.85,
+      "chance_max": 1.0,
+      "tests": 31,
+      "fail_share": 0.871,
+      "far_over_share": 0.677
+    }
+  ],
+  "caveats": [
+    "This forecast is experimental.",
+    "It is not an official advisory.",
+    "None of the levels means the water is safe.",
+    "It estimates the chance that a county test fails; it does not predict illness."
+  ]
+}
