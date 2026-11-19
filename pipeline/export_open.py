@@ -170,7 +170,7 @@ DERIVED = [  # tables made by this script: name, what, organisation, link, built
      "Inherits the terms of the county tests and of Open-Meteo", A_CEDEN + "; " + A_OM),
     ("forecast_log", "Forecasts written down each day before the outcome is known",
      "Built by this project", NO_LINK, "pipeline/forecast_log.py (writes open-data/forecast_log.csv)",
-     "Rain inputs come from Open-Meteo: " + T_OM, A_OM),
+     "Rain, weather and sea-state values come from Open-Meteo: " + T_OM, A_OM),
 ]
 
 DATE_COLUMN = {

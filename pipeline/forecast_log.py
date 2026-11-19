@@ -32,6 +32,28 @@ key, and nothing is sent beyond those parameters.
 The rain is NOT identical to what a later archive refresh will say; recent
 days get revised. That is part of what the log records.
 
+THE WEATHER FORECAST AS ISSUED (so that later tuning can tell "the rule was
+wrong" from "the weather forecast was wrong", and can try other inputs)
+Besides the two rule inputs, each row keeps what the services said when the row
+was written:
+  - the three daily rain values that add up to rain3_mm (rain_day0_mm is the
+    target day, day1 the day before, day2 two days before), each with where it
+    came from: "archive" (the ERA5 archive), "recent" (the forecast service's
+    estimate for a past day the archive does not have yet) or "forecast";
+  - the forecast for the target day from the same forecast call: chance of
+    rain, mean / highest / lowest temperature, sunshine, top wind speed and
+    wind direction (from the forecast endpoint's daily variables);
+  - the sea state for the target day from Open-Meteo's marine forecast at the
+    sea point the service returns for 37.60 N, 122.51 W (just offshore of
+    Linda Mar beach): highest wave, longest wave period, wave direction, and
+    the day's mean sea temperature from the hourly values. The point actually
+    used is recorded in sea_lat and sea_lon;
+  - weather_source, a fixed text naming the services (the responses do not
+    name the forecast model).
+Only the two rule inputs are required. If an extra weather or sea value is
+missing, or the marine call fails, those cells are left blank, a note goes to
+stderr, and the forecast is still logged. A blank cell means no value.
+
 THE INPUTS TO THE RULE
   R3  rain on the target day plus the two days before it. Past days use
       measured (archive) rain, today and later use forecast rain.
@@ -49,10 +71,14 @@ script compares its ground index with rain_context.ground_idx on the dates
 they share and prints the largest difference.
 
 VALUES IN THE FILE
-The inputs are rounded first (rain3_mm to 2 decimals, ground_idx to 3), then
+The inputs are rounded first (each daily rain and rain3_mm to 2 decimals,
+ground_idx to 3; rain3_mm is the sum of the three rounded daily values), then
 chance is computed from the rounded inputs and rounded to 3 decimals, and
 level from the rounded chance, so every row can be recomputed from the file
-alone with forecast_rule.chance() and forecast_rule.level().
+alone with forecast_rule.chance() and forecast_rule.level(). Extra values
+use fixed formats: temperatures, wind speed, wave period and sea temperature to
+1 decimal; sunshine and wave height to 2; chance of rain and the directions in
+whole numbers.
 
 Usage (from the repo root):
     python3 pipeline/forecast_log.py                       # append today's rows
@@ -89,6 +115,9 @@ WX_LAT, WX_LON = 37.585, -122.47
 TZ_NAME = "America/Los_Angeles"
 ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
+MARINE_URL = "https://marine-api.open-meteo.com/v1/marine"
+SEA_LAT, SEA_LON = 37.60, -122.51   # just offshore of Linda Mar beach
+WEATHER_SOURCE = "Open-Meteo forecast API (best match, model not named in response); Open-Meteo marine API"
 
 HISTORY_DAYS = 400    # rain history, and the days the indices run from zero
 PAST_FILL_DAYS = 14   # recent past asked of the forecast endpoint to cover the archive's lag
@@ -97,7 +126,30 @@ BURN_IN_DAYS = 150    # the database comparison skips the first days, where star
 MAX_DAILY_MM = 1000.0  # anything above this is treated as a bad value
 
 COLUMNS = ["issued_at_utc", "issue_date", "target_date", "lead_days", "rain3_mm",
-           "rain3_forecast_mm", "ground_idx", "chance", "level", "rule_version"]
+           "rain3_forecast_mm", "ground_idx", "chance", "level", "rule_version",
+           "rain_day0_mm", "rain_day1_mm", "rain_day2_mm",
+           "rain_day0_src", "rain_day1_src", "rain_day2_src",
+           "rain_prob_max_pct", "temp_mean_c", "temp_max_c", "temp_min_c", "sun_mj_m2",
+           "wind_max_kmh", "wind_dir_deg",
+           "wave_height_max_m", "wave_period_max_s", "wave_dir_deg", "sea_temp_c",
+           "sea_lat", "sea_lon", "weather_source"]
+FIRST_REQUIRED = 10   # the first ten columns (the rule's inputs and result) must have values
+
+# Optional forecast values: column -> (Open-Meteo daily variable, decimals).
+FORECAST_VARS = {
+    "rain_prob_max_pct": ("precipitation_probability_max", 0),
+    "temp_mean_c": ("temperature_2m_mean", 1),
+    "temp_max_c": ("temperature_2m_max", 1),
+    "temp_min_c": ("temperature_2m_min", 1),
+    "sun_mj_m2": ("shortwave_radiation_sum", 2),
+    "wind_max_kmh": ("wind_speed_10m_max", 1),
+    "wind_dir_deg": ("wind_direction_10m_dominant", 0),
+}
+MARINE_VARS = {
+    "wave_height_max_m": ("wave_height_max", 2),
+    "wave_period_max_s": ("wave_period_max", 1),
+    "wave_dir_deg": ("wave_direction_dominant", 0),
+}
 
 
 class LogError(Exception):
@@ -120,39 +172,51 @@ def get_json(url, params):
             time.sleep(5)
 
 
-def daily_rain(url, extra):
-    """Returns {date: mm or None} from an Open-Meteo daily response."""
-    params = {"latitude": WX_LAT, "longitude": WX_LON, "daily": "precipitation_sum",
+def daily_values(url, extra, variables, hourly=None):
+    """Returns ({variable: {date: value or None}}, response) from an Open-Meteo
+    response. Only coordinates and parameters are sent."""
+    params = {"latitude": WX_LAT, "longitude": WX_LON, "daily": ",".join(variables),
               "timezone": TZ_NAME}
     params.update(extra)
-    d = get_json(url, params).get("daily")
-    if not d or "time" not in d or "precipitation_sum" not in d:
+    resp = get_json(url, params)
+    d = resp.get("daily")
+    if not d or "time" not in d or any(v not in d for v in variables):
         raise LogError(f"unexpected response from {url}")
-    if len(d["time"]) != len(d["precipitation_sum"]):
-        raise LogError(f"mismatched lengths in response from {url}")
-    return {date.fromisoformat(t): v for t, v in zip(d["time"], d["precipitation_sum"])}
+    out = {}
+    for v in variables:
+        if len(d[v]) != len(d["time"]):
+            raise LogError(f"mismatched lengths in response from {url}")
+        out[v] = {date.fromisoformat(t): x for t, x in zip(d["time"], d[v])}
+    return out, resp
 
 
-def get_rain(issue):
-    """Daily rain (mm) for every day from issue - 400 through issue + 6.
-    Raises LogError if any day is missing or implausible."""
+def get_rain(issue, forecast_vars):
+    """Daily rain (mm) and where each day came from, for every day from
+    issue - 400 through issue + 6. Returns ({date: mm}, {date: source}).
+    Raises LogError if any day is missing or implausible. forecast_vars is the
+    forecast call's result ({variable: {date: value}}) or None if that call
+    failed."""
     start, last = issue - timedelta(days=HISTORY_DAYS), issue + timedelta(days=HORIZON_DAYS)
     real_yesterday = datetime.now(ZoneInfo(TZ_NAME)).date() - timedelta(days=1)
 
-    archive = daily_rain(ARCHIVE_URL, {"start_date": start.isoformat(),
-                                       "end_date": min(last, real_yesterday).isoformat()})
-    rain = {d: v for d, v in archive.items() if v is not None and start <= d <= last}
+    archive, _ = daily_values(ARCHIVE_URL, {"start_date": start.isoformat(),
+                                            "end_date": min(last, real_yesterday).isoformat()},
+                              ["precipitation_sum"])
+    rain, src = {}, {}
     wanted = [start + timedelta(days=i) for i in range((last - start).days + 1)]
+    for d, v in archive["precipitation_sum"].items():
+        if v is not None and start <= d <= last:
+            rain[d], src[d] = v, "archive"
     missing = [d for d in wanted if d not in rain]
 
-    filled = []
     if missing:
-        fc = daily_rain(FORECAST_URL, {"past_days": PAST_FILL_DAYS,
-                                       "forecast_days": HORIZON_DAYS + 1})
+        if forecast_vars is None:
+            raise LogError("the forecast call failed and the archive does not cover every day")
+        fc = forecast_vars["precipitation_sum"]
         for d in missing:
             if fc.get(d) is not None:
                 rain[d] = fc[d]
-                filled.append(d)
+                src[d] = "forecast" if d >= issue else "recent"
         missing = [d for d in wanted if d not in rain]
     if missing:
         raise LogError(f"rain missing for {len(missing)} day(s), first {missing[0]}, last {missing[-1]}")
@@ -162,11 +226,50 @@ def get_rain(issue):
         if not isinstance(v, (int, float)) or isinstance(v, bool) or not math.isfinite(v) \
                 or v < 0 or v > MAX_DAILY_MM:
             raise LogError(f"implausible rain value {v!r} on {d}")
-    past_filled = [d for d in filled if d < issue]
+    recent = [d for d in wanted if src[d] == "recent"]
     print(f"rain: {len(wanted)} days {start} .. {last}; "
-          f"{len(past_filled)} recent past day(s) filled from the forecast endpoint"
-          + (f" ({past_filled[0]} .. {past_filled[-1]})" if past_filled else ""))
-    return {d: float(rain[d]) for d in wanted}
+          f"{len(recent)} recent past day(s) filled from the forecast endpoint"
+          + (f" ({recent[0]} .. {recent[-1]})" if recent else ""))
+    return {d: float(rain[d]) for d in wanted}, src
+
+
+def get_forecast():
+    """One call to the forecast endpoint: rain plus the optional daily
+    variables. Returns {variable: {date: value}}, or None if the call failed
+    (get_rain decides whether that matters)."""
+    variables = ["precipitation_sum"] + [v for v, _ in FORECAST_VARS.values()]
+    try:
+        out, _ = daily_values(FORECAST_URL, {"past_days": PAST_FILL_DAYS,
+                                             "forecast_days": HORIZON_DAYS + 1}, variables)
+        return out
+    except LogError as e:
+        print(f"note: forecast call failed ({e}); extra weather cells will be blank", file=sys.stderr)
+        return None
+
+
+def get_marine():
+    """Sea state from the marine forecast: ({column: {date: value}}, (lat, lon)
+    the service used). Never raises; on any trouble returns ({}, None) and says
+    so on stderr."""
+    try:
+        params = {"latitude": SEA_LAT, "longitude": SEA_LON, "timezone": TZ_NAME,
+                  "daily": ",".join(v for v, _ in MARINE_VARS.values()),
+                  "hourly": "sea_surface_temperature",
+                  "past_days": PAST_FILL_DAYS, "forecast_days": HORIZON_DAYS + 1}
+        resp = get_json(MARINE_URL, params)
+        d, h = resp["daily"], resp["hourly"]
+        out = {}
+        for col, (var, _) in MARINE_VARS.items():
+            out[col] = {date.fromisoformat(t): x for t, x in zip(d["time"], d[var])}
+        by_day = {}
+        for t, x in zip(h["time"], h["sea_surface_temperature"]):
+            if x is not None:
+                by_day.setdefault(date.fromisoformat(t[:10]), []).append(x)
+        out["sea_temp_c"] = {day: sum(v) / len(v) for day, v in by_day.items() if len(v) >= 20}
+        return out, (float(resp["latitude"]), float(resp["longitude"]))
+    except (LogError, KeyError, TypeError, ValueError) as e:
+        print(f"note: marine call failed ({e}); sea cells will be blank", file=sys.stderr)
+        return {}, None
 
 
 # ------------------------------------------------------------------ indices
@@ -227,34 +330,59 @@ def compare_with_database(ground):
 
 
 # ------------------------------------------------------------------ forecast rows
-def build_rows(issue, issued_at, rain, ground):
-    rows = []
+def fixed(v, decimals):
+    """A number as fixed-decimal text, or "" if there is no usable value."""
+    if v is None or isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v):
+        return ""
+    return f"{v:.{decimals}f}"
+
+
+def build_rows(issue, issued_at, rain, src, ground, fc, marine, sea_point):
+    """Seven rows of text cells, in COLUMNS order. The first ten columns must
+    have values; the extra weather and sea cells may be blank (noted on stderr)."""
+    rows, blanks = [], []
     for lead in range(HORIZON_DAYS + 1):
         target = issue + timedelta(days=lead)
         window = [target - timedelta(days=k) for k in range(3)]
-        rain3 = round(sum(rain[d] for d in window), 2)
+        day_mm = [round(rain[d], 2) for d in window]
+        rain3 = round(sum(day_mm), 2)
         rain3_fc = round(sum(rain[d] for d in window if d >= issue), 2)
         g = round(ground[target], 3)
         p = round(float(forecast_rule.chance(rain3, g)), 3)
-        values = [issued_at, issue.isoformat(), target.isoformat(), lead, rain3, rain3_fc, g,
-                  p, forecast_rule.level(p), forecast_rule.VERSION]
-        for name, v in zip(COLUMNS, values):
+        required = [issued_at, issue.isoformat(), target.isoformat(), lead, rain3, rain3_fc, g,
+                    p, forecast_rule.level(p), forecast_rule.VERSION]
+        for name, v in zip(COLUMNS, required):
             if v is None or (isinstance(v, float) and not math.isfinite(v)) or v == "":
                 raise LogError(f"missing value for {name} on {target}")
         if not 0.0 <= p <= 1.0:
             raise LogError(f"chance out of range on {target}: {p}")
-        rows.append(values)
+        row = [issued_at, issue.isoformat(), target.isoformat(), str(lead), f"{rain3:.2f}",
+               f"{rain3_fc:.2f}", f"{g:.3f}", f"{p:.3f}", forecast_rule.level(p),
+               forecast_rule.VERSION]
+        row += [f"{v:.2f}" for v in day_mm] + [src[d] for d in window]
+        for col, (var, nd) in FORECAST_VARS.items():
+            row.append(fixed((fc or {}).get(var, {}).get(target), nd))
+        for col in ("wave_height_max_m", "wave_period_max_s", "wave_dir_deg", "sea_temp_c"):
+            nd = MARINE_VARS[col][1] if col in MARINE_VARS else 1
+            row.append(fixed(marine.get(col, {}).get(target), nd))
+        row += [f"{sea_point[0]:.3f}" if sea_point else "", f"{sea_point[1]:.3f}" if sea_point else "",
+                WEATHER_SOURCE]
+        assert len(row) == len(COLUMNS)
+        empty = [c for c, v in zip(COLUMNS, row) if v == ""]
+        if empty:
+            blanks.append(f"{target}: {', '.join(empty)}")
+        rows.append(row)
+    if blanks:
+        print("note: blank (no value available) cells, left empty:", file=sys.stderr)
+        for b in blanks:
+            print(f"  {b}", file=sys.stderr)
     return rows
 
 
 def format_rows(rows):
     """The rows exactly as they would be written, as CSV text."""
     buf = io.StringIO()
-    w = csv.writer(buf, lineterminator="\n")
-    for r in rows:
-        w.writerow([f"{v:.3f}" if name in ("chance", "ground_idx")
-                    else f"{v:.2f}" if name in ("rain3_mm", "rain3_forecast_mm") else v
-                    for name, v in zip(COLUMNS, r)])
+    csv.writer(buf, lineterminator="\n").writerows(rows)
     return buf.getvalue()
 
 
@@ -312,12 +440,14 @@ def main():
         if not args.dry_run and check_existing_log(issue):
             print(f"{LOG.name} already has rows for issue_date {issue}; nothing written.")
             return 0
-        rain = get_rain(issue)
+        issued_at = now_utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+        fc = get_forecast()
+        rain, src = get_rain(issue, fc)
         days = sorted(rain)
         _, ground = ground_index(rain, days)
         compare_with_database(ground)
-        issued_at = now_utc.strftime("%Y-%m-%dT%H:%M:%SZ")
-        rows = build_rows(issue, issued_at, rain, ground)
+        marine, sea_point = get_marine()
+        rows = build_rows(issue, issued_at, rain, src, ground, fc, marine, sea_point)
         text = format_rows(rows)
     except LogError as e:
         print(f"ERROR: {e}. Nothing written.", file=sys.stderr)

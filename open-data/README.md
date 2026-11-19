@@ -24,6 +24,15 @@ We did none of the sampling.
 | `forecast_scored.csv` | The logged forecasts lined up against the county's results as they arrive. Rebuilt weekly. |
 | `build/pacifica-open.sqlite` | The whole database in one file (not stored in the repository; see "Check it yourself", route c). |
 
+The forecast log records the weather forecast as it stood when each forecast
+was made (rain, temperature, sunshine, wind and sea state), not only the rule's
+answer. The scored file adds what actually happened on each test day, so the
+rule's result can be recomputed with the real weather. Any change to the rule
+is to be judged on the rule fed the actual weather; error in the weather
+forecast is reported separately, because it is not the rule's fault. A blank
+cell in the log means the service gave no value that day. The log is only ever
+added to, never edited.
+
 ### Columns
 
 | Column | Found in | Meaning |
@@ -43,6 +52,24 @@ We did none of the sampling.
 | `chance` | worked | The rule's chance (0 to 1) that the test fails: 1 / (1 + e^(-z)). |
 | `level` | worked | `chance` in words: lower than usual (under 0.50), usual (0.50 to 0.70), high (0.70 to 0.85), very high (0.85 or more). |
 | `chance_held_out` | worked | The same chance, but worked out with every test from that calendar year left out when fitting the equation. This is the fairer test of whether the rule works. |
+| `issued_at_utc`, `issue_date` | log | When the forecasts were written (UTC), and that day's date in Pacific time. Seven rows are written each day, one per target date. |
+| `target_date`, `lead_days` | log | The day being forecast, and how many days ahead of `issue_date` it is (0 to 6). |
+| `rain3_mm`, `rain3_forecast_mm`, `ground_idx`, `chance`, `level`, `rule_version` | log | The rule's inputs and result, as in the worked file. `rain3_forecast_mm` is the part of `rain3_mm` that was forecast rather than measured. |
+| `rain_day0_mm`, `rain_day1_mm`, `rain_day2_mm` | log | The three daily rain values (mm) that add up to `rain3_mm`: the target day, the day before, and two days before. |
+| `rain_day0_src`, `rain_day1_src`, `rain_day2_src` | log | Where each of those came from: `archive` (the rain archive), `recent` (the forecast service's estimate for a past day the archive does not have yet), or `forecast`. |
+| `rain_prob_max_pct` | log | The forecast's highest chance of rain that day, per cent. |
+| `temp_mean_c`, `temp_max_c`, `temp_min_c` | log | Forecast mean, highest and lowest air temperature for the target day, degrees C. |
+| `sun_mj_m2` | log | Forecast sunshine for the day (total solar energy, MJ per square metre). |
+| `wind_max_kmh`, `wind_dir_deg` | log | Forecast top wind speed (km/h) and dominant wind direction (degrees, the direction the wind blows from). |
+| `wave_height_max_m`, `wave_period_max_s`, `wave_dir_deg` | log | Forecast highest wave (m), longest wave period (seconds) and dominant wave direction (degrees) offshore. |
+| `sea_temp_c` | log | Forecast mean sea surface temperature for the day, degrees C. |
+| `sea_lat`, `sea_lon` | log | The sea point the marine forecast actually used (the request was for 37.60 N, 122.51 W, just offshore of Linda Mar beach). |
+| `weather_source` | log | The services the weather and sea values came from. |
+| `rain3_actual_mm`, `ground_actual` | scored | The rain over the test day and the two days before, and the ground index, as the database holds them when the file is rebuilt (the rain archive revises past rain a little). |
+| `chance_actual_weather`, `level_actual_weather` | scored | What the rule gives when it is fed that actual rain and ground index. |
+| `chance_lead0` to `chance_lead6`, `level_lead0` to `level_lead6` | scored | The chance and level that were logged for that test date, 0 to 6 days ahead. |
+| `rain3_error_mm_lead0`, `_lead1`, `_lead3` | scored | Logged `rain3_mm` minus `rain3_actual_mm` (mm); plus means more rain was forecast than fell. |
+| `temp_mean_c_lead1`, `temp_mean_actual_c`, `sun_mj_m2_lead1`, `sun_actual_mj_m2` | scored | The temperature and sunshine forecast logged one day ahead, beside what the archive says happened. |
 
 A blank cell means no value was available.
 
