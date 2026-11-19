@@ -31,7 +31,7 @@ Linda Mar Beach has some of the worst measured water quality in San Mateo County
 
 The public data behind our simple forecast rule, and three ways to rerun it, are in
 [`open-data/`](open-data/README.md): a spreadsheet check, one command, or the whole
-database as a single download. Spot a mistake or a better idea? Open an issue.
+database as a single download. The full method is written up as a [paper](https://augers-co.github.io/pacifica-beach-water/beta/method/), with a [PDF](docs/paper/linda-mar-forecast-method-v0.1.pdf) in this repository. Spot a mistake or a better idea? Open an issue.
 Nothing there says the water is ever safe.
 
 ## Repo layout
