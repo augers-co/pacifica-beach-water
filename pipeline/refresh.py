@@ -11,6 +11,12 @@ Usage (from the repo root, inside the venv):
     .venv/bin/python3 pipeline/refresh.py --skip-fetch         # export + gates only
     .venv/bin/python3 pipeline/refresh.py --inject             # also inject into the ledger HTML
     .venv/bin/python3 pipeline/refresh.py --export PATH --html PATH   # override locations
+    .venv/bin/python3 pipeline/refresh.py --write-beta-data    # only rewrite docs/beta/explore/data.json
+                                                              # from the committed pipeline/ledger_data.json
+
+The same DATA object also goes to docs/beta/explore/data.json (the preview
+site's Explore page loads it as a file). It is written by --inject together
+with the HTML, byte for byte the text injected there, so the two never differ.
 
 Publishing the artifact remains a session action, after reviewing the change
 summary this script prints.
@@ -41,6 +47,7 @@ PIPE = ROOT / "pipeline"
 # shrink relative to it), which also makes cold-start CI runs fully guarded.
 DEFAULT_EXPORT = PIPE / "export_ledger.py"
 DEFAULT_HTML = ROOT / "docs" / "index.html"
+BETA_DATA = ROOT / "docs" / "beta" / "explore" / "data.json"
 
 LMWQ_PAGE = "https://www.lindamarwaterquality.org/test-results"
 SSO_BASE = "https://www.waterboards.ca.gov/water_issues/programs/sso/docs/data_files/"
@@ -294,6 +301,24 @@ def run_export(export_path: Path):
     return d, changes
 
 
+def page_payload(out_json: Path) -> str:
+    """The DATA object as injected into the page."""
+    # "<" etc. only ever occur inside JSON strings, so \u-escaping them is lossless
+    # and guarantees no value can close the <script> block it is injected into.
+    return (out_json.read_text(encoding="utf-8").replace("<", "\\u003c").replace(">", "\\u003e")
+            .replace("&", "\\u0026").replace("\u2028", "\\u2028").replace("\u2029", "\\u2029"))
+
+
+def write_beta_data(payload: str):
+    """The same DATA object for the preview site's Explore page (skipped if that page is absent)."""
+    if not BETA_DATA.parent.is_dir():
+        print(f"   {BETA_DATA.relative_to(ROOT).parent} not present; beta data not written")
+        return
+    json.loads(payload)  # must be plain JSON
+    BETA_DATA.write_text(payload, encoding="utf-8")
+    print(f"   wrote {BETA_DATA.relative_to(ROOT)} (same DATA object)")
+
+
 def inject(html_path: Path, out_json: Path):
     print(f"-- inject ({html_path})")
     s = html_path.read_text(encoding="utf-8")
@@ -303,10 +328,7 @@ def inject(html_path: Path, out_json: Path):
         fail("DATA line does not end with ';' — HTML layout changed, not injecting")
         return
     shutil.copy2(html_path, html_path.with_suffix(".html.bak"))
-    # "<" etc. only ever occur inside JSON strings, so \u-escaping them is lossless
-    # and guarantees no value can close the <script> block it is injected into.
-    payload = (out_json.read_text(encoding="utf-8").replace("<", "\\u003c").replace(">", "\\u003e")
-               .replace("&", "\\u0026").replace("\u2028", "\\u2028").replace("\u2029", "\\u2029"))
+    payload = page_payload(out_json)
     s = s[:i0] + "const DATA = " + payload + ";" + s[i1:]
     html_path.write_text(s, encoding="utf-8")
     m = re.findall(r"<script>(.*?)</script>", s, re.S)
@@ -317,6 +339,7 @@ def inject(html_path: Path, out_json: Path):
         fail(f"node --check failed after inject: {r.stderr.strip()[:200]} — restore from .bak")
     else:
         print("   injected + syntax OK (backup at .html.bak)")
+        write_beta_data(payload)
 
 
 def main():
@@ -325,7 +348,13 @@ def main():
     ap.add_argument("--inject", action="store_true", help="inject fresh DATA into the ledger HTML")
     ap.add_argument("--export", type=Path, default=DEFAULT_EXPORT)
     ap.add_argument("--html", type=Path, default=DEFAULT_HTML)
+    ap.add_argument("--write-beta-data", action="store_true",
+                    help="only write docs/beta/explore/data.json from the committed ledger_data.json, then stop")
     a = ap.parse_args()
+
+    if a.write_beta_data:
+        write_beta_data(page_payload(a.export.parent / "ledger_data.json"))
+        return
 
     if not a.export.exists():
         sys.exit(f"export script not found at {a.export} — pass --export (has the working copy moved?)")

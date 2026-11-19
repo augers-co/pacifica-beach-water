@@ -157,6 +157,27 @@ forecast did. Until a county result arrives for a forecast date, `tests` and
 | `tests[].forecasts.lead0`, `.lead1`, `.lead3` | The `level`, `level_key` and `chance` logged that many days ahead, or `null`. |
 | `summary[]` | For leads 0, 1 and 3 and each level: `tests`, `over`, `over_share`, beside `stated_fail_share` and `stated_tests` from `levels.json`. With few tests these shares swing a lot. |
 
+### `health_survey.json` (updated by hand)
+
+A few figures from the Linda Mar Health Impacts Survey, run by the Linda Mar
+Water Quality Coalition, copied by hand from the Coalition's public survey
+report (https://reporting.alchemer.com/r/624621_6a8dbf767a0058.06400077). No
+script writes this file; it changes only when someone updates it, so check
+`as_of`. People chose to answer the survey, so the figures describe what
+respondents report, not a rate for everyone who uses the beach, and a survey
+cannot confirm what caused a symptom. This file has `schema` but not
+`generated_at` or `rule_version`.
+
+| Field | Meaning |
+|---|---|
+| `source` | Who ran the survey. |
+| `responses` | How many people had answered by `as_of`. |
+| `as_of` | The date the figures were copied from the report. |
+| `headline_pct` | Per cent of respondents who reported symptoms after being in the water at Linda Mar. |
+| `headline_repeat` | Of those, how many have had symptoms more than once, in words (for example `3 in 4`). |
+| `symptoms[]` | `key` (`sinus`, `stomach`, `ear`, `eye`, `skin`) and `pct`, the per cent of respondents reporting it. |
+| `links.live_results`, `links.take_survey` | The Coalition's live results page and the survey itself. |
+
 ## Reading `forecast.json`
 
 JavaScript (browser):

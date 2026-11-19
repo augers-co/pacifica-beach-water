@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en" data-api="../api/v1/">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Linda Mar Experimental Water Quality Forecast</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800;900&amp;family=Source+Sans+3:wght@400;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="shell">
+<aside class="banner" aria-label="About this project">
+  <div class="banner-text">
+    <div class="banner-kicker">Advocacy &amp; education project</div>
+    <div class="banner-title">Help clean up Linda Mar</div>
+  </div>
+  <a class="banner-btn" href="learn/#involved">Get involved</a>
+</aside>
+
+<div class="page">
+  <div class="intro pad">
+    <header class="sitehead">
+      <div class="sitename">Linda Mar Experimental Water Quality Forecast</div>
+    </header>
+    <div class="titleblock">
+      <h1>Linda Mar</h1>
+      <div class="subtitle">San Pedro Creek mouth · Pacifica</div>
+    </div>
+    <nav class="tabs-nav" aria-label="Sections">
+      <a href="#today" aria-current="page">Today</a>
+      <a href="#week">7 days</a>
+      <a href="learn/">Learn</a>
+      <a href="explore/">Explore</a>
+    </nav>
+  </div>
+
+  <div id="today" class="pad">
+    <p id="loading" class="statusline">Loading the forecast…</p>
+    <div id="noforecast" class="fcnote" hidden>
+      <p id="nf-text"></p>
+      <a class="lnk" href="https://www.smchealth.org/beaches">See the county's beach advisories</a>
+    </div>
+    <div id="fc-today" hidden>
+      <section class="tcard" id="tcard">
+        <div class="thead">
+          <div class="tlevelrow"><div class="tlevel" id="t-level"></div><div class="meter" id="t-meter" aria-hidden="true"></div></div>
+          <span class="tag">Forecast</span>
+        </div>
+        <p class="beyond" id="t-beyond" hidden>This much rain is beyond what the forecast was built on. Only one of the tests behind it had more than 75 mm of rain in three days, so treat this level as a rough guide.</p>
+        <div class="cap" id="t-date"></div>
+        <div class="odds">
+          <div class="oddsbig" id="t-big"></div>
+          <div class="oddsline">tests fail the health standard on days like today.</div>
+          <div class="farline" id="t-far"></div>
+        </div>
+        <div class="refbox" id="t-ref" hidden>
+          <div class="refhead"><div class="cap">Latest measured level</div><span class="tag">Measured</span></div>
+          <div class="refval"><div class="refnum" id="ref-num"></div><div class="t15" id="ref-times"></div></div>
+          <div class="cap" id="ref-sub"></div>
+        </div>
+        <div class="hr"></div>
+        <div class="stats" id="t-stats"></div>
+      </section>
+      <p class="note13">A best guess from past patterns. Not a measurement and not an official advisory. None of these levels means the water is safe. <a href="#disclaimer">Full disclaimer</a></p>
+      <p class="issued" id="t-issued"></p>
+    </div>
+  </div>
+
+  <div id="fc-rest" class="page-rest" hidden>
+    <section class="reportcard" aria-label="Surf report">
+      <a href="https://www.surfline.com/surf-report/linda-mar/5842041f4e65fad6a7708976">Checking the waves too? Linda Mar on Surfline</a>
+    </section>
+  </div>
+
+  <section id="week" class="pad fsec" hidden>
+    <h2>7-day forecast</h2>
+    <div class="wkcard">
+      <div class="wk7" id="wk-days"></div>
+      <div class="wkblock"><div class="cap">Bacteria risk</div><div class="wk7" id="wk-risk"></div></div>
+      <div class="wkblock"><div class="cap">Rain</div><div class="wk7" id="wk-rain"></div></div>
+    </div>
+    <div class="legend">
+      <div><span style="background:#ee7d2b"></span>Forecast</div>
+      <div><span style="border:2px solid #ee7d2b"></span>Outlook, less certain</div>
+    </div>
+  </section>
+
+  <section id="behind" class="pad fsec" hidden>
+    <h2>What's behind the call</h2>
+    <p class="t15 mutedp">The two readings the forecast uses, and three it keeps an eye on, over the last two weeks and the week ahead.</p>
+    <div class="bcard">
+      <div class="col2"><h3>What sets the level</h3><div class="t145m">The forecast is worked out from these two readings alone.</div></div>
+      <div class="drv" id="d-rain">
+        <div class="drvhead"><div class="drvtitle">Rain, last 3 days</div><span class="badge" id="d-rain-badge" hidden></span></div>
+        <div class="drvval"><span class="drvnum" id="d-rain-num"></span><span class="cap">in the last 3 days</span></div>
+        <div id="d-rain-chart"></div>
+        <div class="t14m">Rain washes what is on the streets and in the pipes into the creek. Risk peaks in the first day or two.</div>
+      </div>
+      <div class="drv" id="d-ground">
+        <div class="drvhead"><div class="drvtitle">Ground wetness</div><span class="badge" id="d-ground-badge" hidden></span></div>
+        <div class="drvval"><span class="drvnum" id="d-ground-num"></span><span class="cap" id="d-ground-sub"></span></div>
+        <div id="d-ground-chart"></div>
+        <div class="t14m">Our stand-in for the water table. When it is low the weather is also warm and the creek is low. Drier ground has meant more failed tests. Estimated from rain; nothing measures it here today.</div>
+      </div>
+      <div class="axis" id="axis-1"></div>
+    </div>
+    <div class="bcard">
+      <div class="col2"><h3>Also watching</h3><div class="t145m">Shown for context. They move with the two readings above, so the forecast does not count them separately.</div></div>
+      <div class="drv" id="d-runoff">
+        <div class="drvhead"><div class="drvtitle">Storm runoff</div><span class="badge">Follows the rain</span></div>
+        <div class="drvval"><span class="drvnum" id="d-runoff-num"></span><span class="cap">fades by half in about a week</span></div>
+        <div id="d-runoff-chart"></div>
+        <div class="t14m">After the rain stops, the creek keeps carrying it out to the surf.</div>
+      </div>
+      <div class="drv" id="d-temp">
+        <div class="drvhead"><div class="drvtitle">Water temperature</div><span class="badge">Moves with ground wetness</span></div>
+        <div class="drvval"><span class="drvnum" id="d-temp-num"></span><span class="cap" id="d-temp-sub"></span></div>
+        <div id="d-temp-chart"></div>
+        <div class="t14m">Tests fail more often in the warm months. Whether warmth itself is the cause is not settled.</div>
+      </div>
+      <div class="drv" id="d-recent">
+        <div class="drvhead"><div class="drvtitle">Recent tests</div><span class="badge">For reference</span></div>
+        <div class="drvval"><span class="drvnum" id="d-recent-num"></span><span class="cap" id="d-recent-sub"></span></div>
+        <div id="d-recent-chart"></div>
+        <div class="t14m">A recent result shifts the odds for the next test by about 10 points. After two weeks it tells you almost nothing.</div>
+      </div>
+      <div class="axis" id="axis-2"></div>
+    </div>
+    <div class="legend">
+      <div><span style="background:#cfe0ea"></span>Measured or estimated to date</div>
+      <div><span style="background:#f5f6f7;border:1px solid #d5d9dc"></span>Forecast</div>
+    </div>
+    <p class="t15">The forecast does not look at the calendar. Dry ground already tells it when the dry season has set in. Since 2022, tests from August to November have failed most often.</p>
+    <a class="lnk" href="explore/" style="align-self:flex-start">Compare these readings with every test since 2000</a>
+  </section>
+
+  <section class="pad fsec" id="results" style="gap:14px">
+    <h2>Latest published test results</h2>
+    <div id="res-rows" class="col12"></div>
+    <div id="last8" class="col8" hidden>
+      <div class="cap">Last 8 county tests, oldest first</div>
+      <div class="g8" id="last8-grid"></div>
+      <div class="cap" id="last8-cap"></div>
+    </div>
+    <p id="res-fail" class="t15" hidden></p>
+    <div class="countybox">
+      <div class="fb7">County's official status</div>
+      <a class="lnk" href="https://www.smchealth.org/beaches">County page</a>
+    </div>
+  </section>
+
+  <section class="pad fsec">
+    <h2>Why it never says “safe”</h2>
+    <p>About 4 in 10 tests here come back under the limit. The forecast can say when that is less likely. It cannot say a day is safe: even at the lowest level 1 test in 3 fails, and a test is one sample at one moment.</p>
+    <div class="cap">Tests that fail, by forecast level</div>
+    <div class="lvbars" id="lv-bars"></div>
+    <div class="cap" id="lv-cap" hidden></div>
+    <p id="lv-fail" class="t15" hidden></p>
+  </section>
+
+  <section class="trcard" id="trcard">
+    <div class="kick">Track record</div>
+    <div class="trhead" id="tr-head" hidden></div>
+    <p class="t15">Starts on launch day and shows every miss. It is better at picking out the worst days than the rest. It never calls a day safe.</p>
+    <a class="lnk" id="tr-link" href="#record" hidden>Every forecast, and what the test found</a>
+    <p id="tr-fail" class="t15" hidden></p>
+  </section>
+
+  <section class="pad fsec" id="record" hidden></section>
+
+  <section class="dark">
+    <h2>From the lineup</h2>
+    <p>The Coalition asked people who use this beach. <span data-sv="responses">301</span> answered, nearly all of them surfers.</p>
+    <div class="facts">
+      <div class="fact"><b data-sv="headline">71%</b><span>reported symptoms after being in the water here</span></div>
+      <div class="fact"><b data-sv="sym-sinus">39%</b><span>reported a sinus infection</span></div>
+      <div class="fact"><b>70%</b><span>stay out after rain</span></div>
+      <div class="fact"><b>47%</b><span>now surf somewhere else</span></div>
+    </div>
+    <div class="fine">Linda Mar Health Impacts Survey. People chose to answer, so this is what respondents report, not a rate for everyone who surfs here.</div>
+    <a href="https://reporting.alchemer.com/r/624621_6a8dbf767a0058.06400077" data-sv-link="live_results">See the survey results</a>
+  </section>
+
+  <nav class="pad linklist" aria-label="Learn more">
+    <h2 style="margin:0 0 6px">Learn more</h2>
+    <a class="navrow" href="learn/#s-tested"><span>What's being tested, and why</span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#171717" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></a>
+    <a class="navrow" href="learn/#s-creek"><span>What's polluting the creek</span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#171717" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></a>
+    <a class="navrow" href="learn/#s-health"><span>What it does to your health</span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#171717" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></a>
+    <a class="navrow" href="learn/#s-forecast"><span>How the forecast works</span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#171717" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></a>
+    <a class="navrow" href="learn/#s-improve"><span>Help improve it</span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#171717" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></a>
+    <a class="navrow" href="learn/#involved"><span>Get involved</span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#171717" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></a>
+    <a class="navrow" href="learn/#s-tried"><span>What's been tried, and what happened</span><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#171717" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"></path></svg></a>
+  </nav>
+
+  <section class="exbox">
+    <h2>Explore the data</h2>
+    <p>The full interactive record: every test since 2000 on one timeline, with rain, creek flow, groundwater and construction alongside. Guided views, a question explorer, the map and the tables.</p>
+    <a class="btn" href="explore/" style="margin-top:2px">Explore the data</a>
+  </section>
+
+  <footer class="pad sitefoot" id="disclaimer">
+    <div>This forecast is an estimate from past test results and weather. It is not a measurement, an official advisory or medical advice. Official beach postings come from San Mateo County Environmental Health.</div>
+    <div>This is an independent, experimental project for education and advocacy. It is not affiliated with or endorsed by San Mateo County, the City of Pacifica or any public agency, and naming a group here does not mean that group endorses it. The forecast never indicates that the water is safe. It comes with no guarantee of accuracy, and the decision to enter the water is your own. Test results are shown as published by their sources, with the dates the samples were taken.</div>
+  </footer>
+</div>
+</div>
+<script src="assets/forecast.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "source": "Linda Mar Health Impacts Survey, Linda Mar Water Quality Coalition",
+  "responses": 302,
+  "as_of": "2026-11-19",
+  "headline_pct": 71,
+  "headline_repeat": "3 in 4",
+  "symptoms": [
+    { "key": "sinus", "pct": 40 },
+    { "key": "stomach", "pct": 25 },
+    { "key": "ear", "pct": 25 },
+    { "key": "eye", "pct": 25 },
+    { "key": "skin", "pct": 23 }
+  ],
+  "links": {
+    "live_results": "https://reporting.alchemer.com/r/624621_6a8dbf767a0058.06400077",
+    "take_survey": "https://survey.alchemer.com/s3/8923478/Linda-Mar-Health-Impacts-Survey"
+  }
+}
