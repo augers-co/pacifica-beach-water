@@ -1,0 +1,140 @@
+{
+  "version": "0.1",
+  "fitted": "2026-11-18",
+  "data": {
+    "station": "San Mateo County LM5 (San Pedro Creek mouth), enterococcus, daily maximum",
+    "first_test": "2022-01-03",
+    "last_test": "2026-10-19",
+    "n": 243,
+    "n_fail": 150,
+    "n_far_over": 61,
+    "fail_over": 104.0,
+    "far_over": 312.0
+  },
+  "equation": "z = b0 + b1*ln(1+R3) + b2*log10(max(G,1)); P = 1/(1+exp(-z))",
+  "coefficients": {
+    "b0": 2.051,
+    "b1": 0.77,
+    "b2": -1.363
+  },
+  "levels": [
+    {
+      "name": "lower than usual",
+      "min_p": 0.0
+    },
+    {
+      "name": "usual",
+      "min_p": 0.5
+    },
+    {
+      "name": "high",
+      "min_p": 0.7
+    },
+    {
+      "name": "very high",
+      "min_p": 0.85
+    }
+  ],
+  "held_out": {
+    "each_year_from_other_four": {
+      "auc_fail": 0.7263082437275986,
+      "auc_far": 0.794991893352549,
+      "brier": 0.20227059592983643,
+      "n": 243
+    },
+    "forward_2024_26": {
+      "auc_fail": 0.7122974657249689,
+      "auc_far": 0.7553600879604178,
+      "brier": 0.21556025911610424,
+      "n": 141
+    },
+    "by_year": {
+      "2022": {
+        "auc_fail": 0.79375,
+        "auc_far": 0.9261261261261261,
+        "n": 52
+      },
+      "2023": {
+        "auc_fail": 0.7790476190476191,
+        "auc_far": 0.7872807017543859,
+        "n": 50
+      },
+      "2024": {
+        "auc_fail": 0.7339285714285714,
+        "auc_far": 0.6814814814814815,
+        "n": 51
+      },
+      "2025": {
+        "auc_fail": 0.641156462585034,
+        "auc_far": 0.7564102564102564,
+        "n": 49
+      },
+      "2026": {
+        "auc_fail": 0.7523809523809524,
+        "auc_far": 0.8666666666666667,
+        "n": 41
+      }
+    },
+    "single_input": {
+      "rain only": {
+        "each_year": {
+          "auc_fail": 0.5765232974910395,
+          "auc_far": 0.6789317240136912,
+          "brier": 0.22739680657548508,
+          "n": 243
+        },
+        "forward": {
+          "auc_fail": 0.5813253012048193,
+          "auc_far": 0.6837548103353491,
+          "brier": 0.2379158651385056,
+          "n": 141
+        }
+      },
+      "ground only": {
+        "each_year": {
+          "auc_fail": 0.6263799283154122,
+          "auc_far": 0.6070978202125743,
+          "brier": 0.2258719144253794,
+          "n": 243
+        },
+        "forward": {
+          "auc_fail": 0.6161196510178646,
+          "auc_far": 0.5695437053326003,
+          "brier": 0.2352158055598908,
+          "n": 141
+        }
+      }
+    },
+    "level_table": [
+      {
+        "level": "lower than usual",
+        "from_p": 0.0,
+        "n": 74,
+        "pct_fail": 0.36486486486486486,
+        "pct_far_over": 0.08108108108108109
+      },
+      {
+        "level": "usual",
+        "from_p": 0.5,
+        "n": 64,
+        "pct_fail": 0.625,
+        "pct_far_over": 0.125
+      },
+      {
+        "level": "high",
+        "from_p": 0.7,
+        "n": 74,
+        "pct_fail": 0.7567567567567568,
+        "pct_far_over": 0.35135135135135137
+      },
+      {
+        "level": "very high",
+        "from_p": 0.85,
+        "n": 31,
+        "pct_fail": 0.8709677419354839,
+        "pct_far_over": 0.6774193548387096
+      }
+    ]
+  },
+  "caveat": "Inputs were chosen after looking at the whole record, so held-out scores are somewhat flattering. Nothing here says the water is safe."
+}
