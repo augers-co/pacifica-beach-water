@@ -63,3 +63,39 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Weekly data refresh (automated, all gates passed)"
           git push
+
+      # ---- Open-data export. These steps run AFTER the page update above has
+      # been committed and pushed, so a failure here cannot undo or block it;
+      # it only turns this run red so someone looks.
+      - name: Score the forecast log and export the open data
+        if: steps.gate.outputs.present == 'true'
+        run: |
+          python pipeline/forecast_score.py
+          python pipeline/export_open.py
+
+      - name: Commit the open-data files if they changed
+        if: steps.gate.outputs.present == 'true'
+        run: |
+          git add open-data/*.csv open-data/README.md
+          if git diff --cached --quiet; then
+            echo "No open-data changes this week."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Weekly open-data export (automated)"
+          # The daily forecast log also pushes to this branch; pick up its commits first.
+          git pull --rebase
+          git push
+
+      - name: Publish the full database to the "open-data" release
+        if: steps.gate.outputs.present == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view open-data > /dev/null 2>&1; then
+            gh release create open-data --latest=false \
+              --title "Open data (updated weekly)" \
+              --notes "The full open database, rebuilt every week. What is in it and how to use it: open-data/README.md in the repository."
+          fi
+          gh release upload open-data open-data/build/pacifica-open.sqlite --clobber

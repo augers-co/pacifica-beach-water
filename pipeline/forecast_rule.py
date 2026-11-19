@@ -43,14 +43,27 @@ CAVEATS, PLAINLY
   failed more than a third of the time in the record. Weekly tests sample one
   moment at one spot, and bacteria levels change within hours.
 
-Reads only data/pacifica.db (read-only). Writes models/forecast_v0_1.json.
-Needs numpy and pandas. Run from the repo root:
+By default it reads ONE file, open-data/rule_v0_1_worked.csv: the frozen record
+of the 243 tests (2022-01-03 to 2026-10-19) and the inputs as they were when
+version 0.1 was fixed. That file never changes, so this run prints the same
+numbers on every machine, forever, with no database and nothing but numpy and
+pandas. Run from the repo root:
     python3 pipeline/forecast_rule.py
+With --refit it repeats the same method on CURRENT data (data/pacifica.db if it
+is there, otherwise open-data/county_ocean_tests.csv and
+open-data/daily_rain_and_ground.csv; add --from-open-data to force the CSVs),
+prints the same report labelled as a refit, and shows the frozen coefficients
+beside the refitted ones. The recent rain is revised by its source and new tests
+keep arriving, so a refit moves a little each week; it is not version 0.1.
+It never writes models/forecast_v0_1.json unless given --write-model (which
+cannot be combined with --refit, and leaves the file alone when only its
+"fitted" date would change).
 Other code can import `chance(rain3_mm, ground_idx)` and `level(p)`.
 """
 
 import json
 import sqlite3
+import sys
 from datetime import date
 from pathlib import Path
 
@@ -59,6 +72,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
 DB = ROOT / "data" / "pacifica.db"
+OPEN = ROOT / "open-data"
 OUT = ROOT / "models" / "forecast_v0_1.json"
 
 VERSION = "0.1"
@@ -73,7 +87,7 @@ LEVELS = [                            # (name, lowest P in the level)
 ]
 FORWARD_YEARS = (2024, 2025, 2026)
 
-# Coefficients of the fitted equation; refreshed by main() when the script runs.
+# Coefficients of the frozen equation (version 0.1). They never change.
 COEF = (2.051, 0.770, -1.363)
 
 
@@ -102,24 +116,28 @@ def level(p):
 
 
 # ------------------------------------------------------------------ data
-def load_tests(con):
-    """One row per sampling day at LM5 (daily maximum), since START, with the
-    rain total and ground index attached."""
+def county_series(con):
+    """Every sampling day at LM5 (daily maximum), all years: columns date, value."""
     raw = pd.read_sql(
         """SELECT SampleDate, Result FROM ceden_raw
            WHERE StationName LIKE '%#5%' AND Analyte LIKE '%Enterococcus%'""", con)
     raw["date"] = pd.to_datetime(raw.SampleDate).dt.tz_localize(None).dt.normalize()
     raw["value"] = pd.to_numeric(raw.Result, errors="coerce")
-    t = (raw.dropna(subset=["value"]).groupby("date", as_index=False).value.max()
-         .sort_values("date"))
+    return (raw.dropna(subset=["value"]).groupby("date", as_index=False).value.max()
+            .sort_values("date"))
+
+
+def _attach(t, wx, rc):
+    """Keep tests since START and attach the rain total and ground index.
+    wx has columns date, precip_mm; rc has columns date, ground_idx."""
     t = t[t.date >= START].reset_index(drop=True)
 
-    wx = pd.read_sql("SELECT date, precip_mm FROM weather_daily", con)
+    wx = wx.copy()
     wx["date"] = pd.to_datetime(wx.date)
     rain = wx.set_index("date").precip_mm.sort_index().fillna(0)
     t["rain3"] = sum(rain.reindex(t.date - pd.Timedelta(days=k)).to_numpy() for k in range(3))
 
-    rc = pd.read_sql("SELECT date, ground_idx FROM rain_context", con)
+    rc = rc.copy()
     rc["date"] = pd.to_datetime(rc.date)
     # rain_context rows are defined through the PRIOR day, so the row dated on
     # the test day is the value "as known through the day before".
@@ -130,6 +148,35 @@ def load_tests(con):
     t["far"] = (t.value > FAR_OVER).astype(int)
     t["year"] = t.date.dt.year
     return t
+
+
+def load_tests(con):
+    """One row per sampling day at LM5 (daily maximum), since START, with the
+    rain total and ground index attached."""
+    wx = pd.read_sql("SELECT date, precip_mm FROM weather_daily", con)
+    rc = pd.read_sql("SELECT date, ground_idx FROM rain_context", con)
+    return _attach(county_series(con), wx, rc)
+
+
+def load_tests_frozen():
+    """The frozen record of the version-0.1 fit: one file, nothing else."""
+    f = pd.read_csv(OPEN / "rule_v0_1_worked.csv", float_precision="round_trip")
+    return pd.DataFrame({
+        "date": pd.to_datetime(f.date), "value": f.result_mpn,
+        "rain3": f.rain3_mm, "ground": f.ground_idx,
+        "fail": (f.result_mpn > STANDARD).astype(int),
+        "far": (f.result_mpn > FAR_OVER).astype(int),
+        "year": pd.to_datetime(f.date).dt.year})
+
+
+def load_tests_open():
+    """The same table, built from the published files in open-data/ instead of
+    the database."""
+    t = pd.read_csv(OPEN / "county_ocean_tests.csv", float_precision="round_trip")
+    t = pd.DataFrame({"date": pd.to_datetime(t.date), "value": t.result_mpn})
+    d = pd.read_csv(OPEN / "daily_rain_and_ground.csv", float_precision="round_trip")
+    return _attach(t.sort_values("date"), d[["date", "rain_mm"]].rename(columns={"rain_mm": "precip_mm"}),
+                   d[["date", "ground_idx"]])
 
 
 # ------------------------------------------------------------------ fitting
@@ -189,22 +236,33 @@ def level_table(p, y, y3):
 
 # ------------------------------------------------------------------ main
 def main():
-    global COEF
-    con = sqlite3.connect(f"file:{DB}?mode=ro", uri=True)
-    try:
-        t = load_tests(con)
-    finally:
-        con.close()
+    args = sys.argv[1:]
+    refit = "--refit" in args
+    if refit and "--write-model" in args:
+        raise SystemExit("--write-model cannot be combined with --refit: the model file records version 0.1.")
+    if not refit:
+        t = load_tests_frozen()
+    elif "--from-open-data" in args or not DB.exists():
+        t = load_tests_open()
+    else:
+        con = sqlite3.connect(f"file:{DB}?mode=ro", uri=True)
+        try:
+            t = load_tests(con)
+        finally:
+            con.close()
     y, y3, year = t.fail.to_numpy(float), t.far.to_numpy(float), t.year.to_numpy()
     X = _design(t.rain3.to_numpy(), t.ground.to_numpy())
     both, rain_only, ground_only = [0, 1, 2], [0, 1], [0, 2]
 
+    if refit:
+        print(f"REFIT on current data, not version 0.1: {len(t)} tests through {t.date.max().date()}")
     print(f"LM5 enterococcus, one value per day (daily max), {t.date.min().date()} to {t.date.max().date()}")
     print(f"n = {len(t)} tests; {int(y.sum())} fail (over {STANDARD:.0f}); {int(y3.sum())} far over (over {FAR_OVER:.0f})\n")
 
     b = fit_logistic(X, y)
-    COEF = tuple(float(v) for v in b)
     print(f"z = {b[0]:+.3f} {b[1]:+.3f}*ln(1+R3) {b[2]:+.3f}*log10(G)   P = 1/(1+exp(-z))\n")
+    if refit:
+        print(f"Frozen version 0.1 coefficients, for comparison: {COEF[0]:+.3f} {COEF[1]:+.3f} {COEF[2]:+.3f}\n")
 
     p_all = held_out(X, y, year, both)
     p_fwd = held_out(X, y, year, both, forward=True)
@@ -244,8 +302,10 @@ def main():
         else:
             print(f"  {r['level']:17} n=  0")
 
+    if "--write-model" not in args:
+        return
     OUT.parent.mkdir(exist_ok=True)
-    OUT.write_text(json.dumps({
+    result = ({
         "version": VERSION,
         "fitted": date.today().isoformat(),
         "data": {"station": "San Mateo County LM5 (San Pedro Creek mouth), enterococcus, daily maximum",
@@ -259,8 +319,18 @@ def main():
                      "by_year": by_year, "single_input": singles,
                      "level_table": table},
         "caveat": "Inputs were chosen after looking at the whole record, so held-out scores are somewhat flattering. Nothing here says the water is safe.",
-    }, indent=2) + "\n")
-    print(f"\nWrote {OUT.relative_to(ROOT)}")
+    })
+    # Leave the file alone when nothing but the date would change, so a re-run
+    # does not make a pointless difference.
+    try:
+        old = json.loads(OUT.read_text())
+    except (OSError, ValueError):
+        old = None
+    if old is not None and {**old, "fitted": None} == {**json.loads(json.dumps(result)), "fitted": None}:
+        print(f"\nUnchanged {OUT.relative_to(ROOT)}")
+    else:
+        OUT.write_text(json.dumps(result, indent=2) + "\n")
+        print(f"\nWrote {OUT.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":
