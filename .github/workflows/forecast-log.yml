@@ -1,0 +1,78 @@
+name: Daily forecast log
+
+# Appends today's seven forecast rows (today and the next six days) to
+# open-data/forecast_log.csv, then commits that one file if it changed. The log
+# is append-only: the script only adds rows at the end, writes nothing if
+# today's rows are already there, and a check below refuses to commit if any
+# earlier byte of the file was altered. No database is needed: the script
+# rebuilds the ground-wetness index from Open-Meteo rain alone. A failed fetch
+# or a missing value fails this workflow (red X) and commits nothing; a missed
+# day stays a gap in the log and is never back-filled.
+
+on:
+  schedule:
+    # 13:30 UTC is 05:30 Pacific Standard Time (winter) but 06:30 Pacific
+    # Daylight Time (summer); GitHub cron is UTC only, so it drifts an hour
+    # with daylight saving, and scheduled runs can also start some minutes
+    # late. The script dates its rows by the Pacific calendar day at run time.
+    - cron: "30 13 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: forecast-log
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  log:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # Actions are pinned to full commit SHAs: a tag can be moved to new code,
+      # a commit cannot. Upgrade deliberately, preferring releases a few weeks old.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pipeline/requirements.txt
+
+      # The same hash-locked list the weekly refresh uses; the forecast script
+      # needs numpy, pandas and requests from it.
+      - name: Install dependencies
+        run: pip install --require-hashes -r pipeline/requirements.txt
+
+      - name: Keep a copy of the log as checked out
+        run: |
+          if [ -f open-data/forecast_log.csv ]; then
+            cp open-data/forecast_log.csv "$RUNNER_TEMP/forecast_log.before"
+          fi
+
+      - name: Log today's forecast
+        run: python pipeline/forecast_log.py
+
+      - name: Commit the log if it changed
+        run: |
+          if [ -f "$RUNNER_TEMP/forecast_log.before" ]; then
+            # Everything that was there before must still be there, unchanged.
+            size=$(wc -c < "$RUNNER_TEMP/forecast_log.before")
+            if ! cmp -s -n "$size" "$RUNNER_TEMP/forecast_log.before" open-data/forecast_log.csv; then
+              echo "Earlier rows of the log changed; refusing to commit."
+              exit 1
+            fi
+          fi
+          git add open-data/forecast_log.csv
+          if git diff --cached --quiet; then
+            echo "No new rows today."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Daily forecast log (automated)"
+          # The weekly refresh also pushes to this branch; pick up its commits
+          # first. Only this one file differs here, so the rebase is clean.
+          git pull --rebase
+          git push
