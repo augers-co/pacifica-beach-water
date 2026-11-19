@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-19T19:29:07Z",
+  "generated_at": "2026-11-19T21:19:09Z",
   "rule_version": "0.1",
   "issue_date": "2026-11-19",
   "issued_at_utc": "2026-11-19T18:18:09Z",
@@ -11,6 +11,11 @@
     "None of the levels means the water is safe.",
     "It estimates the chance that a county test fails; it does not predict illness."
   ],
+  "push_reference": {
+    "rain3_mm": 0.0,
+    "ground_idx": 32.325,
+    "tests": 243
+  },
   "days": [
     {
       "date": "2026-11-19",
@@ -48,7 +53,27 @@
         "weather_source": "Open-Meteo forecast API (best match, model not named in response); Open-Meteo marine API"
       },
       "beyond_experience": true,
-      "beyond_reason": "Rain over three days (116.1 mm) is more than in any of the 243 tests the rule was fitted on (most was 77.6 mm)."
+      "beyond_reason": "Rain over three days (116.1 mm) is more than in any of the 243 tests the rule was fitted on (most was 77.6 mm).",
+      "push": {
+        "rain3": {
+          "points": 49.4,
+          "direction": "up",
+          "size": "clear"
+        },
+        "ground": {
+          "points": -0.2,
+          "direction": "none",
+          "size": "none"
+        }
+      },
+      "ground_normal": {
+        "normal_idx": 26.834,
+        "pct_of_normal": 137.3,
+        "compared_to_normal": "above",
+        "years": 28,
+        "normal_from": "1998-10-01",
+        "normal_to": "2026-10-23"
+      }
     },
     {
       "date": "2026-11-20",
@@ -86,7 +111,27 @@
         "weather_source": "Open-Meteo forecast API (best match, model not named in response); Open-Meteo marine API"
       },
       "beyond_experience": true,
-      "beyond_reason": "Rain over three days (122.6 mm) is more than in any of the 243 tests the rule was fitted on (most was 77.6 mm)."
+      "beyond_reason": "Rain over three days (122.6 mm) is more than in any of the 243 tests the rule was fitted on (most was 77.6 mm).",
+      "push": {
+        "rain3": {
+          "points": 52.9,
+          "direction": "up",
+          "size": "clear"
+        },
+        "ground": {
+          "points": -0.6,
+          "direction": "none",
+          "size": "none"
+        }
+      },
+      "ground_normal": {
+        "normal_idx": 27.57,
+        "pct_of_normal": 173.0,
+        "compared_to_normal": "above",
+        "years": 28,
+        "normal_from": "1998-10-01",
+        "normal_to": "2026-10-23"
+      }
     },
     {
       "date": "2026-11-21",
@@ -124,7 +169,27 @@
         "weather_source": "Open-Meteo forecast API (best match, model not named in response); Open-Meteo marine API"
       },
       "beyond_experience": false,
-      "beyond_reason": null
+      "beyond_reason": null,
+      "push": {
+        "rain3": {
+          "points": 54.4,
+          "direction": "up",
+          "size": "clear"
+        },
+        "ground": {
+          "points": -1.5,
+          "direction": "none",
+          "size": "none"
+        }
+      },
+      "ground_normal": {
+        "normal_idx": 28.339,
+        "pct_of_normal": 213.6,
+        "compared_to_normal": "above",
+        "years": 28,
+        "normal_from": "1998-10-01",
+        "normal_to": "2026-10-23"
+      }
     },
     {
       "date": "2026-11-22",
@@ -162,7 +227,27 @@
         "weather_source": "Open-Meteo forecast API (best match, model not named in response); Open-Meteo marine API"
       },
       "beyond_experience": false,
-      "beyond_reason": null
+      "beyond_reason": null,
+      "push": {
+        "rain3": {
+          "points": 42.7,
+          "direction": "up",
+          "size": "clear"
+        },
+        "ground": {
+          "points": -6.3,
+          "direction": "down",
+          "size": "a_little"
+        }
+      },
+      "ground_normal": {
+        "normal_idx": 29.14,
+        "pct_of_normal": 247.4,
+        "compared_to_normal": "above",
+        "years": 28,
+        "normal_from": "1998-10-01",
+        "normal_to": "2026-10-23"
+      }
     },
     {
       "date": "2026-11-23",
@@ -200,7 +285,27 @@
         "weather_source": "Open-Meteo forecast API (best match, model not named in response); Open-Meteo marine API"
       },
       "beyond_experience": false,
-      "beyond_reason": null
+      "beyond_reason": null,
+      "push": {
+        "rain3": {
+          "points": 32.2,
+          "direction": "up",
+          "size": "clear"
+        },
+        "ground": {
+          "points": -10.6,
+          "direction": "down",
+          "size": "clear"
+        }
+      },
+      "ground_normal": {
+        "normal_idx": 29.925,
+        "pct_of_normal": 274.7,
+        "compared_to_normal": "above",
+        "years": 28,
+        "normal_from": "1998-10-01",
+        "normal_to": "2026-10-23"
+      }
     },
     {
       "date": "2026-11-24",
@@ -238,7 +343,27 @@
         "weather_source": "Open-Meteo forecast API (best match, model not named in response); Open-Meteo marine API"
       },
       "beyond_experience": false,
-      "beyond_reason": null
+      "beyond_reason": null,
+      "push": {
+        "rain3": {
+          "points": 45.2,
+          "direction": "up",
+          "size": "clear"
+        },
+        "ground": {
+          "points": -8.0,
+          "direction": "down",
+          "size": "a_little"
+        }
+      },
+      "ground_normal": {
+        "normal_idx": 30.754,
+        "pct_of_normal": 295.3,
+        "compared_to_normal": "above",
+        "years": 28,
+        "normal_from": "1998-10-01",
+        "normal_to": "2026-10-23"
+      }
     },
     {
       "date": "2026-11-25",
@@ -276,7 +401,27 @@
         "weather_source": "Open-Meteo forecast API (best match, model not named in response); Open-Meteo marine API"
       },
       "beyond_experience": false,
-      "beyond_reason": null
+      "beyond_reason": null,
+      "push": {
+        "rain3": {
+          "points": 54.1,
+          "direction": "up",
+          "size": "clear"
+        },
+        "ground": {
+          "points": -5.4,
+          "direction": "down",
+          "size": "a_little"
+        }
+      },
+      "ground_normal": {
+        "normal_idx": 31.592,
+        "pct_of_normal": 312.4,
+        "compared_to_normal": "above",
+        "years": 28,
+        "normal_from": "1998-10-01",
+        "normal_to": "2026-10-23"
+      }
     }
   ]
 }

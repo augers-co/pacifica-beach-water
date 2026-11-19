@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-19T19:29:07Z",
+  "generated_at": "2026-11-19T21:19:11Z",
   "rule_version": "0.1",
   "note": "County results reach the state's public database weeks after the sample, so these are not current conditions. For current postings see the county's beach page.",
   "county_beach_advisories": "https://www.smchealth.org/beaches",
@@ -15,7 +15,51 @@
       "unit": "MPN per 100 mL",
       "standard_mpn": 104,
       "compared_to_standard": "under",
-      "days_old": 31
+      "days_old": 31,
+      "source_url": "https://data.ca.gov/dataset/surface-water-fecal-indicator-bacteria-results",
+      "as_of": "2026-11-19",
+      "recent": [
+        {
+          "date": "2026-08-31",
+          "result_mpn": 256,
+          "compared_to_standard": "over"
+        },
+        {
+          "date": "2026-09-08",
+          "result_mpn": 201,
+          "compared_to_standard": "over"
+        },
+        {
+          "date": "2026-09-14",
+          "result_mpn": 31,
+          "compared_to_standard": "under"
+        },
+        {
+          "date": "2026-09-21",
+          "result_mpn": 110,
+          "compared_to_standard": "over"
+        },
+        {
+          "date": "2026-09-28",
+          "result_mpn": 120,
+          "compared_to_standard": "over"
+        },
+        {
+          "date": "2026-10-05",
+          "result_mpn": 120,
+          "compared_to_standard": "over"
+        },
+        {
+          "date": "2026-10-13",
+          "result_mpn": 538,
+          "compared_to_standard": "over"
+        },
+        {
+          "date": "2026-10-19",
+          "result_mpn": 20,
+          "compared_to_standard": "under"
+        }
+      ]
     },
     {
       "series": "lm5_e_coli",
@@ -27,7 +71,9 @@
       "unit": "MPN per 100 mL",
       "standard_mpn": 320,
       "compared_to_standard": "under",
-      "days_old": 31
+      "days_old": 31,
+      "source_url": "https://data.ca.gov/dataset/surface-water-fecal-indicator-bacteria-results",
+      "as_of": "2026-11-19"
     },
     {
       "series": "creek_e_coli",
@@ -39,7 +85,9 @@
       "unit": "MPN per 100 mL",
       "standard_mpn": 320,
       "compared_to_standard": "under",
-      "days_old": 31
+      "days_old": 31,
+      "source_url": "https://data.ca.gov/dataset/surface-water-fecal-indicator-bacteria-results",
+      "as_of": "2026-11-19"
     },
     {
       "series": "creek_enterococcus",
@@ -51,7 +99,23 @@
       "unit": "MPN per 100 mL",
       "standard_mpn": 110,
       "compared_to_standard": "over",
-      "days_old": 171
+      "days_old": 171,
+      "source_url": "https://data.ca.gov/dataset/surface-water-fecal-indicator-bacteria-results",
+      "as_of": "2026-11-19"
+    },
+    {
+      "series": "surfrider_creek_mouth_enterococcus",
+      "station": "Beach at creek mouth (Surfrider site Linda Mar Beach/San Pedro Creek)",
+      "sampled_by": "Surfrider Foundation Blue Water Task Force, San Mateo County chapter",
+      "analyte": "enterococcus",
+      "date": "2026-10-10",
+      "result_mpn": 1071,
+      "unit": "MPN per 100 mL",
+      "standard_mpn": 110,
+      "compared_to_standard": "over",
+      "days_old": 40,
+      "source_url": "https://bwtf.surfrider.org/",
+      "as_of": "2026-11-19"
     }
   ],
   "caveats": [

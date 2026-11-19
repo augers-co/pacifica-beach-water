@@ -1,12 +1,17 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-19T19:29:07Z",
+  "generated_at": "2026-11-19T21:19:09Z",
   "rule_version": "0.1",
   "files": [
     {
       "name": "forecast.json",
       "updated": "daily",
       "holds": "The latest forecast: seven days, each with its level, chance, inputs and logged weather."
+    },
+    {
+      "name": "conditions.json",
+      "updated": "daily",
+      "holds": "Rain, the wetness indexes and the estimated creek temperature for the 13 days before today to 6 days after, and the last 30 days' rain and storms."
     },
     {
       "name": "levels.json",
@@ -21,7 +26,7 @@
     {
       "name": "latest_results.json",
       "updated": "weekly",
-      "holds": "The most recent county test result for each county series the project's page shows."
+      "holds": "The most recent county test result for each county series the project's page shows, the last eight county ocean tests, and the latest Surfrider result at the creek mouth."
     },
     {
       "name": "track_record.json",

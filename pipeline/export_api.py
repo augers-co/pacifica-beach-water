@@ -4,13 +4,24 @@ WHAT IT WRITES (GitHub Pages serves docs/, so these are public at
 https://augers-co.github.io/pacifica-beach-water/api/v1/)
   Daily (the default; no database needed):
     forecast.json        the latest issue in open-data/forecast_log.csv: seven
-                         days, each with its level, chance and inputs
+                         days, each with its level, chance and inputs, how each
+                         input moves the rule's chance, and the ground index
+                         beside its normal for the date
+    conditions.json      rain, the two wetness indexes and the estimated creek
+                         temperature for the 13 days before today, today and
+                         the 6 days after, plus the last 30 days' rain and
+                         storms. Fetched from Open-Meteo by this script (as
+                         pipeline/forecast_log.py does); if the fetch fails the
+                         old file is left as it is and the run still succeeds
     levels.json          the four levels, their chance ranges and the odds
                          seen for each in the 2022-2026 record (held out)
     meta.json            what each file holds, links, and a note on the address
   Weekly (--weekly; needs data/pacifica.db, and skips cleanly without it):
     latest_results.json  the most recent county result for each county series
-                         the public page already shows
+                         the public page already shows, the last eight county
+                         ocean tests, and the latest Surfrider result at the
+                         creek mouth (latest only; Surfrider's data is not
+                         redistributed here, see bwtf.surfrider.org)
     track_record.json    each scored test from open-data/forecast_scored.csv
                          beside the forecasts logged for it, with a summary
 The two modes write different files, so the daily and weekly workflows never
@@ -47,6 +58,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))  # find forecast_rule even under python -I
 import forecast_rule as fr  # noqa: E402
+import forecast_log as fl  # noqa: E402  (the same Open-Meteo calls and index recurrence)
 
 ROOT = Path(__file__).resolve().parent.parent
 DB = ROOT / "data" / "pacifica.db"
@@ -54,6 +66,7 @@ OPEN = ROOT / "open-data"
 LOG = OPEN / "forecast_log.csv"
 SCORED = OPEN / "forecast_scored.csv"
 FROZEN = OPEN / "rule_v0_1_worked.csv"
+DAILY_CSV = OPEN / "daily_rain_and_ground.csv"
 MODEL = ROOT / "models" / "forecast_v0_1.json"
 OUT = ROOT / "docs" / "api" / "v1"
 
@@ -76,6 +89,30 @@ CAVEATS = [
 WEATHER_TEXT = {"rain_day0_src", "rain_day1_src", "rain_day2_src", "weather_source"}
 SCORED_LEADS = (0, 1, 3)
 SAMPLED_BY = "San Mateo County Environmental Health"
+COUNTY_SOURCE = "https://data.ca.gov/dataset/surface-water-fecal-indicator-bacteria-results"
+
+# Surfrider's creek-mouth site. Only the latest result is published here; the
+# standard is the freshwater 110 the public page already uses for this series
+# (docs/inferences.md section 8: the brackish mouth is judged as fresh water).
+SURFRIDER = dict(key="surfrider_creek_mouth_enterococcus",
+                 station="Beach at creek mouth (Surfrider site Linda Mar Beach/San Pedro Creek)",
+                 site_name="Linda Mar Beach/San Pedro Creek",
+                 sampled_by="Surfrider Foundation Blue Water Task Force, San Mateo County chapter",
+                 source_url="https://bwtf.surfrider.org/", analyte="enterococcus", standard=110)
+RECENT_COUNTY_TESTS = 8
+
+# Definitions used by the new fields (see docs/api/README.md).
+HISTORY_BEFORE, HISTORY_AFTER = 13, 6      # conditions.json: 13 days before today .. 6 after
+RAIN30_DAYS = 30                           # today and the 29 days before
+RAIN_DAY_MM, STORM_DAY_MM = 1.0, 5.0       # pipeline/features.py: an event is a run of days
+                                           # with >= 1 mm; a storm day has >= 5 mm
+SHADOW_KEEP = 0.73                         # docs/inferences.md section 4 (rain shadow)
+WATER_T = (-1.59, 1.05)                    # docs/inferences.md section 5; 7-day trailing mean air,
+AIR_WINDOW, AIR_MIN_DAYS = 7, 3            # at least 3 days, as pipeline/export_ledger.py
+TEMP_TREND_DAYS, TEMP_TREND_C = 3, 0.5     # water-temperature trend (needs the owner's approval)
+NORMAL_FROM = "1998-10-01"                 # ground normal: skip the 1998 start-up months
+NORMAL_BELOW, NORMAL_ABOVE = 70.0, 130.0   # per cent of normal; the cut-offs of inferences.md s. 11
+PUSH_NONE, PUSH_CLEAR = 2.0, 10.0          # percentage points (needs the owner's approval)
 
 # The county series the public page (pipeline/export_ledger.py) already shows,
 # with the same station and analyte filters, and the standard the page draws
@@ -151,6 +188,56 @@ def beyond(rain3, ground, rng):
     return bool(reasons), (" ".join(reasons) or None)
 
 
+def push_reference():
+    """Median rain3 and ground index among the 243 tests the rule was fitted on."""
+    f = pd.read_csv(FROZEN, float_precision="round_trip")
+    return float(f.rain3_mm.median()), float(f.ground_idx.median()), len(f)
+
+
+def push(rain3, ground, ref):
+    """How far each input moves the rule's chance from what it would be if that
+    one input were at its median in the fitted record (the other unchanged).
+    Returns {input: {points, direction, size}}; points are percentage points."""
+    med_r3, med_g, _ = ref
+    p = fr.chance(rain3, ground)
+    out = {}
+    for name, alt in (("rain3", fr.chance(med_r3, ground)), ("ground", fr.chance(rain3, med_g))):
+        pts = round(100 * (p - alt), 1)
+        size = "none" if abs(pts) < PUSH_NONE else ("a_little" if abs(pts) < PUSH_CLEAR else "clear")
+        out[name] = {"points": pts, "direction": "none" if size == "none" else ("up" if pts > 0 else "down"),
+                     "size": size}
+    return out
+
+
+def water_day(d):
+    """Day of the water year (Oct 1 = 1), exactly as pipeline/features.py."""
+    doy = d.timetuple().tm_yday
+    return doy - 273 if doy >= 274 else doy + 92
+
+
+def ground_normals():
+    """{day of water year: (mean ground index, years)} from open-data/daily_rain_and_ground.csv,
+    from NORMAL_FROM on. The file is in the repository, so both workflows have it."""
+    d = pd.read_csv(DAILY_CSV, float_precision="round_trip")
+    d["date"] = pd.to_datetime(d.date)
+    d = d[d.date >= NORMAL_FROM].dropna(subset=["ground_idx"])
+    d["wd"] = [water_day(x) for x in d.date]
+    g = d.groupby("wd").ground_idx.agg(["mean", "count"])
+    first, last = d.date.min().date().isoformat(), d.date.max().date().isoformat()
+    return {int(k): (float(r["mean"]), int(r["count"])) for k, r in g.iterrows()}, first, last
+
+
+def ground_vs_normal(day, g, normals):
+    table, first, last = normals
+    m = table.get(water_day(date.fromisoformat(day)))
+    if not m or m[0] <= 0:
+        return None
+    pct = 100 * g / m[0]
+    return {"normal_idx": round(m[0], 3), "pct_of_normal": round(pct, 1),
+            "compared_to_normal": "below" if pct < NORMAL_BELOW else ("above" if pct > NORMAL_ABOVE else "near"),
+            "years": m[1], "normal_from": first, "normal_to": last}
+
+
 def forecast_file(today, now):
     with open(LOG, encoding="utf-8", newline="") as f:
         rows = list(csv.DictReader(f))
@@ -165,6 +252,8 @@ def forecast_file(today, now):
         raise SystemExit(f"issue {issue} mixes rule versions {sorted(versions)}")
     odds = model_levels()
     rng = fitted_range()
+    ref = push_reference()
+    normals = ground_normals()
     weather_cols = list(latest[0].keys())[list(latest[0].keys()).index("rule_version") + 1:]
 
     days = []
@@ -185,13 +274,109 @@ def forecast_file(today, now):
             "weather": {c: (r[c] or None) if c in WEATHER_TEXT else number(r[c]) for c in weather_cols},
             "beyond_experience": out_of_range,
             "beyond_reason": reason,
+            "push": push(rain3, ground, ref),
+            "ground_normal": ground_vs_normal(r["target_date"], ground, normals),
         })
     return {**header(versions.pop(), now),
             "issue_date": issue,
             "issued_at_utc": latest[0]["issued_at_utc"],
             "stale": issue != today.isoformat(),
             "caveats": CAVEATS,
+            "push_reference": {"rain3_mm": round(ref[0], 2), "ground_idx": round(ref[1], 3), "tests": ref[2]},
             "days": days}
+
+
+def conditions_file(today, now):
+    """Rain, flow, ground, rain shadow and estimated creek temperature around today,
+    from Open-Meteo through pipeline/forecast_log.py's own fetch functions.
+    Raises fl.LogError if the rain cannot be had."""
+    fc = fl.get_forecast()
+    rain, src = fl.get_rain(today, fc)
+    days = sorted(rain)
+    flow, ground = fl.ground_index(rain, days)
+    shadow, s = {}, 0.0
+    for d in days:
+        s = SHADOW_KEEP * s + rain[d]
+        shadow[d] = s
+
+    # air temperature: the archive for past days, the forecast call where the archive has none
+    first = today - pd.Timedelta(days=HISTORY_BEFORE + AIR_WINDOW).to_pytimedelta()
+    last = today + pd.Timedelta(days=HISTORY_AFTER).to_pytimedelta()
+    real_yesterday = datetime.now(ZoneInfo(TZ_NAME)).date() - pd.Timedelta(days=1).to_pytimedelta()
+    air = {}
+    try:
+        arch, _ = fl.daily_values(fl.ARCHIVE_URL, {"start_date": first.isoformat(),
+                                                   "end_date": min(last, real_yesterday).isoformat()},
+                                  ["temperature_2m_mean"])
+        air.update({d: v for d, v in arch["temperature_2m_mean"].items() if v is not None})
+    except fl.LogError as e:
+        print(f"note: archive temperature call failed ({e})", file=sys.stderr)
+    for d, v in ((fc or {}).get("temperature_2m_mean") or {}).items():
+        if d not in air and v is not None:
+            air[d] = v
+    span = [first + pd.Timedelta(days=i).to_pytimedelta() for i in range((last - first).days + 1)]
+
+    def water_t(d):
+        w = [air[x] for x in span if d - pd.Timedelta(days=AIR_WINDOW - 1).to_pytimedelta() <= x <= d and x in air]
+        return WATER_T[0] + WATER_T[1] * (sum(w) / len(w)) if len(w) >= AIR_MIN_DAYS else None
+
+    out_days = []
+    for i in range(-HISTORY_BEFORE, HISTORY_AFTER + 1):
+        d = today + pd.Timedelta(days=i).to_pytimedelta()
+        wt = water_t(d)
+        out_days.append({"date": d.isoformat(), "rain_mm": round(rain[d], 2), "rain_src": src[d],
+                         "flow_idx": round(flow[d], 3), "ground_idx": round(ground[d], 3),
+                         "rain_shadow": round(shadow[d], 2),
+                         "air_temp_mean_c": round(air[d], 1) if d in air else None,
+                         "water_temp_est_c": round(wt, 1) if wt is not None else None})
+
+    # the last 30 days' rain (today included) and the storms in it
+    win = [today - pd.Timedelta(days=k).to_pytimedelta() for k in range(RAIN30_DAYS - 1, -1, -1)]
+    storms, cur = [], None
+    for d in days:
+        if d > today:
+            break
+        if rain[d] >= RAIN_DAY_MM:
+            if cur is None:
+                cur = {"start": d, "end": d, "total": 0.0, "peak": 0.0, "fc": False}
+            cur["end"], cur["total"] = d, cur["total"] + rain[d]
+            cur["peak"] = max(cur["peak"], rain[d])
+            cur["fc"] = cur["fc"] or src[d] == "forecast"
+            cur.setdefault("storm_in_window", False)
+            if rain[d] >= STORM_DAY_MM and d >= win[0]:
+                cur["storm_in_window"] = True
+        elif cur is not None:
+            storms.append(cur); cur = None
+    if cur is not None:
+        storms.append(cur)
+    storms = [{"start": e["start"].isoformat(), "end": e["end"].isoformat(), "total_mm": round(e["total"], 2),
+               "wettest_day_mm": round(e["peak"], 2), "includes_forecast": e["fc"]}
+              for e in storms if e.get("storm_in_window")]
+
+    t0 = water_t(today)
+    tn = water_t(today + pd.Timedelta(days=TEMP_TREND_DAYS).to_pytimedelta())
+    trend = None
+    if t0 is not None and tn is not None:
+        trend = "steady" if abs(tn - t0) < TEMP_TREND_C else ("rising" if tn > t0 else "falling")
+    yday, tmrw = today - pd.Timedelta(days=1).to_pytimedelta(), today + pd.Timedelta(days=1).to_pytimedelta()
+    f0, f_1, f1 = flow[today], flow[yday], flow[tmrw]
+    flow_trend = "peak" if f0 >= f_1 and f0 >= f1 else ("rising" if f1 > f0 else "falling")
+
+    return {**header(fr.VERSION, now),
+            "as_of": today.isoformat(),
+            "source": fl.WEATHER_SOURCE + "; ERA5 archive for past days",
+            "point": {"lat": fl.WX_LAT, "lon": fl.WX_LON},
+            "note": "Rain is a weather-model estimate, not a gauge. flow_idx, ground_idx and rain_shadow are "
+                    "indexes built from rain alone (no units). water_temp_est_c is an estimate of creek water "
+                    "temperature from air temperature, not a measurement; treat it as +/- 2 degrees C at best.",
+            "days": out_days,
+            "rain_30d": {"from": win[0].isoformat(), "to": today.isoformat(),
+                         "total_mm": round(sum(rain[d] for d in win), 2),
+                         "forecast_mm": round(sum(rain[d] for d in win if src[d] == "forecast"), 2),
+                         "storms": storms},
+            "water_temp_trend": trend,
+            "flow_trend": flow_trend,
+            "caveats": CAVEATS}
 
 
 def levels_file(now):
@@ -220,12 +405,16 @@ def meta_file(now):
             "files": [
                 {"name": "forecast.json", "updated": "daily",
                  "holds": "The latest forecast: seven days, each with its level, chance, inputs and logged weather."},
+                {"name": "conditions.json", "updated": "daily",
+                 "holds": "Rain, the wetness indexes and the estimated creek temperature for the 13 days before "
+                          "today to 6 days after, and the last 30 days' rain and storms."},
                 {"name": "levels.json", "updated": "when the rule changes",
                  "holds": "The four levels, their chance ranges, the odds seen for each, the standard and the caveats."},
                 {"name": "meta.json", "updated": "when the files change",
                  "holds": "This list, the links, and the note on the address."},
                 {"name": "latest_results.json", "updated": "weekly",
-                 "holds": "The most recent county test result for each county series the project's page shows."},
+                 "holds": "The most recent county test result for each county series the project's page shows, "
+                          "the last eight county ocean tests, and the latest Surfrider result at the creek mouth."},
                 {"name": "track_record.json", "updated": "weekly",
                  "holds": "Each county test that had a forecast logged for it, the forecasts, and a summary by level."},
             ],
@@ -242,6 +431,7 @@ def meta_file(now):
 # ------------------------------------------------------------------ weekly files
 def latest_results_file(con, today, now):
     out = []
+    recent = None
     for s in SERIES:
         df = pd.read_sql("""SELECT SampleDate, Result FROM ceden_raw
                             WHERE StationName LIKE ? AND Analyte LIKE ?""",
@@ -254,18 +444,52 @@ def latest_results_file(con, today, now):
         last = df.iloc[-1]
         d = last.date.date()
         v = float(last.v)
-        out.append({"series": s["key"], "station": s["station"], "sampled_by": SAMPLED_BY,
-                    "analyte": s["analyte"], "date": d.isoformat(),
-                    "result_mpn": int(v) if v.is_integer() else round(v, 1),
-                    "unit": "MPN per 100 mL", "standard_mpn": s["standard"],
-                    "compared_to_standard": "over" if v > s["standard"] else "under",
-                    "days_old": (today - d).days})
+        row = {"series": s["key"], "station": s["station"], "sampled_by": SAMPLED_BY,
+               "analyte": s["analyte"], "date": d.isoformat(),
+               "result_mpn": int(v) if v.is_integer() else round(v, 1),
+               "unit": "MPN per 100 mL", "standard_mpn": s["standard"],
+               "compared_to_standard": "over" if v > s["standard"] else "under",
+               "days_old": (today - d).days, "source_url": COUNTY_SOURCE, "as_of": today.isoformat()}
+        if s["key"] == "lm5_enterococcus":
+            row["recent"] = [{"date": r.date.date().isoformat(),
+                              "result_mpn": int(r.v) if float(r.v).is_integer() else round(float(r.v), 1),
+                              "compared_to_standard": "over" if r.v > s["standard"] else "under"}
+                             for r in df.tail(RECENT_COUNTY_TESTS).itertuples()]
+        out.append(row)
+    sr = surfrider_latest(con, today)
+    if sr:
+        out.append(sr)
     return {**header(fr.VERSION, now),
             "note": "County results reach the state's public database weeks after the sample, so these "
                     "are not current conditions. For current postings see the county's beach page.",
             "county_beach_advisories": COUNTY_ADVISORIES,
             "results": out,
             "caveats": CAVEATS}
+
+
+def surfrider_latest(con, today):
+    """The latest Surfrider enterococcus result at the creek mouth (highest of the
+    day, as on the public page), or None. Nothing else from that table is published."""
+    s = SURFRIDER
+    try:
+        df = pd.read_sql("""SELECT collection_date, entero FROM bwtf_lindamar WHERE "site name" = ?""",
+                         con, params=[s["site_name"]])
+    except Exception as e:  # table missing on a partial database
+        print(f"note: no Surfrider results ({e})", file=sys.stderr)
+        return None
+    df["date"] = pd.to_datetime(df.collection_date, errors="coerce").dt.normalize()
+    df["v"] = pd.to_numeric(df.entero, errors="coerce")
+    df = df.dropna(subset=["date", "v"]).groupby("date", as_index=False).v.max().sort_values("date")
+    if df.empty:
+        return None
+    last = df.iloc[-1]
+    d, v = last.date.date(), float(last.v)
+    return {"series": s["key"], "station": s["station"], "sampled_by": s["sampled_by"],
+            "analyte": s["analyte"], "date": d.isoformat(),
+            "result_mpn": int(v) if v.is_integer() else round(v, 1),
+            "unit": "MPN per 100 mL", "standard_mpn": s["standard"],
+            "compared_to_standard": "over" if v > s["standard"] else "under",
+            "days_old": (today - d).days, "source_url": s["source_url"], "as_of": today.isoformat()}
 
 
 def track_record_file(now):
@@ -323,6 +547,12 @@ def main():
 
     if not args.weekly:
         write("forecast.json", forecast_file(today, now), dry)
+        try:
+            write("conditions.json", conditions_file(today, now), dry)
+        except (fl.LogError, KeyError, TypeError, ValueError) as e:
+            # The forecast log is already written by now; a failed fetch here must not stop
+            # it being committed. The old conditions.json stays, and its as_of shows its age.
+            print(f"note: conditions.json not updated ({e})", file=sys.stderr)
         write("levels.json", levels_file(now), dry)
         write("meta.json", meta_file(now), dry)
         return 0
