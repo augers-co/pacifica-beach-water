@@ -11,11 +11,19 @@ name: Daily forecast log
 
 on:
   schedule:
-    # 13:30 UTC is 05:30 Pacific Standard Time (winter) but 06:30 Pacific
-    # Daylight Time (summer); GitHub cron is UTC only, so it drifts an hour
-    # with daylight saving, and scheduled runs can also start some minutes
-    # late. The script dates its rows by the Pacific calendar day at run time.
+    # GitHub cron is UTC only and scheduled runs can start hours late or be
+    # skipped (in November 2026 they ran 5 to 8 hours late), so the job is
+    # scheduled several times. The first run that lands writes the day's rows;
+    # later runs find them already there and write nothing to the log (they
+    # only refresh conditions.json). All five times fall on the same Pacific
+    # calendar day in both winter and summer: 09:17 UTC is 01:17 PST / 02:17
+    # PDT, 19:43 UTC is 11:43 PST / 12:43 PDT. The script dates its rows by the
+    # Pacific calendar day at run time.
+    - cron: "17 9 * * *"
+    - cron: "47 11 * * *"
     - cron: "30 13 * * *"
+    - cron: "13 16 * * *"
+    - cron: "43 19 * * *"
   workflow_dispatch:
 
 concurrency:
