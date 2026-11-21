@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-20T18:31:47Z",
+  "generated_at": "2026-11-21T00:57:11Z",
   "rule_version": "0.1",
   "issue_date": "2026-11-20",
   "issued_at_utc": "2026-11-20T18:31:45Z",
@@ -67,12 +67,12 @@
         }
       },
       "ground_normal": {
-        "normal_idx": 27.57,
-        "pct_of_normal": 165.5,
+        "normal_idx": 28.219,
+        "pct_of_normal": 161.7,
         "compared_to_normal": "above",
-        "years": 28,
+        "years": 29,
         "normal_from": "1998-10-01",
-        "normal_to": "2026-10-23"
+        "normal_to": "2026-11-20"
       }
     },
     {
@@ -125,12 +125,12 @@
         }
       },
       "ground_normal": {
-        "normal_idx": 28.339,
-        "pct_of_normal": 197.7,
+        "normal_idx": 28.372,
+        "pct_of_normal": 197.5,
         "compared_to_normal": "above",
         "years": 28,
         "normal_from": "1998-10-01",
-        "normal_to": "2026-10-23"
+        "normal_to": "2026-11-20"
       }
     },
     {
@@ -183,12 +183,12 @@
         }
       },
       "ground_normal": {
-        "normal_idx": 29.14,
-        "pct_of_normal": 229.3,
+        "normal_idx": 29.172,
+        "pct_of_normal": 229.1,
         "compared_to_normal": "above",
         "years": 28,
         "normal_from": "1998-10-01",
-        "normal_to": "2026-10-23"
+        "normal_to": "2026-11-20"
       }
     },
     {
@@ -241,12 +241,12 @@
         }
       },
       "ground_normal": {
-        "normal_idx": 29.925,
-        "pct_of_normal": 254.7,
+        "normal_idx": 29.962,
+        "pct_of_normal": 254.4,
         "compared_to_normal": "above",
         "years": 28,
         "normal_from": "1998-10-01",
-        "normal_to": "2026-10-23"
+        "normal_to": "2026-11-20"
       }
     },
     {
@@ -299,12 +299,12 @@
         }
       },
       "ground_normal": {
-        "normal_idx": 30.754,
-        "pct_of_normal": 274.0,
+        "normal_idx": 30.79,
+        "pct_of_normal": 273.7,
         "compared_to_normal": "above",
         "years": 28,
         "normal_from": "1998-10-01",
-        "normal_to": "2026-10-23"
+        "normal_to": "2026-11-20"
       }
     },
     {
@@ -357,12 +357,12 @@
         }
       },
       "ground_normal": {
-        "normal_idx": 31.592,
-        "pct_of_normal": 288.2,
+        "normal_idx": 31.622,
+        "pct_of_normal": 287.9,
         "compared_to_normal": "above",
         "years": 28,
         "normal_from": "1998-10-01",
-        "normal_to": "2026-10-23"
+        "normal_to": "2026-11-20"
       }
     },
     {
@@ -415,12 +415,12 @@
         }
       },
       "ground_normal": {
-        "normal_idx": 32.326,
-        "pct_of_normal": 301.8,
+        "normal_idx": 32.35,
+        "pct_of_normal": 301.5,
         "compared_to_normal": "above",
         "years": 28,
         "normal_from": "1998-10-01",
-        "normal_to": "2026-10-23"
+        "normal_to": "2026-11-20"
       }
     }
   ]
