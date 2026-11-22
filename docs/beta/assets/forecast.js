@@ -259,9 +259,10 @@
     }
     stats.hidden = !stats.children.length;
 
-    var cut = "Issued " + longDate(f.issue_date);
+    var cut = (f.carried ? "Issued yesterday, " : "Issued ") + longDate(f.issue_date);
     var thru = measuredThrough(f.days[0]);
     if (thru) cut += " · Data through " + longDate(thru);
+    if (f.carried) cut += " · Today's forecast is not out yet";
     $("t-issued").textContent = cut;
   }
   function stat(label, val, unit, sub) {
@@ -486,7 +487,11 @@
 
     if (f.err || !f.v || !Array.isArray(f.v.days) || !f.v.days.length) { noForecast("The forecast could not be loaded."); return; }
     var fv = f.v;
-    if (fv.stale === true || fv.issue_date !== today) { noForecast("No current forecast is available."); return; }
+    // Until today's forecast is issued (the daily job can start hours late),
+    // show yesterday's forecast for today, labelled as such. Anything older: none.
+    if (fv.issue_date !== today && daysBetween(fv.issue_date, today) === 1 && fv.days.length > 1 && fv.days[1].date === today) {
+      fv = Object.assign({}, fv, { days: fv.days.slice(1), carried: true });
+    } else if (fv.stale === true || fv.issue_date !== today) { noForecast("No current forecast is available."); return; }
     var cond = co.err ? null : usableConditions(co.v, today);
     var resv = res.err ? null : res.v;
     try {

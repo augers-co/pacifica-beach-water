@@ -13,12 +13,15 @@ on:
   schedule:
     # GitHub cron is UTC only and scheduled runs can start hours late or be
     # skipped (in November 2026 they ran 5 to 8 hours late), so the job is
-    # scheduled several times. The first run that lands writes the day's rows;
+    # scheduled several times, starting just after midnight Pacific. The first
+    # run that lands writes the day's rows;
     # later runs find them already there and write nothing to the log (they
-    # only refresh conditions.json). All five times fall on the same Pacific
-    # calendar day in both winter and summer: 09:17 UTC is 01:17 PST / 02:17
+    # only refresh conditions.json). The Forecast page shows yesterday's forecast
+    # for today, labelled, until today's lands. All six times fall on the same Pacific
+    # calendar day in both winter and summer: 08:05 UTC is 00:05 PST / 01:05
     # PDT, 19:43 UTC is 11:43 PST / 12:43 PDT. The script dates its rows by the
     # Pacific calendar day at run time.
+    - cron: "5 8 * * *"
     - cron: "17 9 * * *"
     - cron: "47 11 * * *"
     - cron: "30 13 * * *"
