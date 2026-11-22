@@ -115,6 +115,7 @@ h3{font-size:18px; font-weight:800; letter-spacing:-0.005em; line-height:1.25;}
 .statval small{font-size:13px; font-weight:700;}
 .note13{font-size:13.5px; color:var(--muted);}
 .issued{font-size:13px; color:var(--muted);}
+section + .note13{margin-top:14px;} .note13 + .issued{margin-top:8px;}
 .reportcard{margin:0 20px; background:#f5f6f7; border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:10px;}
 .reportcard a{font-family:var(--fhead); font-size:14px; font-weight:700; padding:12px 0; min-height:44px; display:inline-flex; align-items:center;}
 .fsec{display:flex; flex-direction:column; gap:12px;}
@@ -172,7 +173,7 @@ h3{font-size:18px; font-weight:800; letter-spacing:-0.005em; line-height:1.25;}
 .exbox{margin:0 20px; border:1px solid var(--line); border-radius:16px; padding:18px; display:flex; flex-direction:column; gap:10px;}
 .recrow{display:flex; justify-content:space-between; align-items:center; gap:12px; border-top:1px solid var(--line); padding:10px 0;}
 @media (max-width:380px){ .oddsbig{font-size:54px;} }
-.note13 a{display:inline-flex; align-items:center; min-height:44px;}
+.note13 a{padding:12px 0;} /* inline: the padding enlarges the tap area without changing the line height */
 .beyond{font-size:14px; line-height:1.4; color:#171717; background:#fdf1ec; border-left:3px solid var(--vhigh); border-radius:4px; padding:8px 10px; margin:0;}
 .col8{display:flex; flex-direction:column; gap:8px;}
 .g8{display:grid; grid-template-columns:repeat(8,minmax(0,1fr)); gap:4px; font-family:var(--fhead); font-size:11px; font-weight:800; text-align:center;}
