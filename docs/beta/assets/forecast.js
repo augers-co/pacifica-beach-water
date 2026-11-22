@@ -118,7 +118,7 @@
       var col = dry ? "#d5d9dc" : (r.measured ? "#2b8fd6" : "#a9d0ee");
       body += '<rect x="' + (i * w + (w - bw) / 2).toFixed(1) + '" y="' + (44 - h).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + h.toFixed(1) + '" fill="' + col + '"></rect>';
     }
-    return svgOpen("Daily rain, measured and forecast") + shade(fr) + body + todayLine(fr) + "</svg>";
+    return svgOpen("Daily rain, estimated and forecast") + shade(fr) + body + todayLine(fr) + "</svg>";
   }
   // Solid up to today, dashed after; optional fill (darker to date, lighter ahead).
   function lineChart(fr, vals, stroke, fillArea, label) {
@@ -241,8 +241,7 @@
     var stats = $("t-stats"); stats.textContent = "";
     var w = d.weather || {}, inp = d.inputs || {};
     if (isNum(inp.rain3_mm)) {
-      stats.appendChild(stat("Rain, last 3 days", in1(inp.rain3_mm), " in",
-        (isNum(w.rain_day0_mm) && inp.rain3_mm > 0 && w.rain_day0_mm / inp.rain3_mm > 0.5) ? "most of it today" : ""));
+      stats.appendChild(stat("Rain, 2 days and today", in1(inp.rain3_mm), " in", "model estimate"));
     }
     if (cond && cond.rain_30d && isNum(cond.rain_30d.total_mm)) {
       var st = (cond.rain_30d.storms || []).filter(function (s) { return s && s.start; });
@@ -258,6 +257,29 @@
         "latest is " + shortDate(lm.recent[lm.recent.length - 1].date)));
     }
     stats.hidden = !stats.children.length;
+
+    // a nearby volunteer gauge: only when its reports for today and the two days before are all in
+    var gl = $("t-gauge"), gtext = "";
+    if (gl) {
+      var gd = [today, addDays(today, -1), addDays(today, -2)];
+      var gst = cond && cond.gauge && Array.isArray(cond.gauge.stations) ? cond.gauge.stations : [];
+      var pick = function (name) {
+        var s = gst.filter(function (x) { return x && x.name === name && Array.isArray(x.daily); })[0];
+        if (!s) return null;
+        var sum = 0;
+        for (var k = 0; k < gd.length; k++) {
+          var rep = s.daily.filter(function (x) { return x && x.date === gd[k]; })[0];
+          if (!rep || !isNum(rep.inches)) return null;
+          sum += rep.inches;
+        }
+        return sum.toFixed(2);
+      };
+      var a = pick("Pacifica 1.9 S"), b = a === null ? pick("Pacifica 0.3 W") : null;
+      if (a !== null) gtext = "Measured at a volunteer rain gauge in Linda Mar: " + a + " in over the 3 days to 7am today.";
+      else if (b !== null) gtext = "Measured at a volunteer rain gauge 2 miles north of the creek: " + b + " in over the 3 days to 7am today.";
+      gl.textContent = gtext;
+      gl.hidden = !gtext;
+    }
 
     var cut = (f.carried ? "Issued yesterday, " : "Issued ") + longDate(f.issue_date);
     var thru = measuredThrough(f.days[0]);

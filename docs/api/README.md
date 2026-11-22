@@ -95,6 +95,7 @@ the log (`forecast.json`).
 | `rain_30d.storms[]` | The storms in that window. A rain event is a run of days with 1 mm or more each, and it counts as a storm when at least one of its days inside the window had 5 mm or more (the two thresholds in `pipeline/features.py`). `start`, `end` (an event may start before the window; `end` is at most `as_of`), `total_mm`, `wettest_day_mm`, `includes_forecast`. |
 | `water_temp_trend` | `rising`, `falling` or `steady`: the estimate 3 days after `as_of` against the estimate on `as_of`; `steady` when they are less than 0.5 degrees C apart. |
 | `flow_trend` | `peak` (flow on `as_of` is at least that of the day before and the day after), `rising` (the day after is higher) or `falling`. |
+| `gauge` | Measured rain from two CoCoRaHS volunteer gauges (Pacifica 0.3 W, about 2 miles north of the creek, and Pacifica 1.9 S, in the Linda Mar valley), fetched from NOAA ACIS in the same run, or `null` when that fetch fails. `stations[]` holds `sid`, `name` and `daily[]`, the last 7 dates as `date` and `inches`. A trace is 0; a missing report or a multi-day accumulation is `null`. Each report covers the 24 hours to about 7am on its date. `source` and `source_url` name the service. |
 
 ### `levels.json` (changes only with the rule)
 

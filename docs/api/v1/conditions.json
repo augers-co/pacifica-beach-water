@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-22T18:40:13Z",
+  "generated_at": "2026-11-22T19:58:04Z",
   "rule_version": "0.1",
   "as_of": "2026-11-22",
   "source": "Open-Meteo forecast API (best match, model not named in response); Open-Meteo marine API; ERA5 archive for past days",
@@ -147,8 +147,8 @@
       "flow_idx": 93.211,
       "ground_idx": 63.19,
       "rain_shadow": 36.72,
-      "air_temp_mean_c": 10.4,
-      "water_temp_est_c": 10.4
+      "air_temp_mean_c": 10.3,
+      "water_temp_est_c": 10.3
     },
     {
       "date": "2026-11-23",
@@ -157,8 +157,8 @@
       "flow_idx": 83.889,
       "ground_idx": 70.616,
       "rain_shadow": 26.8,
-      "air_temp_mean_c": 10.4,
-      "water_temp_est_c": 10.0
+      "air_temp_mean_c": 10.8,
+      "water_temp_est_c": 10.1
     },
     {
       "date": "2026-11-24",
@@ -167,8 +167,8 @@
       "flow_idx": 78.151,
       "ground_idx": 76.886,
       "rain_shadow": 24.87,
-      "air_temp_mean_c": 12.3,
-      "water_temp_est_c": 10.1
+      "air_temp_mean_c": 13.2,
+      "water_temp_est_c": 10.3
     },
     {
       "date": "2026-11-25",
@@ -178,7 +178,7 @@
       "ground_idx": 82.395,
       "rain_shadow": 28.45,
       "air_temp_mean_c": 13.7,
-      "water_temp_est_c": 10.3
+      "water_temp_est_c": 10.5
     },
     {
       "date": "2026-11-26",
@@ -188,7 +188,7 @@
       "ground_idx": 87.736,
       "rain_shadow": 20.77,
       "air_temp_mean_c": 13.1,
-      "water_temp_est_c": 10.6
+      "water_temp_est_c": 10.8
     },
     {
       "date": "2026-11-27",
@@ -198,7 +198,7 @@
       "ground_idx": 92.651,
       "rain_shadow": 15.16,
       "air_temp_mean_c": 14.0,
-      "water_temp_est_c": 11.1
+      "water_temp_est_c": 11.2
     },
     {
       "date": "2026-11-28",
@@ -208,7 +208,7 @@
       "ground_idx": 96.664,
       "rain_shadow": 11.27,
       "air_temp_mean_c": 15.5,
-      "water_temp_est_c": 11.8
+      "water_temp_est_c": 12.0
     }
   ],
   "rain_30d": {
@@ -242,6 +242,81 @@
   },
   "water_temp_trend": "steady",
   "flow_trend": "falling",
+  "gauge": {
+    "source": "CoCoRaHS volunteer gauges via NOAA ACIS",
+    "source_url": "https://data.rcc-acis.org/",
+    "note": "Each report covers the 24 hours to about 7am on its date.",
+    "stations": [
+      {
+        "sid": "US1CASM0001",
+        "name": "Pacifica 0.3 W",
+        "daily": [
+          {
+            "date": "2026-11-16",
+            "inches": 1.37
+          },
+          {
+            "date": "2026-11-17",
+            "inches": 0.34
+          },
+          {
+            "date": "2026-11-18",
+            "inches": 1.02
+          },
+          {
+            "date": "2026-11-19",
+            "inches": 2.64
+          },
+          {
+            "date": "2026-11-20",
+            "inches": 0.73
+          },
+          {
+            "date": "2026-11-21",
+            "inches": null
+          },
+          {
+            "date": "2026-11-22",
+            "inches": null
+          }
+        ]
+      },
+      {
+        "sid": "US1CASM0033",
+        "name": "Pacifica 1.9 S",
+        "daily": [
+          {
+            "date": "2026-11-16",
+            "inches": 1.02
+          },
+          {
+            "date": "2026-11-17",
+            "inches": 0.59
+          },
+          {
+            "date": "2026-11-18",
+            "inches": 0.25
+          },
+          {
+            "date": "2026-11-19",
+            "inches": 3.95
+          },
+          {
+            "date": "2026-11-20",
+            "inches": 0.49
+          },
+          {
+            "date": "2026-11-21",
+            "inches": 0.03
+          },
+          {
+            "date": "2026-11-22",
+            "inches": 0.43
+          }
+        ]
+      }
+    ]
+  },
   "caveats": [
     "This forecast is experimental.",
     "It is not an official advisory.",

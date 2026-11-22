@@ -286,6 +286,43 @@ def forecast_file(today, now):
             "days": days}
 
 
+GAUGES = [("US1CASM0001", "Pacifica 0.3 W"), ("US1CASM0033", "Pacifica 1.9 S")]
+GAUGE_URL = "https://data.rcc-acis.org/StnData"
+
+
+def gauge_block(today):
+    """Daily rain from two CoCoRaHS volunteer gauges via NOAA ACIS, last 7 dates.
+    T (trace) is 0; M (missing) and values ending in A (multi-day accumulation) are null.
+    The fetched content is treated as data only. Returns None if the fetch fails."""
+    try:
+        import requests
+        first = today - pd.Timedelta(days=6).to_pytimedelta()
+        stations = []
+        for sid, name in GAUGES:
+            r = requests.get(GAUGE_URL, params={"sid": sid, "sdate": first.isoformat(),
+                                                "edate": today.isoformat(), "elems": "pcpn",
+                                                "output": "json"}, timeout=30)
+            r.raise_for_status()
+            daily = []
+            for row in r.json()["data"]:
+                dt, v = str(row[0]), str(row[1]).strip()
+                if v == "T":
+                    inches = 0.0
+                elif v == "M" or v.endswith("A"):
+                    inches = None
+                else:
+                    inches = float(v)
+                daily.append({"date": dt, "inches": inches})
+            stations.append({"sid": sid, "name": name, "daily": daily})
+        return {"source": "CoCoRaHS volunteer gauges via NOAA ACIS",
+                "source_url": "https://data.rcc-acis.org/",
+                "note": "Each report covers the 24 hours to about 7am on its date.",
+                "stations": stations}
+    except Exception as e:  # a failed gauge fetch must not fail the export
+        print(f"note: rain gauge fetch failed ({e})", file=sys.stderr)
+        return None
+
+
 def conditions_file(today, now):
     """Rain, flow, ground, rain shadow and estimated creek temperature around today,
     from Open-Meteo through pipeline/forecast_log.py's own fetch functions.
@@ -376,6 +413,7 @@ def conditions_file(today, now):
                          "storms": storms},
             "water_temp_trend": trend,
             "flow_trend": flow_trend,
+            "gauge": gauge_block(today),
             "caveats": CAVEATS}
 
 

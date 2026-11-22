@@ -61,6 +61,7 @@
         </div>
         <div class="hr"></div>
         <div class="stats" id="t-stats"></div>
+        <div class="cap" id="t-gauge" hidden style="margin-top:12px"></div>
       </section>
       <p class="note13">A best guess from past patterns. Not a measurement and not an official advisory. None of these levels means the water is safe. <a href="#disclaimer">Full disclaimer</a></p>
       <p class="issued" id="t-issued"></p>
@@ -92,8 +93,8 @@
     <div class="bcard">
       <div class="col2"><h3>What sets the level</h3><div class="t145m">The forecast is worked out from these two readings alone.</div></div>
       <div class="drv" id="d-rain">
-        <div class="drvhead"><div class="drvtitle">Rain, last 3 days</div><span class="badge" id="d-rain-badge" hidden></span></div>
-        <div class="drvval"><span class="drvnum" id="d-rain-num"></span><span class="cap">in the last 3 days</span></div>
+        <div class="drvhead"><div class="drvtitle">Rain, 2 days and today</div><span class="badge" id="d-rain-badge" hidden></span></div>
+        <div class="drvval"><span class="drvnum" id="d-rain-num"></span><span class="cap">over 2 days and today, estimated</span></div>
         <div id="d-rain-chart"></div>
         <div class="t14m">Rain washes what is on the streets and in the pipes into the creek. Risk peaks in the first day or two.</div>
       </div>
@@ -128,7 +129,7 @@
       <div class="axis" id="axis-2"></div>
     </div>
     <div class="legend">
-      <div><span style="background:#cfe0ea"></span>Measured or estimated to date</div>
+      <div><span style="background:#cfe0ea"></span>Estimated to date</div>
       <div><span style="background:#f5f6f7;border:1px solid #d5d9dc"></span>Forecast</div>
     </div>
     <p class="t15">The forecast does not look at the calendar. Dry ground already tells it when the dry season has set in. Since 2022, tests from August to November have failed most often.</p>
