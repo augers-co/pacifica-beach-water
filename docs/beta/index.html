@@ -63,7 +63,7 @@
         <div class="stats" id="t-stats"></div>
         <div class="cap" id="t-gauge" hidden style="margin-top:12px"></div>
       </section>
-      <p class="note13">A best guess from past patterns. Not a measurement and not an official advisory. None of these levels means the water is safe. <a href="#disclaimer">Full disclaimer</a></p>
+      <p class="note13">A best guess from past patterns. Not a measurement and not an official advisory. None of these levels means the water is safe. <a href="#disclaimer">Full disclaimer</a> · <a href="#levels">What the levels mean</a></p>
       <p class="issued" id="t-issued"></p>
     </div>
   </div>
@@ -85,6 +85,18 @@
       <div><span style="background:#ee7d2b"></span>Forecast</div>
       <div><span style="border:2px solid #ee7d2b"></span>Outlook, less certain</div>
     </div>
+  </section>
+
+  <section id="levels" class="pad fsec" hidden>
+    <h2>What the levels mean</h2>
+    <p class="t15">Each day's level comes from the forecast's estimate of the chance that the county's test at the creek mouth fails the state standard (over 104 per 100 mL). That chance is grouped into four levels.</p>
+    <div class="lvtablewrap" role="region" aria-label="What the levels mean" tabindex="0">
+      <table class="lvtable">
+        <thead><tr><th>Level</th><th>Chance of failing</th><th>Past tests that failed</th><th>Far over</th></tr></thead>
+        <tbody id="lvl-body"></tbody>
+      </table>
+    </div>
+    <p class="t15">"Usual" is usual for this beach: about 6 in 10 county tests have failed since 2022. "Far over" means above 312, three times the standard. The past-test figures come from 243 county tests from 2022 to 2026, each scored by a version of the model built without that year's tests. None of the levels means the water is safe.</p>
   </section>
 
   <section id="behind" class="pad fsec" hidden>
@@ -164,6 +176,7 @@
     <div class="kick">Track record</div>
     <div class="trhead" id="tr-head" hidden></div>
     <p class="t15">Starts on launch day and shows every miss. It is better at picking out the worst days than the rest. It never calls a day safe.</p>
+    <a class="lnk" href="explore/#track">See each forecast against its result</a>
     <a class="lnk" id="tr-link" href="#record" hidden>Every forecast, and what the test found</a>
     <p id="tr-fail" class="t15" hidden></p>
   </section>

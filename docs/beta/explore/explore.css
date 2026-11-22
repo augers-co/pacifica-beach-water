@@ -163,18 +163,9 @@ section{display:flex; flex-direction:column; gap:12px;}
 .sw{width:14px; height:14px; border-radius:4px;} .sw.dash{width:0; border-left:2px dashed #171717; border-radius:0;}
 
 /* track record */
-.samplehead{display:flex; align-items:center; justify-content:space-between; gap:8px;}
-.samplebadge{font-family:var(--fhead); font-size:13px; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; border:1px solid #171717; border-radius:4px; padding:1px 5px; white-space:nowrap;}
-.tablewrap{overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid var(--line); border-radius:12px;}
-.trtable{border-collapse:collapse; width:100%; min-width:300px; font-size:14px;}
-.trtable th{text-align:left; font-family:var(--fhead); font-size:13px; font-weight:800; color:var(--muted); padding:10px 8px 8px;}
-.trtable th:first-child, .trtable td:first-child{padding-left:12px;} .trtable th:last-child, .trtable td:last-child{padding-right:12px;}
-.trtable td{padding:10px 8px; border-top:1px solid var(--line); vertical-align:top;}
-.trtable .r{text-align:right;} .trtable .d{white-space:nowrap;}
-.fc{display:flex; flex-direction:column; align-items:flex-start; gap:3px;}
+.trlist{display:flex; flex-direction:column; gap:10px;}
+.trlist .card{font-size:14.5px; gap:6px;}
 .lvl{font-family:var(--fhead); font-size:13px; font-weight:800; letter-spacing:0.04em; text-transform:uppercase; border-radius:999px; padding:4px 10px; white-space:nowrap;}
-.res{font-family:var(--fhead); font-weight:800;}
-.over{font-size:13px; font-weight:600; color:#c4281a;} .under{font-size:13px; font-weight:600; color:#171717;}
 
 /* whose work, links, footer */
 .who{display:flex; flex-direction:column; gap:12px;}

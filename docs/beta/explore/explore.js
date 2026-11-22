@@ -26,19 +26,41 @@
   // ---------- Track record ----------
   const LVL = {very_high:["#d43a24","#ffffff"], high:["#ee7d2b",INK], usual:["#f0b46a",INK], lower:["#8fb0c2",INK], lower_than_usual:["#8fb0c2",INK]};
   const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const esc2 = v => String(v ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const WORD = {very_high:"Very high", high:"High", usual:"Usual", lower:"Lower than usual", lower_than_usual:"Lower than usual"};
+  const DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const utc = s => { const p = String(s).split("-"); return Date.UTC(+p[0], +p[1] - 1, +p[2], 12); };
+  const pacificToday = () => new Intl.DateTimeFormat("en-CA", {timeZone:"America/Los_Angeles", year:"numeric", month:"2-digit", day:"2-digit"}).format(new Date());
+  const inch1 = mm => (mm / 25.4).toFixed(1) + " in";
+  const num = v => typeof v === "number" && isFinite(v);
+  const mk = (tag, cls, text) => { const e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; };
+  function chip(key, name){ const c = LVL[key] || ["#f5f6f7", INK], e = mk("span", "lvl", name); e.style.background = c[0]; e.style.color = c[1]; return e; }
   fetch("../../api/v1/track_record.json").then(r => r.ok ? r.json() : null).then(tr => {
-    const tests = tr && Array.isArray(tr.tests) ? tr.tests : [];
-    if(!tests.length) return;            // nothing scored yet: the board's sample rows stay, labelled as samples
-    $("tr-samplehead").hidden = true; $("tr-region").setAttribute("aria-label", "Track record, scrolls sideways");
-    $("tr-body").innerHTML = tests.map(t => {
-      const d = String(t.date || t.test_date || ""), dd = d.length >= 10 ? `${MON[+d.slice(5,7)-1]} ${+d.slice(8,10)}` : esc2(d);
-      const key = String(t.level_key || t.level || "").toLowerCase().replace(/ /g, "_"), c = LVL[key] || ["#f5f6f7", INK];
-      const ch = t.chance != null ? Math.round(t.chance * 100) + "% chance of failing" : "";
-      const v = t.result ?? t.value ?? t.county_result, over = v != null && v > 104;
-      return `<tr><td class="d">${dd}</td><td><div class="fc"><span class="lvl" style="background:${c[0]};color:${c[1]}">${esc2(t.level || "")}</span><span class="fine">${ch}</span></div></td>
-        <td class="r"><div class="res">${v == null ? "–" : Number(v).toLocaleString("en-US")}</div>${v == null ? "" : `<div class="${over ? "over" : "under"}">${over ? "Over 104" : "Under 104"}</div>`}</td></tr>`; }).join("");
-  }).catch(() => {});
+    const today = pacificToday();
+    const tests = (tr && Array.isArray(tr.tests) ? tr.tests : []).filter(t => {
+      if(!t || typeof t.date !== "string" || !t.forecasts || !t.forecasts.lead0 || !num(t.result_mpn)) return false;
+      const age = Math.round((utc(today) - utc(t.date)) / 864e5); return age >= 0 && age <= 61; })
+      .sort((a, b) => a.date < b.date ? 1 : a.date > b.date ? -1 : 0);
+    const list = $("tr-list"); list.textContent = "";
+    if(!tests.length){ $("tr-empty").hidden = false; return; }
+    $("tr-empty").hidden = true;
+    tests.forEach(t => {
+      const d = new Date(utc(t.date)), f = t.forecasts.lead0, card = mk("div", "card line tight");
+      const res = t.far_over ? "far over" : t.result_mpn > 104 ? "failed" : "under 104";
+      card.appendChild(mk("div", "cardtitle", `${DOW[d.getUTCDay()]} ${MON[d.getUTCMonth()]} ${d.getUTCDate()} \u00b7 county test: ${Math.round(t.result_mpn).toLocaleString("en-US")} per 100 mL, ${res}`));
+      const l1 = mk("div"); l1.appendChild(document.createTextNode("Forecast that morning: "));
+      l1.appendChild(chip(f.level_key, WORD[f.level_key] || String(f.level)));
+      l1.appendChild(document.createTextNode(` (${Math.round(f.chance * 100)}% chance of failing)`)); card.appendChild(l1);
+      if(num(t.rain_assumed_mm)) card.appendChild(mk("div", null, `Rain the forecast used: ${inch1(t.rain_assumed_mm)} (2 days and today)`));
+      if(num(t.rain_recorded_mm)){
+        let x = `Rain recorded afterwards: ${inch1(t.rain_recorded_mm)} (model estimate)`;
+        if(num(t.gauge_72h_inches)) x += `; ${t.gauge_72h_inches.toFixed(1)} in at a volunteer rain gauge (3 days to 7am)`;
+        card.appendChild(mk("div", null, x)); }
+      if(t.level_key_with_recorded_rain){
+        const l5 = mk("div"); l5.appendChild(document.createTextNode("With the recorded rain, the level would have been: "));
+        l5.appendChild(chip(t.level_key_with_recorded_rain, WORD[t.level_key_with_recorded_rain] || String(t.level_with_recorded_rain))); card.appendChild(l5); }
+      list.appendChild(card);
+    });
+  }).catch(() => { $("tr-empty").hidden = false; });
 
   // ---------- question chips ----------
   const Q = BOARD.Q;

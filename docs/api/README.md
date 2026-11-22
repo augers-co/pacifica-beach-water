@@ -156,6 +156,12 @@ forecast did. Until a county result arrives for a forecast date, `tests` and
 | `tests[].compared_to_standard` | `over` or `under` 104. |
 | `tests[].far_over` | True if over 312. |
 | `tests[].forecasts.lead0`, `.lead1`, `.lead3` | The `level`, `level_key` and `chance` logged that many days ahead, or `null`. |
+| `tests[].rain_assumed_mm` | The rain, in mm, that the lead-0 forecast used: the model's estimate for the two days before plus the forecast for the day. |
+| `tests[].rain_recorded_mm` | The same three days of rain, in mm, as recorded afterwards (the model estimate), as `pipeline/forecast_score.py` computes it. |
+| `tests[].level_with_recorded_rain` | The level the same rule gives with the recorded rain, or `null`. |
+| `tests[].level_key_with_recorded_rain` | The same level as a key (`lower`, `usual`, `high`, `very_high`), or `null`. |
+| `tests[].gauge_72h_inches` | Inches of rain reported by a CoCoRaHS volunteer gauge on the test day and the two days before (each report covers the 24 hours to about 7am), from NOAA ACIS; `null` if not available. |
+| `tests[].gauge_name` | The gauge used: `Pacifica 1.9 S`, or `Pacifica 0.3 W` if the first lacked a report for any of the three days; `null` if neither. |
 | `summary[]` | For leads 0, 1 and 3 and each level: `tests`, `over`, `over_share`, beside `stated_fail_share` and `stated_tests` from `levels.json`. With few tests these shares swing a lot. |
 
 ### `health_survey.json` (updated by hand)

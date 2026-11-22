@@ -154,24 +154,11 @@
     <p class="body15">The result jumps between Sanchez Adobe (2) and Peralta Bridge (3). Two hundred yards up the beach (6) it is about a tenth of the one in the surf at the mouth (5). That describes one spot at the moments it was tested. It does not show the water there is safe.</p>
   </section>
 
-  <section class="pad block" id="record">
+  <section class="pad block" id="track">
     <h2>Track record</h2>
-    <p class="lede">Every forecast is logged before the test result is known. When the county's result is published, it is set beside the forecast, misses included.</p>
-    <div class="samplehead" id="tr-samplehead"><div class="fine">How the log will look</div><span class="samplebadge">Sample rows, not real results</span></div>
-    <div class="tablewrap" role="region" aria-label="Sample track record, scrolls sideways" tabindex="0" id="tr-region">
-      <table class="trtable">
-        <thead><tr><th>Test date</th><th>Forecast, logged first</th><th class="r">County result</th></tr></thead>
-        <tbody id="tr-body">
-          <tr><td class="d">Nov 23</td><td><div class="fc"><span class="lvl" style="background:#ee7d2b;color:#171717">High</span><span class="fine">78% chance of failing</span></div></td><td class="r"><div class="res">145</div><div class="over">Over 104</div></td></tr>
-          <tr><td class="d">Nov 30</td><td><div class="fc"><span class="lvl" style="background:#f0b46a;color:#171717">Usual</span><span class="fine">61% chance of failing</span></div></td><td class="r"><div class="res">52</div><div class="under">Under 104</div></td></tr>
-          <tr><td class="d">Dec 7</td><td><div class="fc"><span class="lvl" style="background:#d43a24;color:#ffffff">Very high</span><span class="fine">92% chance of failing</span></div></td><td class="r"><div class="res">1,050</div><div class="over">Over 104</div></td></tr>
-          <tr><td class="d">Dec 14</td><td><div class="fc"><span class="lvl" style="background:#8fb0c2;color:#171717">Lower than usual</span><span class="fine">44% chance of failing</span></div></td><td class="r"><div class="res">86</div><div class="under">Under 104</div></td></tr>
-          <tr><td class="d">Dec 21</td><td><div class="fc"><span class="lvl" style="background:#ee7d2b;color:#171717">High</span><span class="fine">74% chance of failing</span></div></td><td class="r"><div class="res">30</div><div class="under">Under 104</div></td></tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="fine">Real rows appear as the county's results arrive, weeks after each test. Logging began on November 19, 2026.</div>
-    <p class="body15">Each row also keeps the rain forecast the call relied on. That way a miss caused by a wrong rain forecast can be told apart from a miss by the forecast itself.</p>
+    <p class="lede">Each county test from the last two months that had a forecast logged for it: what the forecast said that morning, the rain it used, the rain recorded afterwards, and the result.</p>
+    <div id="tr-list" class="trlist" aria-live="polite"></div>
+    <p class="body15" id="tr-empty" hidden>No forecast day has a published county result yet. The daily forecast began on 19 November 2026, and county results go public about four weeks after the sample, so the first comparisons should appear around mid-December.</p>
   </section>
 
   <section class="pad block">

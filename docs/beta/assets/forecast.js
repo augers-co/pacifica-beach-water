@@ -437,13 +437,32 @@
     }
   }
 
+  // a share as a whole percent; a share of exactly .5 rounds down, as on the board
+  function pctOf(x) { return Math.round(x * 100 - 1e-9); }
+
+  function renderLegend(lv) {
+    var body = $("lvl-body"); body.textContent = "";
+    var rows = (lv.levels || []).filter(function (l) { return LV[l.key] && isNum(l.chance_min) && isNum(l.chance_max) && isNum(l.fail_share) && isNum(l.far_over_share); });
+    if (!rows.length) return;
+    rows.forEach(function (l) {
+      var k = LV[l.key], tr = el("tr"), c1 = el("td"), chip = el("span", "lvl", k.word);
+      chip.style.background = k.fill; chip.style.color = k.ink; c1.appendChild(chip);
+      var lo = pctOf(l.chance_min), hi = pctOf(l.chance_max);
+      var chance = l.chance_min <= 0 ? "under " + hi + "%" : l.chance_max >= 1 ? lo + "% and over" : lo + "% to " + hi + "%";
+      tr.appendChild(c1); tr.appendChild(el("td", null, chance));
+      tr.appendChild(el("td", "numc", pctOf(l.fail_share) + "%")); tr.appendChild(el("td", "numc", pctOf(l.far_over_share) + "%"));
+      body.appendChild(tr);
+    });
+    show("levels", true);
+  }
+
   function renderLevels(lv) {
     var box = $("lv-bars"); box.textContent = "";
     var total = 0;
     (lv.levels || []).forEach(function (l) {
       var k = LV[l.key]; if (!k) return;
       total += l.tests || 0;
-      var pct = Math.round(l.fail_share * 100 - 1e-9); // a share of exactly .5 rounds down, as on the board
+      var pct = pctOf(l.fail_share);
       var item = el("div", "col4"), head = el("div", "barhead");
       head.appendChild(el("span", null, k.word)); head.appendChild(el("span", "fb8", pct + "%"));
       var track = el("div", "track"), fill = el("div", "fill");
@@ -499,7 +518,7 @@
     var today = pacificToday();
 
     if (lv.err) { $("lv-fail").textContent = "The level figures could not be loaded."; show("lv-fail", true); }
-    else { try { renderLevels(lv.v); } catch (e) { $("lv-fail").textContent = "The level figures could not be loaded."; show("lv-fail", true); } }
+    else { try { renderLegend(lv.v); } catch (e) { /* the legend stays hidden */ } try { renderLevels(lv.v); } catch (e) { $("lv-fail").textContent = "The level figures could not be loaded."; show("lv-fail", true); } }
 
     if (res.err) { $("res-fail").textContent = "The test results could not be loaded."; show("res-fail", true); }
     else { try { renderResults(res.v); } catch (e) { $("res-fail").textContent = "The test results could not be loaded."; show("res-fail", true); } }

@@ -182,3 +182,12 @@ section + .note13{margin-top:14px;} .note13 + .issued{margin-top:8px;}
 .badge.down{color:var(--muted); border-color:var(--muted);}
 
 .mutedp{color:var(--muted);}
+
+/* what the levels mean */
+.lvtablewrap{overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid var(--line); border-radius:12px;}
+.lvtable{border-collapse:collapse; width:100%; font-size:13.5px;}
+.lvtable th{text-align:left; vertical-align:bottom; font-family:var(--fhead); font-size:12.5px; font-weight:800; color:var(--muted); padding:10px 6px 8px;}
+.lvtable td{padding:10px 6px; border-top:1px solid var(--line); vertical-align:middle;}
+.lvtable th:first-child, .lvtable td:first-child{padding-left:10px;} .lvtable th:last-child, .lvtable td:last-child{padding-right:10px;}
+.lvtable .numc{font-family:var(--fhead); font-weight:800;}
+.lvtable .lvl{display:inline-block; font-size:10.5px; padding:4px 8px; white-space:normal; line-height:1.15;}

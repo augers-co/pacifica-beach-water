@@ -290,30 +290,35 @@ GAUGES = [("US1CASM0001", "Pacifica 0.3 W"), ("US1CASM0033", "Pacifica 1.9 S")]
 GAUGE_URL = "https://data.rcc-acis.org/StnData"
 
 
+def gauge_daily(sid, first, last):
+    """One gauge's daily rain in inches from NOAA ACIS, [{"date", "inches"}], first to last date.
+    T (trace) is 0; M (missing) and values ending in A or S (multi-day accumulation) are null.
+    The fetched content is treated as data only. Raises if the fetch or parse fails."""
+    import requests
+    r = requests.get(GAUGE_URL, params={"sid": sid, "sdate": first.isoformat(),
+                                        "edate": last.isoformat(), "elems": "pcpn",
+                                        "output": "json"}, timeout=30)
+    r.raise_for_status()
+    daily = []
+    for row in r.json()["data"]:
+        dt, v = str(row[0]), str(row[1]).strip()
+        if v == "T":
+            inches = 0.0
+        elif v == "M" or v.endswith("A") or v.endswith("S"):
+            inches = None
+        else:
+            inches = float(v)
+        daily.append({"date": dt, "inches": inches})
+    return daily
+
+
 def gauge_block(today):
     """Daily rain from two CoCoRaHS volunteer gauges via NOAA ACIS, last 7 dates.
-    T (trace) is 0; M (missing) and values ending in A (multi-day accumulation) are null.
-    The fetched content is treated as data only. Returns None if the fetch fails."""
+    Returns None if the fetch fails."""
     try:
-        import requests
         first = today - pd.Timedelta(days=6).to_pytimedelta()
-        stations = []
-        for sid, name in GAUGES:
-            r = requests.get(GAUGE_URL, params={"sid": sid, "sdate": first.isoformat(),
-                                                "edate": today.isoformat(), "elems": "pcpn",
-                                                "output": "json"}, timeout=30)
-            r.raise_for_status()
-            daily = []
-            for row in r.json()["data"]:
-                dt, v = str(row[0]), str(row[1]).strip()
-                if v == "T":
-                    inches = 0.0
-                elif v == "M" or v.endswith("A"):
-                    inches = None
-                else:
-                    inches = float(v)
-                daily.append({"date": dt, "inches": inches})
-            stations.append({"sid": sid, "name": name, "daily": daily})
+        stations = [{"sid": sid, "name": name, "daily": gauge_daily(sid, first, today)}
+                    for sid, name in GAUGES]
         return {"source": "CoCoRaHS volunteer gauges via NOAA ACIS",
                 "source_url": "https://data.rcc-acis.org/",
                 "note": "Each report covers the 24 hours to about 7am on its date.",
@@ -321,6 +326,38 @@ def gauge_block(today):
     except Exception as e:  # a failed gauge fetch must not fail the export
         print(f"note: rain gauge fetch failed ({e})", file=sys.stderr)
         return None
+
+
+def gauge_72h(dates):
+    """{test date: (inches, gauge name)} for each date in `dates` (ISO strings): the sum of the
+    reports dated that day and the two before, from the first of 'Pacifica 1.9 S' then
+    'Pacifica 0.3 W' that has all three. Missing entries are (None, None); a failed fetch
+    leaves everything null and never fails the export."""
+    out = {d: (None, None) for d in dates}
+    if not dates:
+        return out
+    order = [("US1CASM0033", "Pacifica 1.9 S"), ("US1CASM0001", "Pacifica 0.3 W")]
+    try:
+        first = date.fromisoformat(min(dates)) - pd.Timedelta(days=2).to_pytimedelta()
+        last = date.fromisoformat(max(dates))
+        series = []
+        for sid, name in order:
+            try:
+                series.append((name, {x["date"]: x["inches"] for x in gauge_daily(sid, first, last)}))
+            except Exception as e:
+                print(f"note: rain gauge {sid} fetch failed ({e})", file=sys.stderr)
+                series.append((name, {}))
+        for d in dates:
+            day = date.fromisoformat(d)
+            keys = [(day - pd.Timedelta(days=i).to_pytimedelta()).isoformat() for i in (0, 1, 2)]
+            for name, by_date in series:
+                vals = [by_date.get(k) for k in keys]
+                if all(v is not None for v in vals):
+                    out[d] = (round(sum(vals), 2), name)
+                    break
+    except Exception as e:
+        print(f"note: rain gauge sums failed ({e})", file=sys.stderr)
+    return out
 
 
 def conditions_file(today, now):
@@ -530,6 +567,19 @@ def surfrider_latest(con, today):
             "days_old": (today - d).days, "source_url": s["source_url"], "as_of": today.isoformat()}
 
 
+def _track_extras(r, log_row, gauge):
+    """The rain the forecast used, the rain recorded afterwards, the level the rule gives with
+    the recorded rain, and the volunteer gauge's three-day sum. Null where not available."""
+    assumed = number(log_row["rain3_mm"]) if log_row else None
+    recorded = number(r.get("rain3_actual_mm", ""))
+    lvl = r.get("level_actual_weather") or None
+    return {"rain_assumed_mm": None if assumed is None else round(float(assumed), 1),
+            "rain_recorded_mm": None if recorded is None else round(float(recorded), 1),
+            "level_with_recorded_rain": lvl,
+            "level_key_with_recorded_rain": LEVEL_KEYS.get(lvl) if lvl else None,
+            "gauge_72h_inches": gauge[0], "gauge_name": gauge[1]}
+
+
 def track_record_file(now):
     base = {**header(fr.VERSION, now)}
     if not SCORED.exists():
@@ -540,6 +590,13 @@ def track_record_file(now):
     if not rows:
         return {**base, "note": "No county results have arrived yet for a forecast date.",
                 "tests": [], "summary": [], "caveats": CAVEATS}
+    log0 = {}
+    if LOG.exists():
+        with open(LOG, encoding="utf-8", newline="") as f:
+            for lr in csv.DictReader(f):
+                if lr.get("lead_days") == "0":
+                    log0.setdefault(lr["target_date"], lr)
+    gauges = gauge_72h([r["target_date"] for r in rows])
     tests = []
     for r in rows:
         v = float(r["result_mpn"])
@@ -550,7 +607,8 @@ def track_record_file(now):
                                "chance": round(float(r[f"chance_lead{k}"]), 3)} if name else None)
         tests.append({"date": r["target_date"], "result_mpn": int(v) if v.is_integer() else round(v, 1),
                       "compared_to_standard": "over" if v > fr.STANDARD else "under",
-                      "far_over": v > fr.FAR_OVER, "forecasts": fc})
+                      "far_over": v > fr.FAR_OVER, "forecasts": fc}
+                     | _track_extras(r, log0.get(r["target_date"]), gauges.get(r["target_date"], (None, None))))
     odds = model_levels()
     summary = []
     for k in SCORED_LEADS:
