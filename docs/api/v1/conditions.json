@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-24T21:34:02Z",
+  "generated_at": "2026-11-24T23:12:04Z",
   "rule_version": "0.1",
   "as_of": "2026-11-24",
   "source": "Open-Meteo forecast API (best match, model not named in response); Open-Meteo marine API; ERA5 archive for past days",
@@ -142,21 +142,21 @@
     },
     {
       "date": "2026-11-24",
-      "rain_mm": 4.4,
+      "rain_mm": 1.5,
       "rain_src": "forecast",
-      "flow_idx": 77.786,
+      "flow_idx": 76.336,
       "ground_idx": 76.9,
-      "rain_shadow": 24.02,
-      "air_temp_mean_c": 12.6,
-      "water_temp_est_c": 10.1
+      "rain_shadow": 21.12,
+      "air_temp_mean_c": 12.8,
+      "water_temp_est_c": 10.2
     },
     {
       "date": "2026-11-25",
-      "rain_mm": 52.9,
+      "rain_mm": 25.2,
       "rain_src": "forecast",
-      "flow_idx": 98.657,
-      "ground_idx": 82.372,
-      "rain_shadow": 70.43,
+      "flow_idx": 82.052,
+      "ground_idx": 82.227,
+      "rain_shadow": 40.62,
       "air_temp_mean_c": 13.8,
       "water_temp_est_c": 10.4
     },
@@ -164,58 +164,58 @@
       "date": "2026-11-26",
       "rain_mm": 0.0,
       "rain_src": "forecast",
-      "flow_idx": 115.242,
-      "ground_idx": 89.767,
-      "rain_shadow": 51.42,
+      "flow_idx": 86.447,
+      "ground_idx": 87.965,
+      "rain_shadow": 29.65,
       "air_temp_mean_c": 13.6,
-      "water_temp_est_c": 10.7
+      "water_temp_est_c": 10.8
     },
     {
       "date": "2026-11-27",
       "rain_mm": 0.0,
       "rain_src": "forecast",
-      "flow_idx": 103.718,
-      "ground_idx": 98.598,
-      "rain_shadow": 37.53,
+      "flow_idx": 77.802,
+      "ground_idx": 93.971,
+      "rain_shadow": 21.65,
       "air_temp_mean_c": 14.9,
-      "water_temp_est_c": 11.3
+      "water_temp_est_c": 11.4
     },
     {
       "date": "2026-11-28",
       "rain_mm": 0.1,
       "rain_src": "forecast",
-      "flow_idx": 93.396,
-      "ground_idx": 106.012,
-      "rain_shadow": 27.5,
+      "flow_idx": 70.072,
+      "ground_idx": 98.932,
+      "rain_shadow": 15.9,
       "air_temp_mean_c": 15.7,
-      "water_temp_est_c": 12.1
+      "water_temp_est_c": 12.2
     },
     {
       "date": "2026-11-29",
       "rain_mm": 7.4,
       "rain_src": "forecast",
-      "flow_idx": 87.806,
-      "ground_idx": 112.171,
-      "rain_shadow": 27.48,
+      "flow_idx": 66.815,
+      "ground_idx": 102.972,
+      "rain_shadow": 19.01,
       "air_temp_mean_c": 15.3,
-      "water_temp_est_c": 12.8
+      "water_temp_est_c": 12.9
     },
     {
       "date": "2026-11-30",
       "rain_mm": 3.1,
       "rain_src": "forecast",
-      "flow_idx": 84.276,
-      "ground_idx": 117.586,
-      "rain_shadow": 23.16,
+      "flow_idx": 65.383,
+      "ground_idx": 106.564,
+      "rain_shadow": 16.98,
       "air_temp_mean_c": 14.2,
-      "water_temp_est_c": 13.4
+      "water_temp_est_c": 13.5
     }
   ],
   "rain_30d": {
     "from": "2026-10-26",
     "to": "2026-11-24",
-    "total_mm": 159.6,
-    "forecast_mm": 4.4,
+    "total_mm": 156.7,
+    "forecast_mm": 1.5,
     "storms": [
       {
         "start": "2026-11-03",
