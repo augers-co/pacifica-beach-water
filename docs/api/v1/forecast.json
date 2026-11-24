@@ -1,9 +1,9 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-23T19:58:26Z",
+  "generated_at": "2026-11-24T19:26:10Z",
   "rule_version": "0.1",
-  "issue_date": "2026-11-23",
-  "issued_at_utc": "2026-11-23T19:58:25Z",
+  "issue_date": "2026-11-24",
+  "issued_at_utc": "2026-11-24T19:26:09Z",
   "stale": false,
   "caveats": [
     "This forecast is experimental.",
@@ -18,93 +18,35 @@
   },
   "days": [
     {
-      "date": "2026-11-23",
-      "lead_days": 0,
-      "level": "high",
-      "level_key": "high",
-      "chance": 0.718,
-      "fail_share": 0.757,
-      "far_over_share": 0.351,
-      "inputs": {
-        "rain3_mm": 5.2,
-        "rain3_forecast_mm": 0.0,
-        "ground_idx": 70.621
-      },
-      "weather": {
-        "rain_day0_mm": 0.0,
-        "rain_day1_mm": 0.1,
-        "rain_day2_mm": 5.1,
-        "rain_day0_src": "forecast",
-        "rain_day1_src": "archive",
-        "rain_day2_src": "archive",
-        "rain_prob_max_pct": 1,
-        "temp_mean_c": 9.8,
-        "temp_max_c": 13.7,
-        "temp_min_c": 7.1,
-        "sun_mj_m2": 10.83,
-        "wind_max_kmh": 17.7,
-        "wind_dir_deg": 109,
-        "wave_height_max_m": 2.32,
-        "wave_period_max_s": 11.8,
-        "wave_dir_deg": 284,
-        "sea_temp_c": 17.8,
-        "sea_lat": 37.625,
-        "sea_lon": -122.625,
-        "weather_source": "Open-Meteo forecast API (best match, model not named in response); Open-Meteo marine API"
-      },
-      "beyond_experience": false,
-      "beyond_reason": null,
-      "push": {
-        "rain3": {
-          "points": 33.3,
-          "direction": "up",
-          "size": "clear"
-        },
-        "ground": {
-          "points": -8.4,
-          "direction": "down",
-          "size": "a_little"
-        }
-      },
-      "ground_normal": {
-        "normal_idx": 29.962,
-        "pct_of_normal": 235.7,
-        "compared_to_normal": "above",
-        "years": 28,
-        "normal_from": "1998-10-01",
-        "normal_to": "2026-11-20"
-      }
-    },
-    {
       "date": "2026-11-24",
-      "lead_days": 1,
-      "level": "high",
-      "level_key": "high",
-      "chance": 0.725,
-      "fail_share": 0.757,
-      "far_over_share": 0.351,
+      "lead_days": 0,
+      "level": "usual",
+      "level_key": "usual",
+      "chance": 0.662,
+      "fail_share": 0.625,
+      "far_over_share": 0.125,
       "inputs": {
-        "rain3_mm": 5.9,
-        "rain3_forecast_mm": 5.8,
+        "rain3_mm": 3.7,
+        "rain3_forecast_mm": 3.6,
         "ground_idx": 76.9
       },
       "weather": {
-        "rain_day0_mm": 5.8,
+        "rain_day0_mm": 3.6,
         "rain_day1_mm": 0.0,
         "rain_day2_mm": 0.1,
         "rain_day0_src": "forecast",
-        "rain_day1_src": "forecast",
+        "rain_day1_src": "archive",
         "rain_day2_src": "archive",
-        "rain_prob_max_pct": 90,
-        "temp_mean_c": 12.6,
-        "temp_max_c": 15.4,
-        "temp_min_c": 9.9,
-        "sun_mj_m2": 9.2,
-        "wind_max_kmh": 32.0,
-        "wind_dir_deg": 161,
-        "wave_height_max_m": 3.18,
-        "wave_period_max_s": 10.9,
-        "wave_dir_deg": 251,
+        "rain_prob_max_pct": 45,
+        "temp_mean_c": 12.5,
+        "temp_max_c": 15.6,
+        "temp_min_c": 9.0,
+        "sun_mj_m2": 9.73,
+        "wind_max_kmh": 26.3,
+        "wind_dir_deg": 157,
+        "wave_height_max_m": 3.26,
+        "wave_period_max_s": 11.4,
+        "wave_dir_deg": 257,
         "sea_temp_c": 17.8,
         "sea_lat": 37.625,
         "sea_lon": -122.625,
@@ -114,14 +56,14 @@
       "beyond_reason": null,
       "push": {
         "rain3": {
-          "points": 35.2,
+          "points": 28.9,
           "direction": "up",
           "size": "clear"
         },
         "ground": {
-          "points": -9.0,
+          "points": -10.4,
           "direction": "down",
-          "size": "a_little"
+          "size": "clear"
         }
       },
       "ground_normal": {
@@ -135,33 +77,33 @@
     },
     {
       "date": "2026-11-25",
-      "lead_days": 2,
-      "level": "very high",
-      "level_key": "very_high",
-      "chance": 0.907,
-      "fail_share": 0.871,
-      "far_over_share": 0.677,
+      "lead_days": 1,
+      "level": "high",
+      "level_key": "high",
+      "chance": 0.816,
+      "fail_share": 0.757,
+      "far_over_share": 0.351,
       "inputs": {
-        "rain3_mm": 38.87,
-        "rain3_forecast_mm": 38.87,
-        "ground_idx": 82.442
+        "rain3_mm": 13.3,
+        "rain3_forecast_mm": 13.3,
+        "ground_idx": 82.332
       },
       "weather": {
-        "rain_day0_mm": 33.07,
-        "rain_day1_mm": 5.8,
+        "rain_day0_mm": 9.7,
+        "rain_day1_mm": 3.6,
         "rain_day2_mm": 0.0,
         "rain_day0_src": "forecast",
         "rain_day1_src": "forecast",
-        "rain_day2_src": "forecast",
-        "rain_prob_max_pct": 90,
-        "temp_mean_c": 14.2,
-        "temp_max_c": 17.7,
-        "temp_min_c": 11.8,
-        "sun_mj_m2": 7.21,
-        "wind_max_kmh": 21.2,
-        "wind_dir_deg": 104,
-        "wave_height_max_m": 4.64,
-        "wave_period_max_s": 14.7,
+        "rain_day2_src": "archive",
+        "rain_prob_max_pct": 64,
+        "temp_mean_c": 13.9,
+        "temp_max_c": 16.5,
+        "temp_min_c": 11.9,
+        "sun_mj_m2": 9.24,
+        "wind_max_kmh": 20.9,
+        "wind_dir_deg": 103,
+        "wave_height_max_m": 4.42,
+        "wave_period_max_s": 14.6,
         "wave_dir_deg": 268,
         "sea_temp_c": 17.8,
         "sea_lat": 37.625,
@@ -172,19 +114,19 @@
       "beyond_reason": null,
       "push": {
         "rain3": {
-          "points": 54.4,
+          "points": 45.2,
           "direction": "up",
           "size": "clear"
         },
         "ground": {
-          "points": -3.7,
+          "points": -6.9,
           "direction": "down",
           "size": "a_little"
         }
       },
       "ground_normal": {
         "normal_idx": 31.622,
-        "pct_of_normal": 260.7,
+        "pct_of_normal": 260.4,
         "compared_to_normal": "above",
         "years": 28,
         "normal_from": "1998-10-01",
@@ -193,33 +135,33 @@
     },
     {
       "date": "2026-11-26",
-      "lead_days": 3,
-      "level": "very high",
-      "level_key": "very_high",
-      "chance": 0.903,
-      "fail_share": 0.871,
-      "far_over_share": 0.677,
+      "lead_days": 2,
+      "level": "high",
+      "level_key": "high",
+      "chance": 0.81,
+      "fail_share": 0.757,
+      "far_over_share": 0.351,
       "inputs": {
-        "rain3_mm": 38.87,
-        "rain3_forecast_mm": 38.87,
-        "ground_idx": 88.976
+        "rain3_mm": 13.3,
+        "rain3_forecast_mm": 13.3,
+        "ground_idx": 87.492
       },
       "weather": {
         "rain_day0_mm": 0.0,
-        "rain_day1_mm": 33.07,
-        "rain_day2_mm": 5.8,
+        "rain_day1_mm": 9.7,
+        "rain_day2_mm": 3.6,
         "rain_day0_src": "forecast",
         "rain_day1_src": "forecast",
         "rain_day2_src": "forecast",
         "rain_prob_max_pct": 0,
-        "temp_mean_c": 13.6,
-        "temp_max_c": 17.4,
-        "temp_min_c": 11.0,
+        "temp_mean_c": 13.7,
+        "temp_max_c": 17.5,
+        "temp_min_c": 11.4,
         "sun_mj_m2": 8.58,
-        "wind_max_kmh": 9.1,
+        "wind_max_kmh": 10.6,
         "wind_dir_deg": 30,
-        "wave_height_max_m": 3.9,
-        "wave_period_max_s": 13.8,
+        "wave_height_max_m": 3.78,
+        "wave_period_max_s": 13.7,
         "wave_dir_deg": 276,
         "sea_temp_c": 17.7,
         "sea_lat": 37.625,
@@ -230,19 +172,19 @@
       "beyond_reason": null,
       "push": {
         "rain3": {
-          "points": 55.0,
+          "points": 45.5,
           "direction": "up",
           "size": "clear"
         },
         "ground": {
-          "points": -4.1,
+          "points": -7.5,
           "direction": "down",
           "size": "a_little"
         }
       },
       "ground_normal": {
         "normal_idx": 32.35,
-        "pct_of_normal": 275.0,
+        "pct_of_normal": 270.5,
         "compared_to_normal": "above",
         "years": 28,
         "normal_from": "1998-10-01",
@@ -251,33 +193,33 @@
     },
     {
       "date": "2026-11-27",
-      "lead_days": 4,
-      "level": "very high",
-      "level_key": "very_high",
-      "chance": 0.888,
-      "fail_share": 0.871,
-      "far_over_share": 0.677,
+      "lead_days": 3,
+      "level": "high",
+      "level_key": "high",
+      "chance": 0.768,
+      "fail_share": 0.757,
+      "far_over_share": 0.351,
       "inputs": {
-        "rain3_mm": 33.07,
-        "rain3_forecast_mm": 33.07,
-        "ground_idx": 96.067
+        "rain3_mm": 9.7,
+        "rain3_forecast_mm": 9.7,
+        "ground_idx": 92.219
       },
       "weather": {
         "rain_day0_mm": 0.0,
         "rain_day1_mm": 0.0,
-        "rain_day2_mm": 33.07,
+        "rain_day2_mm": 9.7,
         "rain_day0_src": "forecast",
         "rain_day1_src": "forecast",
         "rain_day2_src": "forecast",
-        "rain_prob_max_pct": 8,
-        "temp_mean_c": 14.4,
-        "temp_max_c": 18.5,
-        "temp_min_c": 11.2,
-        "sun_mj_m2": 7.7,
-        "wind_max_kmh": 11.8,
-        "wind_dir_deg": 63,
-        "wave_height_max_m": 2.82,
-        "wave_period_max_s": 13.3,
+        "rain_prob_max_pct": 2,
+        "temp_mean_c": 14.9,
+        "temp_max_c": 18.7,
+        "temp_min_c": 11.9,
+        "sun_mj_m2": 7.9,
+        "wind_max_kmh": 10.6,
+        "wind_dir_deg": 55,
+        "wave_height_max_m": 2.9,
+        "wave_period_max_s": 13.7,
         "wave_dir_deg": 279,
         "sea_temp_c": 17.6,
         "sea_lat": 37.625,
@@ -288,19 +230,19 @@
       "beyond_reason": null,
       "push": {
         "rain3": {
-          "points": 54.5,
+          "points": 42.0,
           "direction": "up",
           "size": "clear"
         },
         "ground": {
-          "points": -5.0,
+          "points": -9.2,
           "direction": "down",
           "size": "a_little"
         }
       },
       "ground_normal": {
         "normal_idx": 32.994,
-        "pct_of_normal": 291.2,
+        "pct_of_normal": 279.5,
         "compared_to_normal": "above",
         "years": 28,
         "normal_from": "1998-10-01",
@@ -309,35 +251,35 @@
     },
     {
       "date": "2026-11-28",
-      "lead_days": 5,
-      "level": "high",
-      "level_key": "high",
-      "chance": 0.725,
-      "fail_share": 0.757,
-      "far_over_share": 0.351,
+      "lead_days": 4,
+      "level": "lower than usual",
+      "level_key": "lower",
+      "chance": 0.359,
+      "fail_share": 0.365,
+      "far_over_share": 0.081,
       "inputs": {
-        "rain3_mm": 7.6,
-        "rain3_forecast_mm": 7.6,
-        "ground_idx": 101.969
+        "rain3_mm": 0.1,
+        "rain3_forecast_mm": 0.1,
+        "ground_idx": 96.069
       },
       "weather": {
-        "rain_day0_mm": 7.6,
+        "rain_day0_mm": 0.1,
         "rain_day1_mm": 0.0,
         "rain_day2_mm": 0.0,
         "rain_day0_src": "forecast",
         "rain_day1_src": "forecast",
         "rain_day2_src": "forecast",
-        "rain_prob_max_pct": 68,
-        "temp_mean_c": 15.2,
-        "temp_max_c": 17.6,
-        "temp_min_c": 13.0,
-        "sun_mj_m2": 3.52,
-        "wind_max_kmh": 28.4,
-        "wind_dir_deg": 184,
-        "wave_height_max_m": 2.32,
-        "wave_period_max_s": 12.6,
-        "wave_dir_deg": 276,
-        "sea_temp_c": 17.7,
+        "rain_prob_max_pct": 29,
+        "temp_mean_c": 15.7,
+        "temp_max_c": 19.3,
+        "temp_min_c": 12.8,
+        "sun_mj_m2": 6.87,
+        "wind_max_kmh": 22.0,
+        "wind_dir_deg": 162,
+        "wave_height_max_m": 2.54,
+        "wave_period_max_s": 11.6,
+        "wave_dir_deg": 280,
+        "sea_temp_c": 17.6,
         "sea_lat": 37.625,
         "sea_lon": -122.625,
         "weather_source": "Open-Meteo forecast API (best match, model not named in response); Open-Meteo marine API"
@@ -346,19 +288,19 @@
       "beyond_reason": null,
       "push": {
         "rain3": {
-          "points": 39.0,
-          "direction": "up",
-          "size": "clear"
+          "points": 1.7,
+          "direction": "none",
+          "size": "none"
         },
         "ground": {
-          "points": -11.4,
+          "points": -15.7,
           "direction": "down",
           "size": "clear"
         }
       },
       "ground_normal": {
         "normal_idx": 33.682,
-        "pct_of_normal": 302.7,
+        "pct_of_normal": 285.2,
         "compared_to_normal": "above",
         "years": 28,
         "normal_from": "1998-10-01",
@@ -367,34 +309,34 @@
     },
     {
       "date": "2026-11-29",
-      "lead_days": 6,
+      "lead_days": 5,
       "level": "high",
       "level_key": "high",
-      "chance": 0.83,
+      "chance": 0.727,
       "fail_share": 0.757,
       "far_over_share": 0.351,
       "inputs": {
-        "rain3_mm": 18.8,
-        "rain3_forecast_mm": 18.8,
-        "ground_idx": 107.195
+        "rain3_mm": 7.5,
+        "rain3_forecast_mm": 7.5,
+        "ground_idx": 99.147
       },
       "weather": {
-        "rain_day0_mm": 11.2,
-        "rain_day1_mm": 7.6,
+        "rain_day0_mm": 7.4,
+        "rain_day1_mm": 0.1,
         "rain_day2_mm": 0.0,
         "rain_day0_src": "forecast",
         "rain_day1_src": "forecast",
         "rain_day2_src": "forecast",
-        "rain_prob_max_pct": 75,
-        "temp_mean_c": 14.1,
-        "temp_max_c": 15.1,
-        "temp_min_c": 13.3,
-        "sun_mj_m2": 4.4,
-        "wind_max_kmh": 39.8,
-        "wind_dir_deg": 244,
-        "wave_height_max_m": 3.56,
-        "wave_period_max_s": 11.6,
-        "wave_dir_deg": 249,
+        "rain_prob_max_pct": 76,
+        "temp_mean_c": 15.3,
+        "temp_max_c": 17.6,
+        "temp_min_c": 13.0,
+        "sun_mj_m2": 7.86,
+        "wind_max_kmh": 22.6,
+        "wind_dir_deg": 219,
+        "wave_height_max_m": 1.74,
+        "wave_period_max_s": 10.8,
+        "wave_dir_deg": 269,
         "sea_temp_c": 17.8,
         "sea_lat": 37.625,
         "sea_lon": -122.625,
@@ -404,19 +346,77 @@
       "beyond_reason": null,
       "push": {
         "rain3": {
-          "points": 50.1,
+          "points": 38.8,
           "direction": "up",
           "size": "clear"
         },
         "ground": {
-          "points": -7.9,
+          "points": -11.1,
+          "direction": "down",
+          "size": "clear"
+        }
+      },
+      "ground_normal": {
+        "normal_idx": 34.41,
+        "pct_of_normal": 288.1,
+        "compared_to_normal": "above",
+        "years": 28,
+        "normal_from": "1998-10-01",
+        "normal_to": "2026-11-20"
+      }
+    },
+    {
+      "date": "2026-11-30",
+      "lead_days": 6,
+      "level": "high",
+      "level_key": "high",
+      "chance": 0.769,
+      "fail_share": 0.757,
+      "far_over_share": 0.351,
+      "inputs": {
+        "rain3_mm": 10.6,
+        "rain3_forecast_mm": 10.6,
+        "ground_idx": 101.911
+      },
+      "weather": {
+        "rain_day0_mm": 3.1,
+        "rain_day1_mm": 7.4,
+        "rain_day2_mm": 0.1,
+        "rain_day0_src": "forecast",
+        "rain_day1_src": "forecast",
+        "rain_day2_src": "forecast",
+        "rain_prob_max_pct": 68,
+        "temp_mean_c": 14.2,
+        "temp_max_c": 16.5,
+        "temp_min_c": 12.6,
+        "sun_mj_m2": 6.34,
+        "wind_max_kmh": 10.5,
+        "wind_dir_deg": 172,
+        "wave_height_max_m": 2.06,
+        "wave_period_max_s": 9.8,
+        "wave_dir_deg": 243,
+        "sea_temp_c": 17.8,
+        "sea_lat": 37.625,
+        "sea_lon": -122.625,
+        "weather_source": "Open-Meteo forecast API (best match, model not named in response); Open-Meteo marine API"
+      },
+      "beyond_experience": false,
+      "beyond_reason": null,
+      "push": {
+        "rain3": {
+          "points": 43.4,
+          "direction": "up",
+          "size": "clear"
+        },
+        "ground": {
+          "points": -9.9,
           "direction": "down",
           "size": "a_little"
         }
       },
       "ground_normal": {
-        "normal_idx": 34.41,
-        "pct_of_normal": 311.5,
+        "normal_idx": 35.196,
+        "pct_of_normal": 289.6,
         "compared_to_normal": "above",
         "years": 28,
         "normal_from": "1998-10-01",
