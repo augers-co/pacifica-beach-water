@@ -312,20 +312,83 @@ def gauge_daily(sid, first, last):
     return daily
 
 
+AUTO_NOTE = "Calendar-day totals."
+CDEC_URL = "https://cdec.water.ca.gov/dynamicapp/req/CSVDataServlet"
+ONESHORELINE_URL = "https://raw.githubusercontent.com/OneShorelineSMC/oneshorelinefews/data/storm_tracker.json"
+
+
+def cdec_daily(first, last):
+    """Pilarcitos Dam (CDEC PLD, sensor 45) daily rain in inches, [{"date", "inches"}].
+    '---' is null. Fetched content is data only. Raises on failure."""
+    import csv
+    import io
+    import requests
+    r = requests.get(CDEC_URL, params={"Stations": "PLD", "SensorNums": "45", "dur_code": "D",
+                                       "Start": first.isoformat(), "End": last.isoformat()}, timeout=30)
+    r.raise_for_status()
+    out = {}
+    for row in csv.DictReader(io.StringIO(r.text)):
+        dt = str(row["DATE TIME"]).strip()[:8]
+        d = f"{dt[:4]}-{dt[4:6]}-{dt[6:8]}"
+        v = str(row["VALUE"]).strip()
+        try:
+            out[d] = round(float(v), 2)
+        except ValueError:
+            out[d] = None
+    return [{"date": d, "inches": out[d]} for d in sorted(out)][-7:]
+
+
+def oneshoreline_daily(key="col_rain_41200"):
+    """OneShoreline gauge daily rain in inches, last 7 dates of the feed's range. Absent days count
+    as 0 only when the ledger has an entry on or after that date, else null. Raises on failure."""
+    import requests
+    r = requests.get(ONESHORELINE_URL, timeout=30)
+    r.raise_for_status()
+    j = r.json()
+    rain = j["days"]["rain"][key]
+    hist = j["ledger"][key]["h"]
+    last_h = max((str(k)[:10] for k in hist), default=None)
+    dates = sorted(rain)
+    if not dates:
+        return []
+    start = pd.Timestamp(dates[0]).date()
+    end = pd.Timestamp(max(dates[-1], last_h or dates[-1])).date()
+    out = []
+    for n in range((end - start).days + 1):
+        d = (start + pd.Timedelta(days=n).to_pytimedelta()).isoformat()
+        if d in rain:
+            out.append({"date": d, "inches": round(float(rain[d]), 2)})
+        else:
+            out.append({"date": d, "inches": 0.0 if last_h and last_h >= d else None})
+    return out[-7:]
+
+
 def gauge_block(today):
-    """Daily rain from two CoCoRaHS volunteer gauges via NOAA ACIS, last 7 dates.
-    Returns None if the fetch fails."""
-    try:
-        first = today - pd.Timedelta(days=6).to_pytimedelta()
-        stations = [{"sid": sid, "name": name, "daily": gauge_daily(sid, first, today)}
-                    for sid, name in GAUGES]
-        return {"source": "CoCoRaHS volunteer gauges via NOAA ACIS",
-                "source_url": "https://data.rcc-acis.org/",
-                "note": "Each report covers the 24 hours to about 7am on its date.",
-                "stations": stations}
-    except Exception as e:  # a failed gauge fetch must not fail the export
-        print(f"note: rain gauge fetch failed ({e})", file=sys.stderr)
+    """Daily rain from two CoCoRaHS volunteer gauges and three automated gauges, last 7 dates.
+    Each source fails on its own; returns None only if every one fails."""
+    first = today - pd.Timedelta(days=6).to_pytimedelta()
+    note7 = "Each report covers the 24 hours to about 7am on its date."
+    specs = [(sid, name, "volunteer", "CoCoRaHS volunteer observer", note7, lambda sid=sid: gauge_daily(sid, first, today))
+             for sid, name in GAUGES]
+    specs += [("PLD", "Pilarcitos Dam", "automated", "San Francisco Public Utilities Commission", AUTO_NOTE,
+               lambda: cdec_daily(first, today)),
+              ("41200", "San Bruno Mountain", "automated", "OneShoreline (San Mateo County flood district)", AUTO_NOTE,
+               lambda: oneshoreline_daily()),
+              ("23234", "SFO airport", "automated", "National Weather Service", AUTO_NOTE,
+               lambda: gauge_daily("23234", first, today))]
+    stations = []
+    for sid, name, kind, operator, note, fetch in specs:
+        try:
+            stations.append({"sid": sid, "name": name, "kind": kind, "operator": operator,
+                             "note": note, "daily": fetch()})
+        except Exception as e:  # a failed gauge fetch must not fail the export
+            print(f"note: rain gauge {sid} fetch failed ({e})", file=sys.stderr)
+    if not stations:
         return None
+    return {"source": "CoCoRaHS volunteer gauges via NOAA ACIS; automated gauges from CDEC, OneShoreline and NOAA ACIS",
+            "source_url": "https://data.rcc-acis.org/",
+            "note": note7,
+            "stations": stations}
 
 
 def gauge_72h(dates):

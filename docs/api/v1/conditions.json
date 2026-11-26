@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-26T20:34:13Z",
+  "generated_at": "2026-11-26T20:54:42Z",
   "rule_version": "0.1",
   "as_of": "2026-11-26",
   "source": "Open-Meteo forecast API (best match, model not named in response); Open-Meteo marine API; ERA5 archive for past days",
@@ -250,13 +250,16 @@
   "water_temp_trend": "rising",
   "flow_trend": "falling",
   "gauge": {
-    "source": "CoCoRaHS volunteer gauges via NOAA ACIS",
+    "source": "CoCoRaHS volunteer gauges via NOAA ACIS; automated gauges from CDEC, OneShoreline and NOAA ACIS",
     "source_url": "https://data.rcc-acis.org/",
     "note": "Each report covers the 24 hours to about 7am on its date.",
     "stations": [
       {
         "sid": "US1CASM0001",
         "name": "Pacifica 0.3 W",
+        "kind": "volunteer",
+        "operator": "CoCoRaHS volunteer observer",
+        "note": "Each report covers the 24 hours to about 7am on its date.",
         "daily": [
           {
             "date": "2026-11-20",
@@ -291,6 +294,9 @@
       {
         "sid": "US1CASM0033",
         "name": "Pacifica 1.9 S",
+        "kind": "volunteer",
+        "operator": "CoCoRaHS volunteer observer",
+        "note": "Each report covers the 24 hours to about 7am on its date.",
         "daily": [
           {
             "date": "2026-11-20",
@@ -315,6 +321,117 @@
           {
             "date": "2026-11-25",
             "inches": 0.59
+          },
+          {
+            "date": "2026-11-26",
+            "inches": null
+          }
+        ]
+      },
+      {
+        "sid": "PLD",
+        "name": "Pilarcitos Dam",
+        "kind": "automated",
+        "operator": "San Francisco Public Utilities Commission",
+        "note": "Calendar-day totals.",
+        "daily": [
+          {
+            "date": "2026-11-20",
+            "inches": 0.23
+          },
+          {
+            "date": "2026-11-21",
+            "inches": 0.07
+          },
+          {
+            "date": "2026-11-22",
+            "inches": 0.04
+          },
+          {
+            "date": "2026-11-23",
+            "inches": 0.0
+          },
+          {
+            "date": "2026-11-24",
+            "inches": 0.11
+          },
+          {
+            "date": "2026-11-25",
+            "inches": 0.15
+          },
+          {
+            "date": "2026-11-26",
+            "inches": null
+          }
+        ]
+      },
+      {
+        "sid": "41200",
+        "name": "San Bruno Mountain",
+        "kind": "automated",
+        "operator": "OneShoreline (San Mateo County flood district)",
+        "note": "Calendar-day totals.",
+        "daily": [
+          {
+            "date": "2026-11-19",
+            "inches": 0.64
+          },
+          {
+            "date": "2026-11-20",
+            "inches": 0.24
+          },
+          {
+            "date": "2026-11-21",
+            "inches": 0.08
+          },
+          {
+            "date": "2026-11-22",
+            "inches": 0.0
+          },
+          {
+            "date": "2026-11-23",
+            "inches": 0.0
+          },
+          {
+            "date": "2026-11-24",
+            "inches": 0.28
+          },
+          {
+            "date": "2026-11-25",
+            "inches": 0.16
+          }
+        ]
+      },
+      {
+        "sid": "23234",
+        "name": "SFO airport",
+        "kind": "automated",
+        "operator": "National Weather Service",
+        "note": "Calendar-day totals.",
+        "daily": [
+          {
+            "date": "2026-11-20",
+            "inches": 0.32
+          },
+          {
+            "date": "2026-11-21",
+            "inches": 0.06
+          },
+          {
+            "date": "2026-11-22",
+            "inches": 0.0
+          },
+          {
+            "date": "2026-11-23",
+            "inches": 0.0
+          },
+          {
+            "date": "2026-11-24",
+            "inches": 0.18
+          },
+          {
+            "date": "2026-11-25",
+            "inches": 0.15
           },
           {
             "date": "2026-11-26",

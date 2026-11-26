@@ -280,6 +280,34 @@
       gl.textContent = gtext;
       gl.hidden = !gtext;
     }
+    // automated gauges report calendar days, so today is incomplete until midnight:
+    // the three complete days before today, shown only when Pilarcitos Dam has all three
+    var g2 = $("t-gauge2");
+    if (g2) {
+      var g2d = [addDays(today, -1), addDays(today, -2), addDays(today, -3)];
+      var g2s = cond && cond.gauge && Array.isArray(cond.gauge.stations) ? cond.gauge.stations : [];
+      var sum3 = function (name) {
+        var s = g2s.filter(function (x) { return x && x.name === name && Array.isArray(x.daily); })[0];
+        if (!s) return null;
+        var t = 0;
+        for (var k = 0; k < g2d.length; k++) {
+          var rep = s.daily.filter(function (x) { return x && x.date === g2d[k]; })[0];
+          if (!rep || !isNum(rep.inches)) return null;
+          t += rep.inches;
+        }
+        return t.toFixed(2);
+      };
+      var g2text = "", pld = sum3("Pilarcitos Dam");
+      if (pld !== null) {
+        g2text = "Automated gauges, 3 days to midnight last night: Pilarcitos Dam " + pld + " in (SFPUC, 6 km south)";
+        var sbm = sum3("San Bruno Mountain"), sfo = sum3("SFO airport");
+        if (sbm !== null) g2text += "; San Bruno Mountain " + sbm + " in (12 km north)";
+        if (sfo !== null) g2text += "; SFO airport " + sfo + " in (10 km east)";
+        g2text += ".";
+      }
+      g2.textContent = g2text;
+      g2.hidden = !g2text;
+    }
 
     var cut = (f.carried ? "Issued yesterday, " : "Issued ") + longDate(f.issue_date);
     var thru = measuredThrough(f.days[0]);
