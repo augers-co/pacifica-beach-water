@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-27T20:20:49Z",
+  "generated_at": "2026-11-27T22:13:54Z",
   "rule_version": "0.1",
   "as_of": "2026-11-27",
   "source": "Open-Meteo forecast API (best match, model not named in response); Open-Meteo marine API; ERA5 archive for past days",
@@ -147,7 +147,7 @@
       "flow_idx": 68.928,
       "ground_idx": 92.845,
       "rain_shadow": 15.77,
-      "air_temp_mean_c": 13.8,
+      "air_temp_mean_c": 13.7,
       "water_temp_est_c": 11.2
     },
     {
@@ -157,7 +157,7 @@
       "flow_idx": 62.035,
       "ground_idx": 96.952,
       "rain_shadow": 11.51,
-      "air_temp_mean_c": 14.8,
+      "air_temp_mean_c": 14.9,
       "water_temp_est_c": 11.9
     },
     {
