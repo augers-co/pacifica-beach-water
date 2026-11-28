@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-27T17:57:12Z",
+  "generated_at": "2026-11-28T02:09:54Z",
   "rule_version": "0.1",
   "issue_date": "2026-11-27",
   "issued_at_utc": "2026-11-27T17:57:11Z",
@@ -67,12 +67,12 @@
         }
       },
       "ground_normal": {
-        "normal_idx": 32.994,
-        "pct_of_normal": 281.4,
+        "normal_idx": 35.058,
+        "pct_of_normal": 264.8,
         "compared_to_normal": "above",
-        "years": 28,
+        "years": 29,
         "normal_from": "1998-10-01",
-        "normal_to": "2026-11-20"
+        "normal_to": "2026-11-28"
       }
     },
     {
@@ -125,12 +125,12 @@
         }
       },
       "ground_normal": {
-        "normal_idx": 33.682,
-        "pct_of_normal": 287.8,
+        "normal_idx": 35.863,
+        "pct_of_normal": 270.3,
         "compared_to_normal": "above",
-        "years": 28,
+        "years": 29,
         "normal_from": "1998-10-01",
-        "normal_to": "2026-11-20"
+        "normal_to": "2026-11-28"
       }
     },
     {
@@ -188,7 +188,7 @@
         "compared_to_normal": "above",
         "years": 28,
         "normal_from": "1998-10-01",
-        "normal_to": "2026-11-20"
+        "normal_to": "2026-11-28"
       }
     },
     {
@@ -246,7 +246,7 @@
         "compared_to_normal": "above",
         "years": 28,
         "normal_from": "1998-10-01",
-        "normal_to": "2026-11-20"
+        "normal_to": "2026-11-28"
       }
     },
     {
@@ -304,7 +304,7 @@
         "compared_to_normal": "above",
         "years": 28,
         "normal_from": "1998-10-01",
-        "normal_to": "2026-11-20"
+        "normal_to": "2026-11-28"
       }
     },
     {
@@ -362,7 +362,7 @@
         "compared_to_normal": "above",
         "years": 28,
         "normal_from": "1998-10-01",
-        "normal_to": "2026-11-20"
+        "normal_to": "2026-11-28"
       }
     },
     {
@@ -420,7 +420,7 @@
         "compared_to_normal": "above",
         "years": 28,
         "normal_from": "1998-10-01",
-        "normal_to": "2026-11-20"
+        "normal_to": "2026-11-28"
       }
     }
   ]

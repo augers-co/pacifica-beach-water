@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-28T00:02:14Z",
+  "generated_at": "2026-11-28T02:09:54Z",
   "rule_version": "0.1",
   "as_of": "2026-11-27",
   "source": "Open-Meteo forecast API (best match, model not named in response); Open-Meteo marine API; ERA5 archive for past days",
@@ -147,8 +147,8 @@
       "flow_idx": 68.928,
       "ground_idx": 92.845,
       "rain_shadow": 15.77,
-      "air_temp_mean_c": 13.8,
-      "water_temp_est_c": 11.2
+      "air_temp_mean_c": 13.9,
+      "water_temp_est_c": 11.3
     },
     {
       "date": "2026-11-28",
@@ -157,26 +157,26 @@
       "flow_idx": 62.035,
       "ground_idx": 96.952,
       "rain_shadow": 11.51,
-      "air_temp_mean_c": 14.8,
-      "water_temp_est_c": 11.9
+      "air_temp_mean_c": 15.0,
+      "water_temp_est_c": 12.0
     },
     {
       "date": "2026-11-29",
-      "rain_mm": 12.23,
+      "rain_mm": 11.38,
       "rain_src": "forecast",
-      "flow_idx": 61.946,
+      "flow_idx": 61.521,
       "ground_idx": 100.247,
-      "rain_shadow": 20.63,
-      "air_temp_mean_c": 15.1,
+      "rain_shadow": 19.78,
+      "air_temp_mean_c": 14.8,
       "water_temp_est_c": 12.6
     },
     {
       "date": "2026-11-30",
       "rain_mm": 1.8,
       "rain_src": "forecast",
-      "flow_idx": 62.767,
-      "ground_idx": 103.434,
-      "rain_shadow": 16.86,
+      "flow_idx": 61.959,
+      "ground_idx": 103.392,
+      "rain_shadow": 16.24,
       "air_temp_mean_c": 14.3,
       "water_temp_est_c": 13.2
     },
@@ -184,9 +184,9 @@
       "date": "2026-12-01",
       "rain_mm": 0.8,
       "rain_src": "forecast",
-      "flow_idx": 57.79,
-      "ground_idx": 106.608,
-      "rain_shadow": 13.11,
+      "flow_idx": 57.063,
+      "ground_idx": 106.486,
+      "rain_shadow": 12.66,
       "air_temp_mean_c": 12.8,
       "water_temp_est_c": 13.2
     },
@@ -194,9 +194,9 @@
       "date": "2026-12-02",
       "rain_mm": 0.0,
       "rain_src": "forecast",
-      "flow_idx": 52.411,
-      "ground_idx": 109.189,
-      "rain_shadow": 9.57,
+      "flow_idx": 51.757,
+      "ground_idx": 108.998,
+      "rain_shadow": 9.24,
       "air_temp_mean_c": 12.8,
       "water_temp_est_c": 13.0
     },
@@ -204,9 +204,9 @@
       "date": "2026-12-03",
       "rain_mm": 0.0,
       "rain_src": "forecast",
-      "flow_idx": 47.17,
-      "ground_idx": 111.154,
-      "rain_shadow": 6.99,
+      "flow_idx": 46.581,
+      "ground_idx": 110.903,
+      "rain_shadow": 6.74,
       "air_temp_mean_c": 12.6,
       "water_temp_est_c": 12.8
     }
