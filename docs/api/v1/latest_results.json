@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generated_at": "2026-11-20T22:45:56Z",
+  "generated_at": "2026-11-28T00:10:39Z",
   "rule_version": "0.1",
   "note": "County results reach the state's public database weeks after the sample, so these are not current conditions. For current postings see the county's beach page.",
   "county_beach_advisories": "https://www.smchealth.org/beaches",
@@ -15,9 +15,9 @@
       "unit": "MPN per 100 mL",
       "standard_mpn": 104,
       "compared_to_standard": "under",
-      "days_old": 32,
+      "days_old": 39,
       "source_url": "https://data.ca.gov/dataset/surface-water-fecal-indicator-bacteria-results",
-      "as_of": "2026-11-20",
+      "as_of": "2026-11-27",
       "recent": [
         {
           "date": "2026-08-31",
@@ -71,9 +71,9 @@
       "unit": "MPN per 100 mL",
       "standard_mpn": 320,
       "compared_to_standard": "under",
-      "days_old": 32,
+      "days_old": 39,
       "source_url": "https://data.ca.gov/dataset/surface-water-fecal-indicator-bacteria-results",
-      "as_of": "2026-11-20"
+      "as_of": "2026-11-27"
     },
     {
       "series": "creek_e_coli",
@@ -85,9 +85,9 @@
       "unit": "MPN per 100 mL",
       "standard_mpn": 320,
       "compared_to_standard": "under",
-      "days_old": 32,
+      "days_old": 39,
       "source_url": "https://data.ca.gov/dataset/surface-water-fecal-indicator-bacteria-results",
-      "as_of": "2026-11-20"
+      "as_of": "2026-11-27"
     },
     {
       "series": "creek_enterococcus",
@@ -99,23 +99,23 @@
       "unit": "MPN per 100 mL",
       "standard_mpn": 110,
       "compared_to_standard": "over",
-      "days_old": 172,
+      "days_old": 179,
       "source_url": "https://data.ca.gov/dataset/surface-water-fecal-indicator-bacteria-results",
-      "as_of": "2026-11-20"
+      "as_of": "2026-11-27"
     },
     {
       "series": "surfrider_creek_mouth_enterococcus",
       "station": "Beach at creek mouth (Surfrider site Linda Mar Beach/San Pedro Creek)",
       "sampled_by": "Surfrider Foundation Blue Water Task Force, San Mateo County chapter",
       "analyte": "enterococcus",
-      "date": "2026-11-13",
-      "result_mpn": 10112,
+      "date": "2026-11-21",
+      "result_mpn": 583,
       "unit": "MPN per 100 mL",
       "standard_mpn": 110,
       "compared_to_standard": "over",
-      "days_old": 7,
+      "days_old": 6,
       "source_url": "https://bwtf.surfrider.org/",
-      "as_of": "2026-11-20"
+      "as_of": "2026-11-27"
     }
   ],
   "caveats": [
